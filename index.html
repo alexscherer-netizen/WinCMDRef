@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0c10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WinCMD Ref">
+<link rel="manifest" id="pwa-manifest">
 <title>Windows CMD & PowerShell — Befehlsreferenz</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -41,7 +47,7 @@
     overflow-x: hidden;
   }
 
-  /* ── SIDEBAR OVERLAY (mobile) ── */
+  /* -- SIDEBAR OVERLAY (mobile) -- */
   #sidebar-overlay {
     display: none;
     position: fixed;
@@ -52,7 +58,7 @@
   }
   #sidebar-overlay.visible { display: block; }
 
-  /* ── SIDEBAR ── */
+  /* -- SIDEBAR -- */
   #sidebar {
     width: var(--sidebar-w);
     background: var(--bg2);
@@ -122,10 +128,10 @@
   .sidebar-item .cat-count { margin-left: auto; font-size: 10px; color: var(--text3); background: var(--bg4); padding: 1px 6px; border-radius: 10px; }
   .sidebar-footer { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); font-size: 10px; color: var(--text3); text-align: center; }
 
-  /* ── MAIN ── */
+  /* -- MAIN -- */
   #main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-  /* ── TOPBAR ── */
+  /* -- TOPBAR -- */
   #topbar {
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
@@ -159,7 +165,7 @@
   .stat-pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); color: var(--text2); background: var(--bg3); }
   .stat-pill b { color: var(--text); }
 
-  /* ── CONTENT ── */
+  /* -- CONTENT -- */
   #content { padding: 20px 24px; flex: 1; }
 
   .cat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
@@ -167,7 +173,7 @@
   .cat-header-text h2 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); }
   .cat-header-text p { font-size: 11px; color: var(--text2); margin-top: 2px; }
 
-  /* ── COMMAND GRID ── */
+  /* -- COMMAND GRID -- */
   .cmd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
 
   .cmd-card {
@@ -225,7 +231,7 @@
   .detail-row:last-child { margin-bottom: 0; }
   .detail-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); font-weight: 600; margin-bottom: 5px; }
 
-  /* ── UNIVERSELLE CODE/TEXT BOXEN — gleiche Regeln ueberall ── */
+  /* -- UNIVERSELLE CODE/TEXT BOXEN — gleiche Regeln ueberall -- */
   .code-box {
     display: block;
     background: var(--bg);
@@ -303,7 +309,96 @@
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
   mark { background: #2d1b00; color: var(--amber); border-radius: 2px; padding: 0 2px; }
 
-  /* ── COPY BUTTON ── */
+  /* -- FAVORITEN STERN -- */
+  .fav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 2px 4px;
+    line-height: 1;
+    opacity: 0.4;
+    transition: opacity 0.15s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .fav-btn:hover { opacity: 0.8; transform: scale(1.2); }
+  .fav-btn.active { opacity: 1; color: #fbbf24; }
+
+  /* -- VERLAUF BADGE -- */
+  .verlauf-badge {
+    font-size: 9px; padding: 1px 5px;
+    border-radius: 3px;
+    background: #1e293b;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  /* -- TOPBAR EXTRAS -- */
+  .topbar-actions { display: flex; gap: 6px; align-items: center; margin-left: 8px; }
+  .topbar-icon-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    color: var(--text2);
+    font-size: 14px;
+    padding: 5px 8px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .topbar-icon-btn:hover { background: var(--bg4); color: var(--text); }
+  .topbar-icon-btn.lang-active { color: var(--blue-bright); border-color: var(--blue); }
+
+  /* -- EXPORT MODAL -- */
+  #exportModal {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .export-box {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 24px 22px;
+    width: 100%; max-width: 400px;
+  }
+  .export-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--blue-bright);
+    margin-bottom: 16px;
+  }
+  .export-options { display: grid; gap: 10px; }
+  .export-option {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .export-option:hover { border-color: var(--blue); background: var(--bg4); }
+  .export-option-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .export-option-desc  { font-size: 11px; color: var(--text2); margin-top: 3px; }
+  .export-close {
+    margin-top: 14px; width: 100%;
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 7px; padding: 8px;
+    color: var(--text2); font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; cursor: pointer;
+  }
+  .export-close:hover { background: var(--bg4); }
+
+  /* -- COPY BUTTON -- */
   .copy-btn {
     position: absolute;
     top: 4px; right: 4px;
@@ -320,7 +415,7 @@
   }
   .copy-btn:hover { background: var(--border2); color: var(--text); }
 
-  /* ── CUSTOM CARDS ── */
+  /* -- CUSTOM CARDS -- */
   .custom-card { border-color: #facc1544 !important; }
   .custom-card.open { border-color: #facc15 !important; }
   .custom-badge {
@@ -340,7 +435,7 @@
   .del-btn { color: #f87171; font-size: 12px; }
   .del-btn:hover { background: #450a0a; }
 
-  /* ── FAB (Floating Action Button) ── */
+  /* -- FAB (Floating Action Button) -- */
   #fab {
     position: fixed;
     bottom: calc(var(--bottom-nav-h) + 16px);
@@ -364,7 +459,7 @@
     #fab { bottom: 24px; right: 24px; }
   }
 
-  /* ── MODAL ── */
+  /* -- MODAL -- */
   #addModal {
     display: none;
     position: fixed; inset: 0;
@@ -433,9 +528,9 @@
   .btn-save:hover { background: #fde047; }
   .hint-text { font-size: 10px; color: var(--text3); margin-top: 4px; }
 
-  /* ══════════════════════════════════════════
+  /* ==========================================
      BOTTOM NAV (mobile only)
-  ══════════════════════════════════════════ */
+  ========================================== */
   #bottom-nav {
     display: none;
     position: fixed;
@@ -480,104 +575,312 @@
   .bnav-icon { font-size: 18px; line-height: 1; }
   .bnav-label { font-size: 8.5px; white-space: nowrap; }
 
-  /* ══════════════════════════════════════════
+  /* ==========================================
      TABLET  (768px – 1024px)
-  ══════════════════════════════════════════ */
+  ========================================== */
   @media (max-width: 1024px) {
     :root { --sidebar-w: 200px; }
-    #content { padding: 16px 18px; }
-    .cmd-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
-    .topbar-badges .stat-pill:not(:first-child) { display: none; }
     #topbar { padding: 0 16px; }
-    .guide-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+    .topbar-badges .stat-pill:not(:first-child) { display: none; }
+    #content { padding: 16px 18px; }
+    .cmd-grid   { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+    .guide-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+    .guide-title    { font-size: 12px; }
+    .guide-subtitle { font-size: 10px; }
+    .guide-panel    { padding: 12px 14px; }
+    .step-code      { font-size: 10.5px; }
+    /* Topbar actions — hide text labels on tablet */
+    .topbar-icon-btn { font-size: 16px; padding: 5px 7px; }
   }
 
-  /* ══════════════════════════════════════════
-     MOBILE  (≤ 767px) — Slide-in Drawer
-  ══════════════════════════════════════════ */
+  /* ==========================================
+     MOBILE  (≤ 767px) — vollständige Neugestaltung
+  ========================================== */
   @media (max-width: 767px) {
+    :root {
+      --topbar-h: 52px;
+      --bottom-nav-h: 62px;
+    }
     body { font-size: 13px; }
 
-    /* Sidebar becomes off-canvas drawer */
+    /* -- Sidebar: Off-Canvas Drawer -- */
     #sidebar {
       transform: translateX(-100%);
-      width: 260px;
-      bottom: 0;
+      width: min(280px, 85vw);
       padding-bottom: env(safe-area-inset-bottom, 0px);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    #sidebar.open { transform: translateX(0); }
-    #sidebar-close { display: block; }
+    #sidebar.open   { transform: translateX(0); }
+    #sidebar-close  { display: flex; align-items: center; justify-content: center; }
 
-    /* Main takes full width */
-    #main { margin-left: 0; padding-bottom: var(--bottom-nav-h); }
+    /* -- Main layout -- */
+    #main {
+      margin-left: 0;
+      padding-bottom: var(--bottom-nav-h);
+    }
 
-    /* Topbar: hamburger visible, pills hidden */
-    #topbar { padding: 0 12px; gap: 8px; }
-    #menu-btn { display: flex; align-items: center; }
+    /* -- Topbar: kompakt und funktional -- */
+    #topbar {
+      padding: 0 10px;
+      gap: 6px;
+      height: var(--topbar-h);
+    }
+    #menu-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      font-size: 20px;
+      border-radius: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+    }
+    .topbar-title { font-size: 12px; flex: 1; }
     .topbar-badges { display: none; }
-    .topbar-title { font-size: 13px; }
+    /* Topbar actions: nur Icons, kein Text */
+    .topbar-actions { gap: 4px; margin-left: 4px; }
+    .topbar-icon-btn {
+      font-size: 17px;
+      padding: 6px 8px;
+      min-width: 38px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+    }
+    /* Zeige nur Icon (kein Text) auf Mobil */
+    .topbar-icon-btn .btn-text { display: none; }
 
-    /* Bottom nav visible */
+    /* -- Bottom Nav -- */
     #bottom-nav { display: flex; }
+    #bottom-nav-inner { padding: 0 4px; gap: 0; }
+    .bnav-item {
+      min-width: 52px;
+      padding: 0 10px;
+      gap: 2px;
+      /* Größere Touch-Fläche */
+      min-height: 54px;
+    }
+    .bnav-item.active {
+      background: var(--bg3);
+      border-radius: 10px;
+      color: var(--blue-bright);
+    }
+    .bnav-icon { font-size: 20px; }
+    .bnav-label { font-size: 8px; letter-spacing: 0.02em; }
 
-    /* Content */
-    #content { padding: 10px; }
+    /* -- Content & Grids -- */
+    #content { padding: 8px; }
+    .cmd-grid  { grid-template-columns: 1fr; gap: 6px; }
+    .guide-grid{ grid-template-columns: 1fr; gap: 7px; }
 
-    /* Full-width grid on small screens */
-    .cmd-grid { grid-template-columns: 1fr; gap: 7px; }
+    /* -- Command Cards: größere Touch-Fläche -- */
+    .cmd-head {
+      padding: 13px 13px;
+      min-height: 56px;
+    }
+    .cmd-name  { font-size: 13px; }
+    .cmd-short { font-size: 11px; line-height: 1.5; }
+    .cmd-detail{ padding: 10px 12px; }
+    .cmd-arrow { font-size: 12px; min-width: 24px; min-height: 24px; display: flex; align-items: center; justify-content: center; }
 
-    /* Cards */
-    .cmd-head { padding: 11px 12px; }
-    .cmd-name { font-size: 13px; }
-    .cmd-short { font-size: 11px; }
-    /* All code/text boxes — unified mobile size */
-    .code-box, .example-line, .tip-box,
-    .step-code, .step-path,
-    .step-note, .step-warn { font-size: 11px; }
-    /* Guide panels */
-    .guide-panel { padding: 10px 12px; }
-    .guide-tab { padding: 7px 11px; font-size: 9px; }
-    .step { gap: 8px; margin-bottom: 12px; }
-    .step-num { width: 20px; height: 20px; min-width: 20px; font-size: 10px; }
-    .step-title { font-size: 11px; }
-    .step-desc { font-size: 10.5px; }
+    /* Fav Button — größere Touch-Fläche */
+    .fav-btn { font-size: 18px; padding: 4px 6px; min-width: 34px; min-height: 34px; display: flex; align-items: center; justify-content: center; }
 
-    /* Section header */
-    .section-title-desc { display: none; }
-    .cat-header-text h2 { font-size: 15px; }
+    /* Copy Button — größer */
+    .copy-btn { font-size: 14px; padding: 4px 8px; min-width: 32px; min-height: 28px; }
 
-    /* Sidebar */
-    .sidebar-search input { font-size: 13px; padding: 8px 10px 8px 30px; }
-    .sidebar-item { padding: 10px 14px; font-size: 12px; }
-    .sidebar-item .cat-icon { font-size: 15px; width: 20px; }
+    /* -- Code Boxen -- */
+    .code-box,
+    .example-line { font-size: 10.5px; padding: 7px 38px 7px 10px; }
+    .tip-box       { font-size: 10.5px; padding: 7px 10px; }
 
-    /* Guide */
-    .guide-grid { grid-template-columns: 1fr; gap: 8px; }
-    .guide-title { font-size: 12px; }
-    .guide-subtitle { font-size: 10px; }
-    .guide-panel { padding: 10px 12px; }
-    .guide-tab { padding: 7px 11px; font-size: 9px; }
-    .step-code { font-size: 10.5px; padding: 6px 9px; }
-    .step-title { font-size: 11px; }
-    .step-desc { font-size: 10.5px; }
-    .step-note, .step-warn, .step-path { font-size: 10.5px; }
-    .step-num { width: 20px; height: 20px; min-width: 20px; font-size: 10px; }
-    .step { gap: 8px; margin-bottom: 12px; }
+    /* -- Section Titles -- */
+    .section-title {
+      padding: 10px 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .section-title-desc  { display: none; }
+    .section-title-name  { font-size: 13px; }
+    .section-title-count { font-size: 9px; padding: 2px 7px; }
+    .cat-header          { margin-bottom: 14px; padding-bottom: 12px; gap: 10px; }
+    .cat-header-text h2  { font-size: 15px; }
+    .cat-header-icon     { width: 36px; height: 36px; font-size: 18px; }
+
+    /* -- Sidebar -- */
+    .sidebar-search { padding: 10px 12px 8px; }
+    .sidebar-search input { font-size: 13px; padding: 9px 10px 9px 32px; }
+    .sidebar-item {
+      padding: 11px 14px;
+      font-size: 12px;
+      min-height: 44px; /* Touch-Mindestgröße */
+    }
+    .sidebar-item .cat-icon { font-size: 16px; width: 22px; }
+    .cat-count { font-size: 9px; padding: 1px 6px; }
+
+    /* -- Guide Cards: großzügigere Touch-Fläche -- */
+    .guide-head {
+      padding: 13px 14px;
+      min-height: 60px;
+    }
+    .guide-emoji    { font-size: 20px; }
+    .guide-title    { font-size: 12px; }
+    .guide-subtitle { font-size: 10px; line-height: 1.5; }
+    .guide-arrow    { min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; }
+
+    /* -- Guide Tabs: horizontales Scrollen -- */
+    .guide-tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .guide-tab {
+      padding: 9px 13px;
+      font-size: 9.5px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* -- Guide Panels -- */
+    .guide-panel { padding: 10px 11px; }
+
+    /* -- Steps -- */
+    .step        { gap: 9px; margin-bottom: 12px; }
+    .step-num    { width: 22px; height: 22px; min-width: 22px; font-size: 10px; }
+    .step-title  { font-size: 11.5px; }
+    .step-desc   { font-size: 10.5px; }
+    .step-note,
+    .step-warn,
+    .step-path   { font-size: 10.5px; padding: 6px 10px; }
+
+    /* -- Step Code -- */
+    .step-code {
+      font-size: 10.5px;
+      padding: 7px 36px 7px 10px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+    }
+    .step-code-wrap { width: 100%; overflow: visible; }
+
+    /* -- Guide section heads -- */
+    .guide-section-head { font-size: 8.5px; margin: 10px 0 6px; }
+
+    /* -- Win Badges -- */
+    .run-wins { gap: 3px; margin-top: 3px; }
+    .run-win  { font-size: 8px; padding: 1px 5px; }
+
+    /* -- Custom Badge -- */
+    .custom-badge { font-size: 8px; padding: 1px 5px; }
+
+    /* -- FAB: optimale Touch-Größe -- */
+    #fab {
+      width: 52px;
+      height: 52px;
+      font-size: 26px;
+      bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px) + 12px);
+      right: 14px;
+    }
+
+    /* -- Modals: fast fullscreen -- */
+    .modal-box {
+      padding: 18px 16px;
+      max-height: 88vh;
+      border-radius: 18px 18px 10px 10px;
+    }
+    .modal-title   { font-size: 14px; }
+    .modal-input,
+    .modal-select,
+    .modal-textarea { font-size: 14px; padding: 10px 12px; }
+    .modal-row-2   { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-save, .btn-cancel { padding: 11px 16px; font-size: 13px; }
+
+    /* Export Modal */
+    .export-box    { border-radius: 16px; padding: 18px; }
+    .export-option { padding: 13px 14px; }
+    .export-option-title { font-size: 13px; }
+    .export-option-desc  { font-size: 11px; }
+
+    /* Lernkarten */
+    .lern-box      { border-radius: 16px; }
+    .lern-card     { padding: 22px 18px; min-height: 200px; }
+    .lern-question { font-size: 18px; }
+    .lern-actions  { gap: 8px; }
+    .lern-btn      { padding: 10px 16px; font-size: 12px; min-height: 44px; }
+
+    /* Theme Picker */
+    .theme-box  { border-radius: 16px; }
+    .theme-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .theme-btn  { padding: 13px 10px; }
+
+    /* Shortcut Overlay */
+    .shortcut-box  { border-radius: 16px; }
+    .shortcut-key  { min-width: 60px; font-size: 11px; padding: 4px 8px; }
+    .shortcut-desc { font-size: 11px; }
+
+    /* Impressum */
+    .impressum-box { border-radius: 16px; padding: 18px; }
+
+    /* Willkommen */
+    .welcome-box { border-radius: 16px 16px 10px 10px; }
+    .welcome-hero { padding: 22px 20px 16px; }
+    .welcome-features { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .welcome-feat { padding: 10px; }
+    .welcome-feat-icon { font-size: 16px; }
+
+    /* Notizen */
+    .notiz-area { font-size: 13px; padding: 8px 10px; min-height: 64px; }
+
+    /* Empty state */
+    .empty { padding: 40px 16px; }
+    .e-icon { font-size: 36px; }
   }
 
-  /* ══════════════════════════════════════════
-     VERY SMALL  (≤ 380px)
-  ══════════════════════════════════════════ */
+  /* ==========================================
+     VERY SMALL  (≤ 380px) — iPhone SE, Galaxy A
+  ========================================== */
   @media (max-width: 380px) {
-    :root { --bottom-nav-h: 56px; }
-    .cmd-name { font-size: 14px; }
+    :root { --bottom-nav-h: 58px; }
+
+    #content  { padding: 6px; }
+    #topbar   { padding: 0 8px; gap: 4px; }
+    .cmd-name  { font-size: 12px; }
+    .cmd-short { font-size: 10.5px; }
+    .cmd-head  { padding: 11px 11px; }
+
+    .guide-title { font-size: 11.5px; }
+    .step-code   { font-size: 10px; padding: 5px 30px 5px 8px; }
+    .step-title  { font-size: 10.5px; }
+
+    /* Bottom Nav: nur Icons */
     .bnav-label { display: none; }
-    .bnav-item { min-width: 44px; }
+    .bnav-item  { min-width: 44px; padding: 0 8px; }
+    .bnav-icon  { font-size: 19px; }
+
+    /* Topbar: maximale Platznutzung */
+    .topbar-actions { gap: 2px; }
+    .topbar-icon-btn { padding: 5px 6px; min-width: 34px; font-size: 15px; }
+
+    .section-title { padding: 8px 10px; }
+    .guide-head    { padding: 11px 12px; min-height: 52px; }
+    .guide-panel   { padding: 8px 10px; }
+
+    .modal-box     { padding: 14px 12px; max-height: 92vh; border-radius: 14px; }
+    .modal-row-2   { grid-template-columns: 1fr; }
+
+    .welcome-features { grid-template-columns: 1fr; }
+    .welcome-feat-icon { font-size: 14px; }
+    .theme-grid { grid-template-columns: 1fr 1fr; }
+
+    #fab { width: 48px; height: 48px; font-size: 24px; right: 12px; }
   }
 
-  /* ══════════════════════════════════════════
-     SAFE AREA (iPhone notch / home bar)
-  ══════════════════════════════════════════ */
+  /* ==========================================
+     SAFE AREA (iPhone Notch / Dynamic Island / Home Bar)
+  ========================================== */
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     #bottom-nav {
       padding-bottom: env(safe-area-inset-bottom);
@@ -587,9 +890,12 @@
       #main { padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom)); }
     }
   }
-  /* ══════════════════════════════════════════
+  @supports (padding-top: env(safe-area-inset-top)) {
+    #topbar { padding-top: max(0px, env(safe-area-inset-top, 0px) - 4px); }
+  }
+  /* ==========================================
      AD GUIDE STYLES
-  ══════════════════════════════════════════ */
+  ========================================== */
   .guide-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -838,6 +1144,163 @@
     margin: 14px 0 8px;
   }
   .guide-section-head:first-child { margin-top: 0; }
+
+  /* == THEMES == */
+  [data-theme="light"] {
+    --bg:#f8fafc;--bg2:#ffffff;--bg3:#f1f5f9;--bg4:#e2e8f0;
+    --border:#e2e8f0;--border2:#cbd5e1;
+    --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+    --blue:#2563eb;--blue-dim:#dbeafe;--blue-bright:#1d4ed8;
+    --green:#16a34a;--green-dim:#dcfce7;
+    --purple:#7c3aed;--purple-dim:#ede9fe;--amber:#d97706;
+  }
+  [data-theme="light"] .code-box,[data-theme="light"] .example-line,[data-theme="light"] .step-code{background:#1e293b;}
+  [data-theme="light"] .sidebar-logo .logo-title{color:#2563eb;}
+  [data-theme="light"] .tip-box{background:#fffbeb;border-color:#fde68a;color:#92400e;}
+  [data-theme="matrix"] {
+    --bg:#001100;--bg2:#001a00;--bg3:#002200;--bg4:#003300;
+    --border:#004400;--border2:#006600;
+    --text:#00ff41;--text2:#00cc33;--text3:#007700;
+    --blue:#00ff41;--blue-dim:#002200;--blue-bright:#00ff41;
+    --green:#00ff41;--green-dim:#001a00;
+    --purple:#00ff41;--purple-dim:#001100;--amber:#00ff41;
+  }
+  [data-theme="matrix"] .cmd-name{color:#00ff41;text-shadow:0 0 8px #00ff4188;}
+  [data-theme="matrix"] .sidebar-logo .logo-title{color:#00ff41;text-shadow:0 0 10px #00ff41;}
+  [data-theme="ocean"] {
+    --bg:#0a1628;--bg2:#0d1f3c;--bg3:#112548;--bg4:#162d5a;
+    --border:#1e3a6e;--border2:#2a4f8a;
+    --text:#e0f2fe;--text2:#7dd3fc;--text3:#38bdf8;
+    --blue:#38bdf8;--blue-dim:#0c2a3d;--blue-bright:#7dd3fc;
+    --green:#34d399;--green-dim:#064e3b;
+    --purple:#a78bfa;--purple-dim:#2e1065;--amber:#fbbf24;
+  }
+  [data-theme="ocean"] .sidebar-logo .logo-title{color:#7dd3fc;}
+  [data-theme="purple"] {
+    --bg:#0d0017;--bg2:#120020;--bg3:#18002e;--bg4:#200040;
+    --border:#2d0060;--border2:#4a0090;
+    --text:#f0e6ff;--text2:#c4b5fd;--text3:#7c3aed;
+    --blue:#a78bfa;--blue-dim:#1e0050;--blue-bright:#c4b5fd;
+    --green:#6ee7b7;--green-dim:#064e3b;
+    --purple:#e879f9;--purple-dim:#4a0060;--amber:#fbbf24;
+  }
+  [data-theme="purple"] .cmd-name{color:#c4b5fd;}
+  [data-theme="purple"] .sidebar-logo .logo-title{color:#e879f9;}
+  [data-theme="solarized"] {
+    --bg:#002b36;--bg2:#073642;--bg3:#094553;--bg4:#0e5464;
+    --border:#1a6070;--border2:#277080;
+    --text:#fdf6e3;--text2:#93a1a1;--text3:#657b83;
+    --blue:#268bd2;--blue-dim:#1a3f5c;--blue-bright:#2aa198;
+    --green:#859900;--green-dim:#3a4200;
+    --purple:#d33682;--purple-dim:#4a1030;--amber:#b58900;
+  }
+  [data-theme="solarized"] .sidebar-logo .logo-title{color:#2aa198;}
+
+  /* Theme Picker Modal */
+  #themePicker{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:250;align-items:center;justify-content:center;padding:16px;}
+  .theme-box{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:22px;width:100%;max-width:400px;}
+  .theme-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;}
+  .theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+  .theme-btn{border-radius:8px;padding:12px 10px;cursor:pointer;border:2px solid transparent;text-align:left;font-family:'JetBrains Mono',monospace;transition:border-color 0.15s, transform 0.1s;}
+  .theme-btn:hover{transform:scale(1.02);}
+  .theme-btn.active{border-color:#fbbf24;}
+  .theme-btn-name{font-size:12px;font-weight:600;}
+  .theme-btn-desc{font-size:10px;margin-top:2px;opacity:0.7;}
+  .theme-close{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:8px;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
+
+  /* == LERNKARTEN == */
+  #lernModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);backdrop-filter:blur(10px);z-index:300;align-items:center;justify-content:center;padding:16px;}
+  .lern-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:520px;overflow:hidden;}
+  .lern-header{background:var(--bg3);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+  .lern-progress-bar{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+  .lern-progress-fill{height:100%;background:#22c55e;border-radius:3px;transition:width 0.4s;}
+  .lern-score{font-size:11px;color:var(--text2);white-space:nowrap;}
+  .lern-close-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;}
+  .lern-card{padding:28px 24px;text-align:center;min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .lern-cat-badge{font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);margin-bottom:14px;}
+  .lern-question{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--blue-bright);margin-bottom:10px;}
+  .lern-hint{font-size:11px;color:var(--text3);margin-bottom:18px;}
+  .lern-answer{display:none;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;width:100%;text-align:left;margin-bottom:14px;}
+  .lern-answer.show{display:block;}
+  .lern-answer-text{font-size:13px;color:var(--text);line-height:1.6;}
+  .lern-answer-syntax{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue-bright);margin-top:8px;background:var(--bg);padding:6px 10px;border-radius:5px;overflow-x:auto;white-space:pre;}
+  .lern-answer-tip{font-size:11px;color:var(--text2);margin-top:6px;font-style:italic;}
+  .lern-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .lern-btn{padding:9px 18px;border-radius:8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;border:none;transition:transform 0.1s,opacity 0.1s;}
+  .lern-btn:active{transform:scale(0.95);}
+  .lern-btn-show{background:var(--bg4);color:var(--text);border:1px solid var(--border2);}
+  .lern-btn-ok{background:#22c55e;color:#000;}
+  .lern-btn-fail{background:#f87171;color:#000;}
+  .lern-btn-skip{background:var(--bg3);color:var(--text2);border:1px solid var(--border2);}
+  .lern-done{padding:32px 24px;text-align:center;}
+  .lern-done-emoji{font-size:48px;margin-bottom:12px;}
+  .lern-done-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;}
+  .lern-done-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+  .lern-restart{background:var(--blue);color:#fff;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;}
+
+  /* == NOTIZEN == */
+  .notiz-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+  .notiz-label{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);font-weight:600;margin-bottom:5px;}
+  .notiz-area{width:100%;background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;resize:vertical;min-height:56px;outline:none;box-sizing:border-box;transition:border-color 0.2s;}
+  .notiz-area:focus{border-color:var(--blue);}
+  .notiz-saved{font-size:10px;color:#22c55e;margin-top:3px;display:none;}
+  .has-notiz .cmd-name::after{content:' 📝';font-size:11px;}
+
+  /* == KEYBOARD SHORTCUTS OVERLAY == */
+  #shortcutOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:400;align-items:center;justify-content:center;padding:16px;}
+  .shortcut-box{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:22px;width:100%;max-width:400px;}
+  .shortcut-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;}
+  .shortcut-list{display:grid;gap:8px;}
+  .shortcut-row{display:flex;align-items:center;gap:12px;}
+  .shortcut-key{background:var(--bg4);border:1px solid var(--border2);border-radius:5px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;min-width:70px;text-align:center;}
+  .shortcut-desc{font-size:12px;color:var(--text2);}
+  .shortcut-close{margin-top:14px;width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:8px;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
+
+  /* Fav hint */
+  .fav-card{border-color:#fbbf2444 !important;}
+  .fav-card.open{border-color:#fbbf24 !important;}
+
+  /* == WILLKOMMEN POPUP == */
+  #welcomeModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:16px;}
+  .welcome-box{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:520px;overflow:hidden;max-height:90vh;overflow-y:auto;}
+  .welcome-hero{background:linear-gradient(135deg,#0078d4,#6b21a8);padding:28px 24px 20px;text-align:center;}
+  .welcome-logo{font-size:40px;margin-bottom:10px;}
+  .welcome-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;}
+  .welcome-sub{font-size:12px;color:#93c5fd;letter-spacing:0.05em;}
+  .welcome-body{padding:22px 22px 20px;}
+  .welcome-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .welcome-feat{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 12px;}
+  .welcome-feat-icon{font-size:18px;margin-bottom:5px;}
+  .welcome-feat-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px;}
+  .welcome-feat-desc{font-size:10px;color:var(--text2);line-height:1.5;}
+  .welcome-dsgvo{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:10px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+  .welcome-dsgvo a{color:var(--blue-bright);text-decoration:none;}
+  .welcome-start-btn{width:100%;background:linear-gradient(90deg,#0078d4,#6b21a8);border:none;border-radius:10px;padding:13px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:0.02em;transition:opacity 0.15s;}
+  .welcome-start-btn:hover{opacity:0.9;}
+  .welcome-nochmal{font-size:10px;color:var(--text3);text-align:center;margin-top:10px;cursor:pointer;}
+  .welcome-nochmal:hover{color:var(--text2);}
+  @media(max-width:480px){
+    .welcome-features{grid-template-columns:1fr;}
+    .welcome-hero{padding:20px 18px 16px;}
+    .welcome-title{font-size:18px;}
+    .welcome-body{padding:16px 16px 14px;}
+  }
+
+  /* == IMPRESSUM / DSGVO MODAL == */
+  #impressumModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);z-index:250;align-items:center;justify-content:center;padding:16px;}
+  .impressum-box{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:24px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;}
+  .impressum-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px;}
+  .impressum-section{margin-bottom:16px;}
+  .impressum-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue-bright);margin-bottom:6px;}
+  .impressum-p{font-size:12px;color:var(--text2);line-height:1.7;}
+  .impressum-p a{color:var(--blue-bright);text-decoration:none;}
+  .impressum-close{width:100%;margin-top:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:9px;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
+  .impressum-close:hover{background:var(--bg4);}
+
+  /* Sidebar footer link */
+  .sidebar-footer-links{display:flex;gap:12px;justify-content:center;margin-top:8px;}
+  .sidebar-footer-links button{background:none;border:none;color:var(--text3);font-size:10px;cursor:pointer;padding:2px 0;text-decoration:underline;}
+  .sidebar-footer-links button:hover{color:var(--text2);}
 </style>
 </head>
 <body>
@@ -862,7 +1325,12 @@
   <div id="navItems"></div>
   <div class="sidebar-footer">
     <div style="color:var(--text2)">Windows Befehlsreferenz</div>
-    <div style="margin-top:4px">780+ Befehle · 48 Guides · 110 Win+R</div>
+    <div style="margin-top:4px">930+ Befehle · 53 Guides · 110 Win+R</div>
+    <div class="sidebar-footer-links">
+      <button onclick="showImpressum()">Impressum</button>
+      <button onclick="showImpressum()">Datenschutz</button>
+      <button onclick="showWelcome()">Hilfe</button>
+    </div>
   </div>
 </nav>
 
@@ -876,8 +1344,185 @@
       <div class="stat-pill" style="border-color:#4c1d95"><b style="color:var(--purple)">PowerShell</b></div>
       <div class="stat-pill" style="border-color:#166534"><b style="color:var(--green)">Beide</b></div>
     </div>
+    <div class="topbar-actions">
+      <button class="topbar-icon-btn" id="langBtn" onclick="toggleLang()" title="Sprache wechseln (L)">&#127760; DE</button>
+      <button class="topbar-icon-btn" onclick="showThemePicker()" title="Theme wechseln (T)">&#127912;</button>
+      <button class="topbar-icon-btn" onclick="startLernmodus()" title="Lernkarten-Modus (K)">&#127924;</button>
+      <button class="topbar-icon-btn" onclick="shareLink()" title="Link teilen (S)">&#128279;</button>
+      <button class="topbar-icon-btn" onclick="showExportModal()" title="Exportieren (E)">&#128228;</button>
+      <button class="topbar-icon-btn" onclick="showShortcuts()" title="Tastaturkuerzel (?)">&#9000;</button>
+    </div>
   </div>
   <div id="content"></div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div id="exportModal" onclick="if(event.target===this)hideExportModal()">
+  <div class="export-box">
+    <div class="export-title">&#128228; Befehle exportieren</div>
+    <div class="export-options">
+      <button class="export-option" onclick="exportData('markdown')">
+        <div class="export-option-title">&#128196; Markdown (.md)</div>
+        <div class="export-option-desc">Aktuelle Kategorie als Markdown-Tabelle</div>
+      </button>
+      <button class="export-option" onclick="exportData('csv')">
+        <div class="export-option-title">&#128202; CSV (.csv)</div>
+        <div class="export-option-desc">Alle Befehle als Tabelle fuer Excel</div>
+      </button>
+      <button class="export-option" onclick="exportData('json')">
+        <div class="export-option-title">&#123;&#125; JSON (.json)</div>
+        <div class="export-option-desc">Alle Befehle als JSON-Datei</div>
+      </button>
+      <button class="export-option" onclick="exportData('favoriten')">
+        <div class="export-option-title">&#11088; Favoriten (.md)</div>
+        <div class="export-option-desc">Nur deine Favoriten als Markdown</div>
+      </button>
+    </div>
+    <button class="export-close" onclick="hideExportModal()">Schliessen</button>
+  </div>
+</div>
+
+<!-- THEME PICKER -->
+<div id="themePicker" onclick="if(event.target===this)hideThemePicker()">
+  <div class="theme-box">
+    <div class="theme-title">&#127912; Theme waehlen</div>
+    <div class="theme-grid" id="themeGrid"></div>
+    <button class="theme-close" onclick="hideThemePicker()">Schliessen</button>
+  </div>
+</div>
+
+<!-- LERNKARTEN MODAL -->
+<div id="lernModal">
+  <div class="lern-box">
+    <div class="lern-header">
+      <div class="lern-progress-bar"><div class="lern-progress-fill" id="lernFill" style="width:0%"></div></div>
+      <span class="lern-score" id="lernScore">0 / 0</span>
+      <button class="lern-close-btn" onclick="closeLernmodus()">&#10005;</button>
+    </div>
+    <div id="lernContent"></div>
+  </div>
+</div>
+
+<!-- KEYBOARD SHORTCUTS -->
+<div id="shortcutOverlay" onclick="if(event.target===this)hideShortcuts()">
+  <div class="shortcut-box">
+    <div class="shortcut-title">&#9000; Tastaturkuerzel</div>
+    <div class="shortcut-list">
+      <div class="shortcut-row"><span class="shortcut-key">/</span><span class="shortcut-desc">Suchfeld fokussieren</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">Esc</span><span class="shortcut-desc">Suche leeren / Modal schliessen</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">T</span><span class="shortcut-desc">Theme-Picker oeffnen</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">K</span><span class="shortcut-desc">Lernkarten-Modus starten</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">E</span><span class="shortcut-desc">Export-Dialog oeffnen</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">S</span><span class="shortcut-desc">Link zur aktuellen Ansicht kopieren</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">L</span><span class="shortcut-desc">Sprache DE/EN umschalten</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">F</span><span class="shortcut-desc">Zu Favoriten springen</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">?</span><span class="shortcut-desc">Diese Hilfe anzeigen</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">1–9</span><span class="shortcut-desc">Kategorie 1–9 auswaehlen</span></div>
+    </div>
+    <button class="shortcut-close" onclick="hideShortcuts()">Schliessen</button>
+  </div>
+</div>
+
+<!-- WILLKOMMEN POPUP -->
+<div id="welcomeModal">
+  <div class="welcome-box">
+    <div class="welcome-hero">
+      <div class="welcome-logo">&#62;_</div>
+      <div class="welcome-title">WinCMD Referenz</div>
+      <div class="welcome-sub">CMD &middot; PowerShell &middot; AD &middot; DNS &middot; Azure &middot; Docker</div>
+    </div>
+    <div class="welcome-body">
+      <div class="welcome-features">
+        <div class="welcome-feat">
+          <div class="welcome-feat-icon">&#128269;</div>
+          <div class="welcome-feat-title">820+ Befehle</div>
+          <div class="welcome-feat-desc">CMD, PowerShell, Azure, Docker in 21 Kategorien mit Syntax &amp; Beispielen</div>
+        </div>
+        <div class="welcome-feat">
+          <div class="welcome-feat-icon">&#128218;</div>
+          <div class="welcome-feat-title">53 Anleitungen</div>
+          <div class="welcome-feat-desc">Schritt-f&uuml;r-Schritt Guides f&uuml;r AD, Troubleshooting, Batch &amp; PowerShell</div>
+        </div>
+        <div class="welcome-feat">
+          <div class="welcome-feat-icon">&#11088;</div>
+          <div class="welcome-feat-title">Favoriten &amp; Verlauf</div>
+          <div class="welcome-feat-desc">Befehle merken, Verlauf automatisch, alles lokal im Browser gespeichert</div>
+        </div>
+        <div class="welcome-feat">
+          <div class="welcome-feat-icon">&#127924;</div>
+          <div class="welcome-feat-title">Lernkarten-Modus</div>
+          <div class="welcome-feat-desc">Befehle lernen mit Karteikarten, Fortschritt &amp; Auswertung</div>
+        </div>
+        <div class="welcome-feat">
+          <div class="welcome-feat-icon">&#9000;</div>
+          <div class="welcome-feat-title">Tastaturk&uuml;rzel</div>
+          <div class="welcome-feat-desc"><b>/</b> Suche &nbsp;&middot;&nbsp; <b>T</b> Theme &nbsp;&middot;&nbsp; <b>K</b> Lernen &nbsp;&middot;&nbsp; <b>?</b> Hilfe</div>
+        </div>
+        <div class="welcome-feat">
+          <div class="welcome-feat-icon">&#127912;</div>
+          <div class="welcome-feat-title">6 Themes &amp; PWA</div>
+          <div class="welcome-feat-desc">Dark, Light, Matrix, Ocean &amp; mehr. Als App auf dem Homescreen installierbar</div>
+        </div>
+        <div class="welcome-feat">
+          <div class="welcome-feat-icon">&#128228;</div>
+          <div class="welcome-feat-title">Export &amp; Teilen</div>
+          <div class="welcome-feat-desc">Befehle als Markdown, CSV oder JSON exportieren, Link zur Ansicht teilen</div>
+        </div>
+        <div class="welcome-feat">
+          <div class="welcome-feat-icon">&#10010;</div>
+          <div class="welcome-feat-title">Eigene Eintr&auml;ge</div>
+          <div class="welcome-feat-desc">Eigene Befehle hinzuf&uuml;gen und mit Notizen versehen — lokal gespeichert</div>
+        </div>
+      </div>
+      <div class="welcome-dsgvo">
+        &#128274; <b>Datenschutz:</b> Diese App speichert Deine Daten ausschlie&szlig;lich lokal in Deinem Browser (localStorage). Es werden keine pers&ouml;nlichen Daten an Server &uuml;bertragen oder gespeichert.<br><br>
+        &#9888; <b>Externe Ressourcen:</b> Diese Seite l&auml;dt Schriftarten (JetBrains Mono, Syne) von <b>Google Fonts</b>. Dabei wird Deine IP-Adresse an Google-Server &uuml;bertragen. Bei Nutzung &uuml;ber GitHub Pages gelten zus&auml;tzlich die <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">Datenschutzbestimmungen von GitHub</a>.
+      </div>
+      <button class="welcome-start-btn" onclick="closeWelcome()">Los geht&apos;s &#8594;</button>
+      <div class="welcome-nochmal" onclick="closeWelcome(true)">Nicht mehr anzeigen</div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPRESSUM & DSGVO MODAL -->
+<div id="impressumModal" onclick="if(event.target===this)hideImpressum()">
+  <div class="impressum-box">
+    <div class="impressum-title">&#128196; Impressum &amp; Datenschutz</div>
+
+    <div class="impressum-section">
+      <div class="impressum-h">Angaben gem&auml;&szlig; &sect; 5 TMG</div>
+      <div class="impressum-p">
+        Alexander Scherer<br>
+        Mertenstra&szlig;e 18<br>
+        13587 Berlin<br><br>
+        E-Mail: <a href="mailto:info@alexander-scherer.com">info@alexander-scherer.com</a>
+      </div>
+    </div>
+
+    <div class="impressum-section">
+      <div class="impressum-h">Haftungsausschluss</div>
+      <div class="impressum-p">
+        Die Inhalte dieser Seite wurden mit gr&ouml;&szlig;ter Sorgfalt erstellt. F&uuml;r die Richtigkeit, Vollst&auml;ndigkeit und Aktualit&auml;t der Inhalte kann keine Gew&auml;hr &uuml;bernommen werden. Die Nutzung der Befehle und Skripte erfolgt auf eigene Verantwortung.
+      </div>
+    </div>
+
+    <div class="impressum-section">
+      <div class="impressum-h">Datenschutzerkl&auml;rung</div>
+      <div class="impressum-p">
+        <b>Lokale Datenspeicherung:</b> Diese App speichert Favoriten, Verlauf, Notizen, Theme und Spracheinstellung ausschlie&szlig;lich im localStorage Deines Browsers. Es werden keine Daten an externe Server &uuml;bertragen.<br><br>
+        <b>Google Fonts:</b> Diese Seite nutzt Schriftarten von Google Fonts (JetBrains Mono, Syne). Beim Laden der Seite wird eine Verbindung zu Google-Servern hergestellt, wobei Deine IP-Adresse &uuml;bermittelt wird. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einheitlicher Darstellung). Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA.<br><br>
+        <b>GitHub Pages:</b> Diese App wird &uuml;ber GitHub Pages bereitgestellt. GitHub erhebt dabei Serverprotokolldaten (IP-Adresse, Zeitpunkt, Browser). Weitere Informationen: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">GitHub Privacy Statement</a>.<br><br>
+        <b>Keine Cookies, kein Tracking, keine Analyse-Tools.</b> Diese App verwendet weder Cookies noch Tracking-Dienste oder Analyse-Software.
+      </div>
+    </div>
+
+    <div class="impressum-section">
+      <div class="impressum-h">Verantwortlich f&uuml;r den Inhalt</div>
+      <div class="impressum-p">Alexander Scherer, Mertenstra&szlig;e 18, 13587 Berlin</div>
+    </div>
+
+    <button class="impressum-close" onclick="hideImpressum()">Schlie&szlig;en</button>
+  </div>
 </div>
 
 <nav id="bottom-nav" aria-label="Kategorien">
@@ -974,6 +1619,11 @@ const CATS = [
   {id:'azure',      icon:'&#9729;',   label:'Azure / Cloud',    desc:'Az PowerShell, Azure CLI, Entra ID', color:'#38bdf8'},
   {id:'virt',       icon:'&#128011;', label:'Virtualisierung',  desc:'Hyper-V, WSL, Docker, Container', color:'#a3e635'},
   {id:'ps-guide',   icon:'&#128218;', label:'PS Scripting Guide',desc:'Anleitungen: Skripte, Module, Remoting', color:'#c084fc'},
+  {id:'paket',      icon:'&#128230;', label:'Paketmanager',      desc:'winget, chocolatey, scoop, NuGet', color:'#fb923c'},
+  {id:'iis',        icon:'&#127760;', label:'IIS & Webserver',   desc:'iisreset, appcmd, SSL, Web.config', color:'#67e8f9'},
+  {id:'batch-guide',icon:'&#128203;', label:'Batch Scripting',   desc:'.bat/.cmd Anleitungen Schritt fuer Schritt', color:'#fbbf24'},
+  {id:'favoriten',  icon:'&#11088;',  label:'Favoriten',         desc:'Gemerkte Lieblingsmerkbefehle', color:'#fbbf24'},
+  {id:'verlauf',    icon:'&#128336;', label:'Verlauf',           desc:'Zuletzt angesehene Befehle', color:'#94a3b8'},
   {id:'eigene',     icon:'&#10010;',  label:'Eigene Befehle',   desc:'Selbst erstellte und gespeicherte Eintraege',  color:'#facc15'},
 ];
 
@@ -1031,7 +1681,7 @@ const CMDS = [
   {name:'pathping',cat:'netzwerk',typ:'cmd',short:'Kombiniert ping + tracert - zeigt Paketverlust pro Hop.',syntax:'pathping [Hostname] [-n]',examples:['pathping google.com','pathping -n 8.8.8.8'],tip:'Dauert laenger als tracert, liefert aber detailliertere Paketverlustdaten.'},
   {name:'nbtstat',cat:'netzwerk',typ:'cmd',short:'Zeigt NetBIOS-Statistiken und Namen-Cache.',syntax:'nbtstat [-a Host] [-n] [-r] [-R]',examples:['nbtstat -n','nbtstat -a 192.168.1.10','nbtstat -R'],tip:'-R loescht den NetBIOS-Cache. Nuetzlich in aelteren Windows-Netzwerken.'},
 
-  // ── NETZWERK ERWEITERT ──
+  // -- NETZWERK ERWEITERT --
 
   // Diagnose & Analyse
   {name:'telnet',cat:'netzwerk',typ:'cmd',short:'Testet TCP-Port-Erreichbarkeit zu einem Host.',syntax:'telnet [Host] [Port]',examples:['telnet 192.168.1.1 80','telnet smtp.gmail.com 25','telnet dc01 389'],tip:'Zuerst aktivieren: pkgmgr /iu:"TelnetClient" oder optionale Features. Gibt keine Fehlerausgabe — Verbindung oder sofort Trennung zeigt ob Port offen ist.'},
@@ -1187,7 +1837,7 @@ const CMDS = [
   {name:'Get-ScheduledTask',cat:'prozesse',typ:'ps',short:'Geplante Aufgaben per PowerShell anzeigen.',syntax:'Get-ScheduledTask [-TaskName Name] [-TaskPath Pfad]',examples:['Get-ScheduledTask','Get-ScheduledTask -TaskName "Backup"','Get-ScheduledTask | Where State -eq Running'],tip:'Mit Start-ScheduledTask, Stop-ScheduledTask, Enable/Disable-ScheduledTask kombinieren.'},
   {name:'Register-ScheduledTask',cat:'prozesse',typ:'ps',short:'Neue geplante Aufgabe per PowerShell erstellen.',syntax:'Register-ScheduledTask -TaskName [Name] -Trigger [Trigger] -Action [Action]',examples:['$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File C:\\script.ps1"','$trigger = New-ScheduledTaskTrigger -Daily -At 02:00','Register-ScheduledTask -TaskName "NachtScript" -Action $action -Trigger $trigger -RunLevel Highest'],tip:'New-ScheduledTaskTrigger: -AtStartup, -AtLogOn, -Daily, -Weekly. -RunLevel Highest = Admin.'},
 
-  // ── BENUTZER ERWEITERT ──
+  // -- BENUTZER ERWEITERT --
   {name:'net user',cat:'benutzer',typ:'cmd',short:'Benutzerkonten anzeigen, erstellen oder aendern.',syntax:'net user [Benutzername] [Passwort|*] [/add|/delete]',examples:['net user','net user Max * /add','net user Max /delete'],tip:'net user ohne Parameter listet alle Konten. * fragt Passwort interaktiv ab.'},
   {name:'net localgroup',cat:'benutzer',typ:'cmd',short:'Lokale Gruppen und Mitgliedschaften verwalten.',syntax:'net localgroup [Gruppe] [Benutzer] [/add|/delete]',examples:['net localgroup','net localgroup Administratoren Max /add'],tip:'Zeigt Mitglieder einer Gruppe oder fuegt Benutzer hinzu/entfernt sie.'},
   {name:'whoami',cat:'benutzer',typ:'both',short:'Gibt den aktuellen Benutzernamen und Rechte aus.',syntax:'whoami [/all] [/groups] [/priv]',examples:['whoami','whoami /all','whoami /groups'],tip:'/all zeigt SID, Gruppen und Berechtigungen. Nuetzlich zur Rechtepruefung.'},
@@ -1216,7 +1866,7 @@ const CMDS = [
   {name:'Get-WinEvent',cat:'benutzer',typ:'ps',short:'Windows-Ereignisprotokolle abfragen — moderner Ersatz fuer Get-EventLog.',syntax:'Get-WinEvent [-LogName Log] [-FilterHashtable @{...}] [-MaxEvents N]',examples:['Get-WinEvent -LogName Security -MaxEvents 20','Get-WinEvent -FilterHashtable @{LogName="Security"; Id=4624} -MaxEvents 10','Get-WinEvent -FilterHashtable @{LogName="System"; Level=2} | Select TimeCreated,Message'],tip:'Level: 1=Kritisch, 2=Fehler, 3=Warnung, 4=Information. Id=4624 Anmeldung, 4625 Fehlversuch, 4740 Gesperrt.'},
   {name:'Get-EventLog',cat:'benutzer',typ:'ps',short:'Ereignisprotokoll abfragen (aelterer Befehl, noch verfuegbar).',syntax:'Get-EventLog -LogName [Log] [-Newest N] [-EntryType Error|Warning] [-Source Name]',examples:['Get-EventLog -LogName System -Newest 50','Get-EventLog -LogName Application -EntryType Error -Newest 20','Get-EventLog -LogName Security -InstanceId 4624 -Newest 10'],tip:'Veraltet — Get-WinEvent bevorzugen. Funktioniert aber noch und hat einfachere Syntax.'},
 
-  // ── PROZESSE WEITERES ──
+  // -- PROZESSE WEITERES --
   {name:'pmon',cat:'prozesse',typ:'cmd',short:'Einfacher Prozessmonitor in der Konsole (Resource Kit).',syntax:'pmon',examples:['pmon'],tip:'Aehnlich wie top in Linux. Zeigt CPU und Speicher aller Prozesse in Echtzeit. Aus dem Windows Resource Kit.'},
   {name:'tskill',cat:'prozesse',typ:'cmd',short:'Prozess per Name oder ID beenden (Terminal Services).',syntax:'tskill [PID|Prozessname] [/server:Computer] [/a]',examples:['tskill notepad','tskill 1234','tskill chrome /a'],tip:'/a beendet alle Instanzen. Fuer RDP-Server: /server:SERVERNAME. Einfacher als taskkill.'},
   {name:'tlist',cat:'prozesse',typ:'cmd',short:'Prozessliste mit Fenstertiteln (Resource Kit).',syntax:'tlist [-t] [-m] [Muster]',examples:['tlist','tlist -t','tlist note*'],tip:'-t zeigt Prozessbaum. -m zeigt geladene Module (DLLs). Nützlich um Fenstertitel zu finden.'},
@@ -1238,7 +1888,7 @@ const CMDS = [
   {name:'Debug-Process',cat:'prozesse',typ:'ps',short:'Debugger an laufenden Prozess anhaengen.',syntax:'Debug-Process [-Name Name] [-Id PID]',examples:['Debug-Process -Name notepad','Debug-Process -Id 1234'],tip:'Haengt den konfigurierten Just-in-Time-Debugger an. Benoetigt installierten Debugger (WinDbg, Visual Studio).'},
   {name:'Suspend-Process / Resume-Process',cat:'prozesse',typ:'ps',short:'Prozess anhalten und fortsetzen.',syntax:'(Get-Process [Name]).Suspend()  |  .Resume()',examples:['(Get-Process notepad).Suspend()','(Get-Process notepad).Resume()'],tip:'Keine nativen Cmdlets — .NET-Methoden des Process-Objekts verwenden. Haelt CPU-Auslastung an.'},
 
-  // ── BENUTZER WEITERES ──
+  // -- BENUTZER WEITERES --
   {name:'net password',cat:'benutzer',typ:'cmd',short:'Kennwort des aktuellen Benutzers aendern.',syntax:'net user [Benutzername] [AltesPasswort] [NeuesPasswort]',examples:['net user Max AltesPasswort NeuesPasswort!'],tip:'Ohne Admin-Rechte nur eigenes Kennwort aenderbar. Mit Admin: net user Max * fragt neues Kennwort ab.'},
   {name:'net use',cat:'benutzer',typ:'cmd',short:'Netzlaufwerke verbinden, trennen und auflisten.',syntax:'net use [Buchstabe:] [\\\\Server\\Freigabe] [Passwort] [/user:Benutzer] [/persistent:yes]',examples:['net use Z: \\\\Server\\Daten','net use Z: \\\\Server\\Daten /user:DOMAIN\\Max * /persistent:yes','net use Z: /delete','net use * /delete /y'],tip:'/persistent:yes Laufwerk bleibt nach Neustart verbunden. * /delete trennt alle Verbindungen.'},
   {name:'subst',cat:'benutzer',typ:'cmd',short:'Ordner als virtuelles Laufwerk einbinden.',syntax:'subst [Buchstabe:] [Pfad]  |  subst [Buchstabe:] /d',examples:['subst X: C:\\Projekte\\Aktuell','subst X: /d','subst'],tip:'Erstellt temporaere Laufwerkszuweisung (kein Neustart noetig, aber nicht persistent). subst ohne Parameter listet alle.'},
@@ -1365,18 +2015,18 @@ const CMDS = [
   {name:'Get-GPResultantSetOfPolicy',cat:'ad',typ:'ps',short:'Erstellt einen GPO-Bericht fuer Benutzer/Computer (RSOP).',syntax:'Get-GPResultantSetOfPolicy -Path [Pfad] -ReportType Html|Xml [-User Benutzer] [-Computer PC]',examples:['Get-GPResultantSetOfPolicy -ReportType Html -Path "C:\\rsop_report.html"','Get-GPResultantSetOfPolicy -ReportType Html -Path "C:\\report.html" -User mmustermann -Computer PC01'],tip:'Aequivalent zu gpresult /h in PowerShell. Zeigt alle angewendeten GPOs und Einstellungen.'},
   {name:'Import-Module ActiveDirectory',cat:'ad',typ:'ps',short:'Laedt das Active Directory PowerShell-Modul.',syntax:'Import-Module ActiveDirectory',examples:['Import-Module ActiveDirectory','Get-Module -Name ActiveDirectory -ListAvailable'],tip:'Wird automatisch geladen auf DCs. Auf Clients: RSAT-AD-PowerShell installieren (Add-WindowsCapability -Online -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0).'},
 
-  // ═══════════════════════════════════════════════
+  // ===============================================
   // DNS SERVER — Diagnose-Tools (CMD, ueberall)
-  // ═══════════════════════════════════════════════
+  // ===============================================
   {name:'nslookup',cat:'dns',typ:'both',short:'DNS-Abfragen interaktiv oder direkt — der Klassiker.',syntax:'nslookup [Name] [DNS-Server]  |  nslookup (interaktiv)',examples:['nslookup google.com','nslookup google.com 8.8.8.8','nslookup -type=MX firma.local','nslookup -type=NS firma.local dc01.firma.local'],tip:'Interaktiver Modus: nslookup ohne Argumente starten, dann set type=ANY usw. Mit server [IP] Ziel-DNS wechseln.'},
   {name:'Resolve-DnsName',cat:'dns',typ:'ps',short:'Moderner PowerShell-Ersatz fuer nslookup — gibt strukturierte Objekte zurueck.',syntax:'Resolve-DnsName [-Name] Hostname [-Type A|AAAA|MX|NS|SOA|PTR|CNAME|TXT|SRV] [-Server IP]',examples:['Resolve-DnsName google.com','Resolve-DnsName firma.local -Type MX','Resolve-DnsName 192.168.1.1 -Type PTR','Resolve-DnsName _ldap._tcp.firma.local -Type SRV -Server dc01.firma.local'],tip:'Ausgabe ist ein Objekt — ideal fuer Skripte. -Server gibt einen bestimmten DNS-Server an.'},
   {name:'ipconfig /flushdns',cat:'dns',typ:'cmd',short:'Leert den lokalen DNS-Cache des Clients.',syntax:'ipconfig /flushdns',examples:['ipconfig /flushdns'],tip:'Loest Probleme durch veraltete Cache-Eintraege. Danach mit ipconfig /displaydns pruefen.'},
   {name:'ipconfig /displaydns',cat:'dns',typ:'cmd',short:'Zeigt alle Eintraege im lokalen DNS-Client-Cache.',syntax:'ipconfig /displaydns  |  ipconfig /displaydns | find "Eintrag"',examples:['ipconfig /displaydns','ipconfig /displaydns | more','ipconfig /displaydns | find "google"'],tip:'Zeigt gecachte A-, CNAME-, MX-Eintraege mit TTL. Hilfreich zur Cache-Diagnose.'},
   {name:'ipconfig /registerdns',cat:'dns',typ:'cmd',short:'Erzwingt die erneute DNS-Registrierung des Clients.',syntax:'ipconfig /registerdns',examples:['ipconfig /registerdns'],tip:'Registriert den Hostnamen und IP des Clients neu beim DNS-Server. Benoetigt oft Admin-Rechte.'},
 
-  // ═══════════════════════════════════════════════
+  // ===============================================
   // DNS SERVER — dnscmd (Server-Verwaltung, CMD)
-  // ═══════════════════════════════════════════════
+  // ===============================================
   {name:'dnscmd /info',cat:'dns',typ:'cmd',short:'Zeigt die Konfiguration und Einstellungen des DNS-Servers.',syntax:'dnscmd [Server] /info [/Eigenschaft]',examples:['dnscmd /info','dnscmd DC01 /info','dnscmd /info /forwarders'],tip:'Zeigt alle Serverkonfigurationen wie Forwarder, Rekursion, Cache-Groesse usw. /forwarders zeigt nur Weiterleitungen.'},
   {name:'dnscmd /enumzones',cat:'dns',typ:'cmd',short:'Listet alle Zonen auf dem DNS-Server auf.',syntax:'dnscmd [Server] /enumzones [/primary|/secondary|/forwarder|/stub]',examples:['dnscmd /enumzones','dnscmd DC01 /enumzones','dnscmd /enumzones /primary'],tip:'Zeigt Zonenname, Typ (Primary/Secondary/Stub/Forwarder) und AD-Integration.'},
   {name:'dnscmd /zoneadd',cat:'dns',typ:'cmd',short:'Erstellt eine neue DNS-Zone auf dem Server.',syntax:'dnscmd [Server] /zoneadd [Zonenname] /primary|/secondary|/stub /file [Datei] [/dp /domain|/forest|/legacy]',examples:['dnscmd /zoneadd firma.local /primary /dp /domain','dnscmd /zoneadd firma.local /primary /file firma.local.dns','dnscmd /zoneadd 1.168.192.in-addr.arpa /primary /dp /domain'],tip:'/dp /domain = AD-integriert (empfohlen). Fuer Reverse-Zone: IP-Oktette umkehren + .in-addr.arpa'},
@@ -1395,9 +2045,9 @@ const CMDS = [
   {name:'dnscmd /zonepause',cat:'dns',typ:'cmd',short:'Pausiert eine Zone — beantwortet keine Abfragen mehr.',syntax:'dnscmd [Server] /zonepause [Zonenname]  |  /zoneresume [Zonenname]',examples:['dnscmd /zonepause testzone.local','dnscmd /zoneresume testzone.local'],tip:'Nuetzlich fuer Wartung. Abfragen fuer diese Zone werden mit SERVFAIL beantwortet.'},
   {name:'dnscmd /exportsettings',cat:'dns',typ:'cmd',short:'Exportiert die DNS-Serverkonfiguration in eine Textdatei.',syntax:'dnscmd [Server] /exportsettings',examples:['dnscmd /exportsettings','dnscmd DC01 /exportsettings'],tip:'Erstellt eine DnsSettings.txt im DNS-Serververzeichnis. Gut fuer Dokumentation und Backups.'},
 
-  // ═══════════════════════════════════════════════
+  // ===============================================
   // DNS SERVER — PowerShell DnsServer-Modul
-  // ═══════════════════════════════════════════════
+  // ===============================================
   {name:'Get-DnsServer',cat:'dns',typ:'ps',short:'Zeigt die komplette Konfiguration des DNS-Servers.',syntax:'Get-DnsServer [-ComputerName Server]',examples:['Get-DnsServer','Get-DnsServer -ComputerName DC01','(Get-DnsServer).ServerSetting'],tip:'Gibt ein vollstaendiges Konfigurationsobjekt zurueck. Ideal fuer Skripte und Dokumentation.'},
   {name:'Get-DnsServerZone',cat:'dns',typ:'ps',short:'Listet alle Zonen auf dem DNS-Server auf.',syntax:'Get-DnsServerZone [-ComputerName Server] [-Name Zonenname]',examples:['Get-DnsServerZone','Get-DnsServerZone -ComputerName DC01','Get-DnsServerZone | Where ZoneType -eq Primary | Select ZoneName,IsADIntegrated'],tip:'Zeigt ZoneType, AD-Integration, ReplicationScope und mehr als Objekte.'},
   {name:'Add-DnsServerPrimaryZone',cat:'dns',typ:'ps',short:'Erstellt eine neue primaere DNS-Zone.',syntax:'Add-DnsServerPrimaryZone -Name [Zone] -ReplicationScope Domain|Forest|Legacy|None [-ZoneFile Datei]',examples:['Add-DnsServerPrimaryZone -Name "firma.local" -ReplicationScope Domain','Add-DnsServerPrimaryZone -Name "1.168.192.in-addr.arpa" -ReplicationScope Domain','Add-DnsServerPrimaryZone -Name "test.local" -ZoneFile "test.local.dns" -PassThru'],tip:'ReplicationScope Domain = AD-integriert (empfohlen). Ohne ReplicationScope = dateibasiert.'},
@@ -1427,7 +2077,7 @@ const CMDS = [
   {name:'Set-DnsServerZoneAging',cat:'dns',typ:'ps',short:'Aktiviert und konfiguriert Scavenging fuer eine Zone.',syntax:'Set-DnsServerZoneAging -Name [Zone] -Aging $true|$false [-RefreshInterval HH:MM:SS] [-NoRefreshInterval HH:MM:SS]',examples:['Set-DnsServerZoneAging -Name firma.local -Aging $true -RefreshInterval 7.00:00:00 -NoRefreshInterval 7.00:00:00','Set-DnsServerZoneAging -Name firma.local -Aging $false'],tip:'Scavenging entfernt veraltete dynamische Eintraege. Standard: NoRefresh=7 Tage, Refresh=7 Tage.'},
   {name:'Import-Module DnsServer',cat:'dns',typ:'ps',short:'Laedt das DNS Server PowerShell-Modul.',syntax:'Import-Module DnsServer',examples:['Import-Module DnsServer','Get-Module -Name DnsServer -ListAvailable','Install-WindowsFeature RSAT-DNS-Server'],tip:'Auf DNS-Servern automatisch verfuegbar. Auf Clients: RSAT-DNS installieren (Install-WindowsFeature RSAT-DNS-Server).'},
 
-  // ═══ WIN+R BEFEHLE ═══
+  // === WIN+R BEFEHLE ===
 
   // SYSTEM & VERWALTUNG
   {name:'msconfig',cat:'run',subcat:'system',typ:'run',win:['7','8','10','11'],short:'Systemkonfiguration — Autostart, Dienste, Boot-Optionen',syntax:'Oeffnet: Systemkonfiguration (msconfig.exe)',examples:[],tip:'Boot-Tab: Safe Mode aktivieren. Dienste-Tab: Dienste deaktivieren. Autostart jetzt im Task-Manager (Windows 8+).'},
@@ -1569,7 +2219,145 @@ const CMDS = [
   {name:'cttune',cat:'run',subcat:'dev',typ:'run',win:['7','8','10','11'],short:'ClearType-Textoptimierung konfigurieren',syntax:'Oeffnet: ClearType-Text-Tuner',examples:[],tip:'Schriften auf LCD-Bildschirmen optimieren. Durchlaufen des Assistenten verbessert Lesbarkeit deutlich.'},
   {name:'colorcpl',cat:'run',subcat:'dev',typ:'run',win:['7','8','10','11'],short:'Farbverwaltung — ICC-Profile fuer Monitore/Drucker',syntax:'Oeffnet: Farbverwaltung',examples:[],tip:'ICC-Farbprofile fuer Monitore und Drucker installieren und zuweisen. Wichtig fuer Foto-/Druckbereich.'},
 
-  // ═══ TROUBLESHOOTING BEFEHLE ═══
+  {name:'colorcpl',cat:'run',subcat:'dev',typ:'run',win:['7','8','10','11'],short:'Farbverwaltung -- ICC-Profile fuer Monitore/Drucker',syntax:'Oeffnet: Farbverwaltung',examples:[],tip:'ICC-Farbprofile fuer Monitore und Drucker installieren und zuweisen. Wichtig fuer Foto-/Druckbereich.'},
+
+  // === MEDIA ERWEITERT ===
+  {name:'ffmpeg',cat:'media',typ:'cmd',short:'Maechtiges CLI-Tool fuer Audio/Video konvertieren, schneiden, streamen.',syntax:'ffmpeg -i [Eingabe] [Optionen] [Ausgabe]',examples:['ffmpeg -i video.mp4 -c:v libx264 -crf 23 output.mp4','ffmpeg -i input.mp4 -ss 00:01:30 -t 00:00:30 clip.mp4','ffmpeg -i video.mp4 -vn -acodec mp3 audio.mp3','ffmpeg -i video.mp4 -vf scale=1280:720 hd.mp4'],tip:'-i = Eingabedatei. -ss = Startzeit. -t = Dauer. -vn = kein Video. -crf 18-28 (kleiner = besser).'},
+  {name:'ffprobe',cat:'media',typ:'cmd',short:'Medien-Informationen anzeigen (Teil der ffmpeg-Suite).',syntax:'ffprobe -v quiet -print_format json -show_streams [Datei]',examples:['ffprobe video.mp4','ffprobe -v quiet -print_format json -show_streams video.mp4'],tip:'Zeigt Codec, Bitrate, Aufloesung, Dauer. -print_format json fuer maschinenlesbare Ausgabe.'},
+  {name:'mspaint',cat:'media',typ:'cmd',short:'Windows Paint -- einfacher Bildeditor.',syntax:'mspaint [Datei]',examples:['mspaint','mspaint C:\\bild.png'],tip:'Schneller Bildeditor fuer Screenshots. Unterstuetzt BMP, PNG, JPG, GIF, TIFF.'},
+  {name:'snippingtool',cat:'media',typ:'cmd',short:'Snipping Tool -- Screenshots erstellen und bearbeiten.',syntax:'snippingtool [/clip]',examples:['snippingtool','snippingtool /clip'],tip:'/clip oeffnet direkt den Freihand-Modus. Win+Shift+S ist der modernere Shortcut.'},
+  {name:'wmplayer',cat:'media',typ:'cmd',short:'Windows Media Player starten.',syntax:'wmplayer [Datei]',examples:['wmplayer','wmplayer C:\\musik.mp3'],tip:'Kann Audiodateien, Videos und DVDs abspielen.'},
+  {name:'Get-WmiObject Win32_VideoController',cat:'media',typ:'ps',short:'Grafikkarte und Video-Informationen per PowerShell.',syntax:'Get-WmiObject Win32_VideoController | Select *',examples:['Get-WmiObject Win32_VideoController | Select Name,AdapterRAM,CurrentHorizontalResolution,CurrentVerticalResolution','(Get-WmiObject Win32_VideoController).Name'],tip:'Zeigt GPU-Name, VRAM (in Bytes), aktuelle Aufloesung, Refresh-Rate und Treiber-Version.'},
+  {name:'Get-DisplayResolution',cat:'media',typ:'ps',short:'Verfuegbare Bildschirmauflösungen anzeigen.',syntax:'Get-DisplayResolution  |  Set-DisplayResolution -Width 1920 -Height 1080 -Force',examples:['Get-DisplayResolution','Set-DisplayResolution -Width 1920 -Height 1080 -Force'],tip:'Set-DisplayResolution setzt Aufloesung ohne GUI. -Force ohne Rueckfrage.'},
+  {name:'wmic sounddev',cat:'media',typ:'cmd',short:'Audiogeraete und Soundkarte per WMI abfragen.',syntax:'wmic sounddev get Name,Manufacturer,Status',examples:['wmic sounddev get Name,Manufacturer,Status','wmic sounddev list brief'],tip:'Zeigt alle installierten Audiogeraete mit Status.'},
+  {name:'Get-CimInstance Win32_SoundDevice',cat:'media',typ:'ps',short:'Audiogeraete per PowerShell abfragen.',syntax:'Get-CimInstance Win32_SoundDevice | Select Name,Status,Manufacturer',examples:['Get-CimInstance Win32_SoundDevice','Get-CimInstance Win32_SoundDevice | Select Name,Status'],tip:'Moderner Ersatz fuer wmic sounddev. Zeigt alle installierten Audiogeraete.'},
+
+  // === MMC ERWEITERT ===
+  {name:'compmgmt.msc',cat:'mmc',typ:'cmd',short:'Computerverwaltung -- alle Verwaltungstools an einem Ort.',syntax:'compmgmt.msc [/computer:PC]',examples:['compmgmt.msc','compmgmt.msc /computer:PC02'],tip:'Enthaelt: Geraete-Manager, Datentraegerverwaltung, Dienste, Freigegebene Ordner, lokale Benutzer.'},
+  {name:'diskmgmt.msc',cat:'mmc',typ:'cmd',short:'Datentraegerverwaltung -- Laufwerke und Partitionen.',syntax:'diskmgmt.msc',examples:['diskmgmt.msc'],tip:'Partitionen erstellen, formatieren, Laufwerksbuchstaben aendern, Volumes erweitern.'},
+  {name:'fsmgmt.msc',cat:'mmc',typ:'cmd',short:'Freigegebene Ordner -- SMB-Freigaben verwalten.',syntax:'fsmgmt.msc',examples:['fsmgmt.msc'],tip:'Zeigt alle Netzwerkfreigaben, aktive Sitzungen und geoeffnete Dateien.'},
+  {name:'wf.msc',cat:'mmc',typ:'cmd',short:'Windows-Firewall -- erweiterte Regelkonfiguration.',syntax:'wf.msc',examples:['wf.msc'],tip:'Grafische Firewall-Verwaltung fuer Regeln, Verbindungssicherheitsregeln und Profile.'},
+  {name:'taskschd.msc',cat:'mmc',typ:'cmd',short:'Aufgabenplanung -- geplante Aufgaben verwalten.',syntax:'taskschd.msc',examples:['taskschd.msc'],tip:'Erstellen, bearbeiten und ueberwachen von geplanten Aufgaben mit Last-Run-Status.'},
+  {name:'lusrmgr.msc',cat:'mmc',typ:'cmd',short:'Lokale Benutzer und Gruppen (kein Domaenen-PC).',syntax:'lusrmgr.msc',examples:['lusrmgr.msc'],tip:'Verwaltet lokale Konten und Gruppen. Auf Domaenen-PCs: ADUC (dsa.msc) nutzen.'},
+  {name:'rsop.msc',cat:'mmc',typ:'cmd',short:'Richtlinienergebnissatz -- welche GPOs gelten.',syntax:'rsop.msc',examples:['rsop.msc'],tip:'Zeigt alle angewendeten Gruppenrichtlinien. Alternativ: gpresult /h C:\\report.html'},
+  {name:'azman.msc',cat:'mmc',typ:'cmd',short:'Autorisierungs-Manager -- rollenbasierte Zugriffskontrolle.',syntax:'azman.msc',examples:['azman.msc'],tip:'Fuer anwendungsbasierte RBAC-Verwaltung. Teil des Windows-Sicherheitsmodells.'},
+  {name:'certlm.msc',cat:'mmc',typ:'cmd',short:'Zertifikate (Computer) -- lokaler Zertifikatspeicher.',syntax:'certlm.msc',examples:['certlm.msc'],tip:'Computer-Zertifikatspeicher. Gegensatz zu certmgr.msc (Benutzer-Zertifikate).'},
+  {name:'storagemgmt.msc',cat:'mmc',typ:'cmd',short:'Speicherverwaltung -- erweiterte Festplatten-Verwaltung.',syntax:'storagemgmt.msc',examples:['storagemgmt.msc'],tip:'Storage-Pools, virtuelle Festplatten, RAID. Erweiterte Alternative zu diskmgmt.msc.'},
+
+  // === TOOLS ERWEITERT ===
+  {name:'diskpart',cat:'tools',typ:'cmd',short:'Interaktiver Festplatten- und Partitionsmanager.',syntax:'diskpart  dann: list disk | select disk N | clean | format | assign',examples:['diskpart','list disk','select disk 1','list partition','select partition 2','format fs=ntfs quick label="Daten"','assign letter=E'],tip:'Maechtiger als GUI. clean loescht ALLE Daten! Als Admin. diskpart /s skript.txt fuer Batch-Ausfuehrung.'},
+  {name:'dism /get-imageinfo',cat:'tools',typ:'cmd',short:'Windows-Image-Informationen abrufen.',syntax:'dism /get-imageinfo /imagefile:[WIM-Datei]',examples:['dism /get-imageinfo /imagefile:C:\\sources\\install.wim','dism /capture-image /imagefile:D:\\capture.wim /capturedir:C:\\ /name:"Windows"'],tip:'Zeigt Index, Name, Beschreibung und Groesse aller Editionen in einer WIM-Datei.'},
+  {name:'robocopy /MIR',cat:'tools',typ:'cmd',short:'Spiegel-Backup: Quelle und Ziel vollstaendig synchron.',syntax:'robocopy [Quelle] [Ziel] /MIR [/R:N] [/W:N] [/LOG:Datei]',examples:['robocopy C:\\Daten D:\\Backup /MIR /R:3 /W:5 /LOG:C:\\backup.log','robocopy \\\\Server\\Share D:\\Lokal /MIR /Z /IPG:100'],tip:'/MIR = Mirror (loescht Dateien im Ziel die in Quelle geloescht wurden!). /Z = Fortsetzbar. /IPG = Bandbreitenschonung.'},
+  {name:'robocopy /COPYALL',cat:'tools',typ:'cmd',short:'Kopiert Daten + Berechtigungen + Zeitstempel + Owner.',syntax:'robocopy [Quelle] [Ziel] /COPYALL /E',examples:['robocopy C:\\Alt D:\\Neu /COPYALL /E','robocopy \\\\Server\\Share D:\\Lokal /COPYALL /E /LOG:C:\\copy.log'],tip:'/COPYALL = Daten+Attribute+Zeitstempel+NTFS-Rechte+Owner. /E = alle Unterordner inkl. leere.'},
+  {name:'where',cat:'tools',typ:'cmd',short:'Programm im PATH suchen -- Pfad eines Befehls ermitteln.',syntax:'where [Programm] [/r Pfad *.ext]',examples:['where python','where git','where notepad','where /r C:\\ *.exe'],tip:'/r Pfad = rekursiv suchen. Zeigt alle Treffer. PS-Aequivalent: (Get-Command python).Source'},
+  {name:'wevtutil export-log',cat:'tools',typ:'cmd',short:'Ereignisprotokoll als .evtx-Datei exportieren.',syntax:'wevtutil export-log [Log] [Datei.evtx]',examples:['wevtutil export-log System C:\\System.evtx','wevtutil export-log Security C:\\Security.evtx'],tip:'Exportiert das gesamte Protokoll. archive-log fuer lesbare Kopie inkl. Beschreibungen.'},
+
+  // === EXPLORER ERWEITERT ===
+  {name:'explorer /root',cat:'explorer',typ:'cmd',short:'Explorer mit bestimmtem Stammordner oeffnen.',syntax:'explorer /root,[Pfad]',examples:['explorer /root,C:\\Projekte','explorer /root,\\\\Server\\Freigabe'],tip:'/root begrenzt Explorer -- Benutzer sehen nichts darueber.'},
+  {name:'explorer /select',cat:'explorer',typ:'cmd',short:'Explorer mit markierter Datei oeffnen.',syntax:'explorer /select,[Dateipfad]',examples:['explorer /select,C:\\Wichtig\\datei.txt','explorer /select,%APPDATA%\\Microsoft'],tip:'Oeffnet Ordner mit der Datei vorgewaehlt. Praktisch aus Skripten.'},
+  {name:'shell:Desktop',cat:'explorer',typ:'cmd',short:'Desktop-Ordner im Explorer oeffnen.',syntax:'explorer shell:Desktop',examples:['explorer shell:Desktop','explorer shell:Downloads','explorer shell:Personal'],tip:'shell: Abkuerzungen: Desktop, Downloads, Personal, AppData, Startup, SendTo.'},
+  {name:'shell:Startup',cat:'explorer',typ:'cmd',short:'Autostart-Ordner des aktuellen Benutzers oeffnen.',syntax:'explorer shell:Startup',examples:['explorer shell:Startup','explorer shell:Common Startup'],tip:'Common Startup = Autostart fuer alle Benutzer. Admin noetig.'},
+  {name:'Get-ChildItem -Force',cat:'explorer',typ:'ps',short:'Alle Dateien inkl. versteckte und Systemdateien anzeigen.',syntax:'Get-ChildItem [Pfad] -Force [-Hidden]',examples:['Get-ChildItem C:\\ -Force','Get-ChildItem $env:APPDATA -Force | Where Attributes -match Hidden'],tip:'-Force zeigt versteckte und Systemdateien. attrib +H/-H zum Setzen/Entfernen.'},
+  {name:'Invoke-Item',cat:'explorer',typ:'ps',short:'Datei oder Ordner mit Standardprogramm oeffnen.',syntax:'Invoke-Item [Pfad]  |  ii [Pfad]',examples:['Invoke-Item C:\\Dokument.pdf','ii C:\\Temp','ii .'],tip:'Alias: ii. Oeffnet mit dem verknuepften Standardprogramm. ii . = aktuellen Ordner im Explorer oeffnen.'},
+
+  // === DEV ERWEITERT ===
+  {name:'git status',cat:'dev',typ:'cmd',short:'Git-Repository Status anzeigen.',syntax:'git status [-s] [-b]',examples:['git status','git status -s','git log --oneline -10'],tip:'-s = kurze Ausgabe. Zeigt geaenderte, ungetrackte und gestaffelte Dateien.'},
+  {name:'git log --graph',cat:'dev',typ:'cmd',short:'Git-Commit-Verlauf mit Branch-Graph anzeigen.',syntax:'git log [--oneline] [--graph] [--all] [-N]',examples:['git log --oneline -10','git log --graph --oneline --all','git log --author="Max" --since="1 week ago"'],tip:'--graph zeigt Branches visuell. --all zeigt alle Branches. --since/--until fuer Zeitfilter.'},
+  {name:'git stash',cat:'dev',typ:'cmd',short:'Aenderungen temporaer speichern.',syntax:'git stash [push|pop|list|drop] [-m "Nachricht"]',examples:['git stash','git stash push -m "WIP: Feature X"','git stash pop','git stash list'],tip:'Ideal um schnell Branch zu wechseln ohne Commit. pop = letzten Stash wiederherstellen.'},
+  {name:'git branch',cat:'dev',typ:'cmd',short:'Branches anzeigen, erstellen, loeschen.',syntax:'git branch [Name] [-d|-D Name] [-r] [-a]',examples:['git branch','git branch feature-xyz','git branch -d feature-xyz','git branch -a'],tip:'-r = Remote-Branches. -a = alle. -D = erzwingt Loeschen. checkout -b Name erstellt und wechselt.'},
+  {name:'ssh-keygen',cat:'dev',typ:'cmd',short:'SSH-Schluesselpaar erstellen.',syntax:'ssh-keygen -t [ed25519|rsa] -b [4096] -C "Kommentar"',examples:['ssh-keygen -t ed25519 -C "mein@email.de"','type %USERPROFILE%\\.ssh\\id_ed25519.pub'],tip:'ed25519 moderner und sicherer als RSA. Oeffentlichen Schluessel (*.pub) auf Server/GitHub kopieren.'},
+  {name:'ssh',cat:'dev',typ:'cmd',short:'SSH-Verbindung zu Remote-Server aufbauen.',syntax:'ssh [user@]Host [-p Port] [-i Schluessel] [-L Port:Host:Port]',examples:['ssh user@192.168.1.10','ssh admin@server.firma.de -p 2222','ssh -L 8080:localhost:80 user@server'],tip:'-L = Portweiterleitung (Tunnel). -i = spezieller Schluessel. Konfiguration: %USERPROFILE%\\.ssh\\config.'},
+  {name:'wsl --exec',cat:'dev',typ:'cmd',short:'Linux-Befehl direkt aus Windows ausfuehren.',syntax:'wsl [--exec] [Befehl]',examples:['wsl ls -la','wsl grep -r "Suchbegriff" /mnt/c/Projekte/','wsl --distribution Ubuntu-22.04 -- python3 script.py'],tip:'/mnt/c/ = C: Laufwerk aus WSL. Windows-Dateipfade in WSL: /mnt/Buchstabe/'},
+  {name:'dotnet',cat:'dev',typ:'cmd',short:'.NET SDK Befehle -- build, run, publish, test.',syntax:'dotnet [new|build|run|test|publish] [Optionen]',examples:['dotnet new console -n MeinProjekt','dotnet build','dotnet run','dotnet publish -c Release -r win-x64 --self-contained'],tip:'--self-contained = alle .NET-Libs einbetten. -r win-x64/linux-x64/osx-x64 fuer Plattform.'},
+
+  // === AZURE ERWEITERT ===
+  {name:'Get-AzContext',cat:'azure',typ:'ps',short:'Aktuellen Azure-Kontext anzeigen.',syntax:'Get-AzContext  |  Get-AzContext -ListAvailable',examples:['Get-AzContext','Get-AzContext -ListAvailable | Select Name,Account','Set-AzContext -Subscription "Mein Abo"'],tip:'-ListAvailable = alle gespeicherten Kontexte. Save-AzContext / Import-AzContext fuer Skripte.'},
+  {name:'New-AzVM',cat:'azure',typ:'ps',short:'Neue Azure-VM erstellen.',syntax:'New-AzVM -ResourceGroupName [RG] -Name [Name] -Location [Region] -Image [Image]',examples:["New-AzVM -ResourceGroupName 'RG-Test' -Name 'VM-Test' -Location 'westeurope' -Image 'Win2022AzureBotEdge'"],tip:'Verfuegbare Groessen: Get-AzVMSize -Location westeurope. Standard_B1s = 1vCPU/1GB.'},
+  {name:'Get-AzLog',cat:'azure',typ:'ps',short:'Azure Aktivitaetsprotokoll abfragen.',syntax:'Get-AzLog [-StartTime [Datum]] [-ResourceGroupName RG]',examples:['Get-AzLog -StartTime (Get-Date).AddDays(-7) | Select EventTimestamp,Caller,OperationName,Status'],tip:'Zeigt alle Aenderungen. Caller = wer hat was geaendert. Standard: letzte 7 Tage.'},
+
+  // === NEUE BEFEHLE: IIS ERWEITERT ===
+  {name:'appcmd list vdir',cat:'iis',typ:'cmd',short:'Virtuelle Verzeichnisse einer IIS-Website anzeigen.',syntax:'appcmd list vdir [/app.name:Site/App]',examples:['appcmd list vdir','appcmd list vdir /app.name:"Default Web Site/"','appcmd list vdir /path:/api'],tip:'Virtuelle Verzeichnisse zeigen auf physische Pfade ausserhalb des Website-Stammverzeichnisses.'},
+  {name:'appcmd add vdir',cat:'iis',typ:'cmd',short:'Virtuelles Verzeichnis zur IIS-Website hinzufuegen.',syntax:'appcmd add vdir /app.name:"Site/" /path:/vdir /physicalPath:"C:\\Pfad"',examples:['appcmd add vdir /app.name:"Default Web Site/" /path:/bilder /physicalPath:"D:\\Bilder"','appcmd add vdir /app.name:"MeineSeite/" /path:/uploads /physicalPath:"E:\\Uploads"'],tip:'Virtuelle Verzeichnisse koennen auf beliebige lokale oder UNC-Pfade zeigen.'},
+  {name:'appcmd unlock config',cat:'iis',typ:'cmd',short:'Gesperrte IIS-Konfigurationsbereiche fuer web.config freischalten.',syntax:'appcmd unlock config -section:[Section]',examples:['appcmd unlock config -section:system.webServer/handlers','appcmd unlock config -section:system.webServer/modules','appcmd unlock config /section:system.webServer/rewrite/rules'],tip:'Notwendig wenn web.config-Aenderungen fuer bestimmte Sektionen gesperrt sind.'},
+  {name:'appcmd export app',cat:'iis',typ:'cmd',short:'IIS-Website als Archiv exportieren (IIS 7.5+).',syntax:'appcmd export app /app.name:"Site/" /archivePath:"C:\\export.zip"',examples:['appcmd export app /app.name:"Default Web Site/" /archivePath:"C:\\backup.zip"','appcmd install app /package:"C:\\backup.zip" /app.name:"RestoredSite/"'],tip:'Exportiert Website-Konfiguration + Inhalte. install app stellt wieder her.'},
+  {name:'iis crypto',cat:'iis',typ:'cmd',short:'SSL/TLS-Protokolle und Cipher-Suites konfigurieren (Tool).',syntax:'IISCrypto.exe [/best|/pci|/fips] [/reboot]',examples:['IISCrypto.exe /best /reboot','IISCrypto.exe /pci'],tip:'Drittanbieter-Tool von Nartac Software. Deaktiviert TLS 1.0/1.1, aktiviert TLS 1.2/1.3. Download: nartac.com'},
+  {name:'Get-WebBinding',cat:'iis',typ:'ps',short:'IIS-Bindings (Ports, Hostnamen, Protokolle) anzeigen.',syntax:'Get-WebBinding [-Name SiteName] [-Protocol http|https]',examples:["Get-WebBinding -Name 'Default Web Site'",'Get-WebBinding | Select BindingInformation,Protocol,SslFlags','Get-WebBinding | Where Protocol -eq https'],tip:'BindingInformation Format: IP:Port:Hostname. SslFlags 1 = SNI aktiviert.'},
+  {name:'New-WebApplication',cat:'iis',typ:'ps',short:'Neue IIS-Webanwendung unterhalb einer Website erstellen.',syntax:'New-WebApplication -Site [Site] -Name [App] -PhysicalPath [Pfad] -ApplicationPool [Pool]',examples:["New-WebApplication -Site 'Default Web Site' -Name 'api' -PhysicalPath 'C:\\api' -ApplicationPool 'DefaultAppPool'"],tip:'Erstellt /api als Unteranwendung. Eigener App-Pool empfohlen fuer Isolation.'},
+  {name:'Remove-WebSite',cat:'iis',typ:'ps',short:'IIS-Website loeschen.',syntax:'Remove-WebSite -Name [Name]',examples:["Remove-WebSite -Name 'AlteWebsite'",'Get-WebSite | Where State -eq Stopped | Remove-WebSite'],tip:'Loescht nur die IIS-Konfiguration, nicht den physischen Ordner. Stop-WebSite vorher nicht noetig.'},
+  {name:'Get-WebConfiguration',cat:'iis',typ:'ps',short:'IIS-Konfigurationswerte per PowerShell lesen.',syntax:'Get-WebConfiguration -Filter [XPath] -PSPath [Pfad]',examples:["Get-WebConfiguration system.webServer/defaultDocument -PSPath 'IIS:'",'Get-WebConfiguration //add -Filter system.webServer/defaultDocument/files -PSPath "IIS:\Sites\MeineSeite"'],tip:'PSPath IIS: = globale Config. IIS:\\Sites\\Sitename = site-spezifisch.'},
+  {name:'Enable-WindowsOptionalFeature IIS',cat:'iis',typ:'ps',short:'IIS-Feature per PowerShell installieren.',syntax:'Enable-WindowsOptionalFeature -Online -FeatureName [Feature]',examples:['Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServer','Enable-WindowsOptionalFeature -Online -FeatureName IIS-ASPNET45','Get-WindowsOptionalFeature -Online | Where FeatureName -like "IIS*"'],tip:'Get-WindowsOptionalFeature -Online | Where FeatureName -like IIS* listet alle IIS-Features.'},
+
+  // === NEUE BEFEHLE: SICHERHEIT ERWEITERT ===
+  {name:'Get-AuthenticodeSignature',cat:'sicherheit',typ:'ps',short:'Digitale Signatur einer Datei pruefen.',syntax:'Get-AuthenticodeSignature [Datei]',examples:['Get-AuthenticodeSignature C:\\setup.exe','Get-ChildItem C:\\Windows\\System32 -Filter *.exe | Get-AuthenticodeSignature | Where Status -ne Valid'],tip:'Status Valid = signiert und vertrauenswuerdig. NotSigned = keine Signatur. Unsigned DLLs in System32 = Warnsignal!'},
+  {name:'Set-AuthenticodeSignature',cat:'sicherheit',typ:'ps',short:'PowerShell-Skript digital signieren.',syntax:'Set-AuthenticodeSignature -FilePath [Skript.ps1] -Certificate (Get-ChildItem Cert:\\CurrentUser\\My)',examples:['$cert = Get-ChildItem Cert:\\CurrentUser\\My -CodeSigningCert','Set-AuthenticodeSignature -FilePath C:\\Scripts\\mein.ps1 -Certificate $cert'],tip:'Benoetigt Code-Signing-Zertifikat. Dann ExecutionPolicy AllSigned nutzen.'},
+  {name:'ConvertTo-SecureString',cat:'sicherheit',typ:'ps',short:'String sicher als SecureString verschluesseln.',syntax:'ConvertTo-SecureString [Text] -AsPlainText -Force  |  ConvertFrom-SecureString',examples:['$secure = ConvertTo-SecureString "Passwort" -AsPlainText -Force','$encrypted = ConvertFrom-SecureString $secure','$back = $encrypted | ConvertTo-SecureString'],tip:'ConvertFrom-SecureString verschluesselt mit DPAPI (benutzerbezogen). Zum Speichern in Dateien verwenden.'},
+  {name:'Protect-CmsMessage',cat:'sicherheit',typ:'ps',short:'Nachricht/Datei mit Zertifikat verschluesseln (CMS).',syntax:'Protect-CmsMessage -To [Cert-ID] -Content [Text] -OutFile [Datei]',examples:['Protect-CmsMessage -To "CN=MeinZert" -Content "Geheim" -OutFile C:\\geheim.cms','Unprotect-CmsMessage -Path C:\\geheim.cms'],tip:'CMS = Cryptographic Message Syntax. Unprotect-CmsMessage entschluesselt. Sicherer als ConvertFrom-SecureString.'},
+  {name:'Get-LocalSecurityPolicy',cat:'sicherheit',typ:'cmd',short:'Lokale Sicherheitsrichtlinien exportieren und pruefen.',syntax:'secedit /export /cfg C:\\policy.inf /quiet',examples:['secedit /export /cfg C:\\policy.inf','notepad C:\\policy.inf','secedit /configure /db secedit.sdb /cfg C:\\policy.inf /quiet'],tip:'policy.inf enthaelt Passworlaenge, Kontosperrung, Audit-Einstellungen. Fuer Vergleich zwischen Systemen.'},
+  {name:'netsh ipsec',cat:'sicherheit',typ:'cmd',short:'IPSec-Richtlinien konfigurieren und anzeigen.',syntax:'netsh ipsec static show all  |  netsh ipsec dynamic show all',examples:['netsh ipsec static show all','netsh ipsec dynamic show sa','netsh ipsec static add policy name="Test" description="IPSec Test"'],tip:'IPSec verschluesselt Netzwerkkommunikation auf IP-Ebene. Fuer Domaene: GPO-basierte IPSec-Regeln bevorzugen.'},
+  {name:'Get-WindowsDefenderStatus',cat:'sicherheit',typ:'ps',short:'Windows Defender vollstaendigen Status abfragen.',syntax:'Get-MpComputerStatus | Select *',examples:['Get-MpComputerStatus | Select AntivirusEnabled,RealTimeProtectionEnabled,AntivirusSignatureLastUpdated,NISEnabled','(Get-MpComputerStatus).QuickScanAge','Get-MpThreat | Select ThreatName,SeverityID'],tip:'QuickScanAge in Tagen. NISEnabled = Network Inspection System. Get-MpThreat zeigt aktive Bedrohungen.'},
+  {name:'Add-MpPreference',cat:'sicherheit',typ:'ps',short:'Windows Defender Ausnahme hinzufuegen.',syntax:'Add-MpPreference -ExclusionPath [Pfad] | -ExclusionExtension [.ext] | -ExclusionProcess [Name]',examples:["Add-MpPreference -ExclusionPath 'C:\\DevTools'",'Add-MpPreference -ExclusionExtension ".log"','Add-MpPreference -ExclusionProcess "devenv.exe"','Remove-MpPreference -ExclusionPath "C:\\DevTools"'],tip:'Ausnahmen nur fuer vertrauenswuerdige Pfade! Remove-MpPreference zum Entfernen. Get-MpPreference zeigt alle.'},
+  {name:'wmic /namespace:\\root\SecurityCenter2',cat:'sicherheit',typ:'cmd',short:'Installierte Sicherheitssoftware per WMI abfragen.',syntax:'wmic /namespace:\\\\root\\SecurityCenter2 path AntiVirusProduct get displayName,productState',examples:['wmic /namespace:\\\\root\\SecurityCenter2 path AntiVirusProduct get displayName,productState','wmic /namespace:\\\\root\\SecurityCenter2 path FirewallProduct get displayName'],tip:'productState: 397312 = aktiviert und aktuell. Zeigt ALLE installierten AV-Programme.'},
+  {name:'whoami /groups',cat:'sicherheit',typ:'cmd',short:'Alle Gruppen und Privilegien des aktuellen Tokens anzeigen.',syntax:'whoami /groups  |  whoami /priv  |  whoami /all',examples:['whoami /groups','whoami /priv','whoami /all | findstr "Enabled"','whoami /groups | findstr "S-1-5-32-544"'],tip:'S-1-5-32-544 = Administratoren. whoami /priv zeigt ob SeDebugPrivilege o.a. aktiv sind.'},
+  {name:'net accounts /lockout',cat:'sicherheit',typ:'cmd',short:'Kontosperrungsrichtlinien konfigurieren.',syntax:'net accounts /lockoutthreshold:N /lockoutduration:N /lockoutwindow:N',examples:['net accounts','net accounts /lockoutthreshold:5','net accounts /lockoutduration:30 /lockoutwindow:30'],tip:'lockoutthreshold: Anzahl Fehlversuche. lockoutduration: Sperrzeit in Minuten (0=dauerhaft). lockoutwindow: Beobachtungszeitraum.'},
+
+  // === NEUE BEFEHLE: DATEN & TEXT ERWEITERT ===
+  {name:'findstr /s /i',cat:'daten',typ:'cmd',short:'Text in Dateien suchen -- rekursiv und case-insensitive.',syntax:'findstr [/s] [/i] [/r] "Muster" [Pfad\\*.ext]',examples:['findstr /s /i "Fehler" C:\\Logs\\*.log','findstr /r "192\\.168\\.[0-9]" C:\\*.txt','findstr /s "TODO" *.ps1 *.bat','findstr /n "ERROR" app.log'],tip:'/s = Unterordner. /i = Gross/Klein egal. /r = Regex. /n = Zeilennummern. /c: fuer Suchbegriff mit Leerzeichen.'},
+  {name:'find /c /v',cat:'daten',typ:'cmd',short:'Zeilen zaehlen und nach Text filtern.',syntax:'find [/c] [/v] [/i] "Muster" [Datei]',examples:['find /c /v "" datei.txt','find /i "error" app.log','type datei.txt | find /c "Zeile"','netstat -an | find ":443"'],tip:'/c zaehlt Vorkommen. /v = invertieren (nicht enthaltene Zeilen). /i case-insensitive.'},
+  {name:'sort',cat:'daten',typ:'cmd',short:'Eingabe alphabetisch sortieren.',syntax:'sort [/R] [/+N] [Datei]  |  [Eingabe] | sort',examples:['sort datei.txt','sort /R datei.txt','dir | sort','type unsorted.txt | sort > sorted.txt'],tip:'/R = umgekehrt. /+N = sortiere ab Spalte N. Gut mit Pipeline kombinierbar.'},
+  {name:'more',cat:'daten',typ:'cmd',short:'Ausgabe seitenweise anzeigen.',syntax:'more [Datei]  |  [Befehl] | more',examples:['more C:\\Windows\\System32\\drivers\\etc\\hosts','help | more','Get-Content log.txt | more'],tip:'Leertaste = naechste Seite. Enter = naechste Zeile. Q = beenden. /E aktiviert erweitertes Format.'},
+  {name:'clip',cat:'daten',typ:'cmd',short:'Befehlsausgabe in Zwischenablage kopieren.',syntax:'[Befehl] | clip  |  clip < [Datei]',examples:['dir | clip','ipconfig /all | clip','clip < C:\\datei.txt','echo Hallo | clip'],tip:'Extrem nuetzlich! Ergebnis direkt in Clipboard ohne Copy-Paste. In PowerShell: Set-Clipboard.'},
+  {name:'Set-Clipboard',cat:'daten',typ:'ps',short:'Text in Windows-Zwischenablage schreiben.',syntax:'Set-Clipboard [Text]  |  [Objekte] | Set-Clipboard',examples:['Set-Clipboard "Hallo Welt"','Get-Process | Out-String | Set-Clipboard','Get-Content C:\\hosts.txt | Set-Clipboard','Get-Clipboard'],tip:'Get-Clipboard liest den Inhalt. Set-Clipboard -Append haengt an. Ersetzt den clip-Befehl.'},
+  {name:'Select-Object',cat:'daten',typ:'ps',short:'Objekte filtern, Felder auswaehlen, erste/letzte N ausgeben.',syntax:'[Objekte] | Select-Object [Felder] [-First N] [-Last N] [-Unique] [-ExpandProperty]',examples:['Get-Process | Select Name,CPU,Id','Get-Service | Select -First 10','Get-ChildItem | Select -Last 5 Name,Length','Get-ADUser -Filter * | Select -ExpandProperty SamAccountName'],tip:'-ExpandProperty gibt nur den Wert zurueck (kein Objekt). Alias: Select. Kombiniert gut mit Sort-Object.'},
+  {name:'Sort-Object',cat:'daten',typ:'ps',short:'Objekte nach Eigenschaft sortieren.',syntax:'[Objekte] | Sort-Object [Eigenschaft] [-Descending] [-Unique]',examples:['Get-Process | Sort-Object CPU -Descending','Get-ChildItem | Sort Length -Descending | Select -First 10','Get-Service | Sort Status,Name'],tip:'Mehrere Eigenschaften: Sort Status,Name. -Unique entfernt Duplikate. Alias: Sort.'},
+  {name:'Where-Object',cat:'daten',typ:'ps',short:'Objekte nach Bedingung filtern.',syntax:'[Objekte] | Where-Object { $_.Eigenschaft [operator] Wert }  |  Where Eigen -op Wert',examples:['Get-Process | Where CPU -gt 10','Get-Service | Where { $_.Status -eq "Running" -and $_.StartType -eq "Automatic" }','Get-ChildItem | Where Length -gt 1MB'],tip:'Alias: Where, ?. Kurze Syntax: Where Feld -gt Wert. Ausdruck-Syntax: { $_.Feld -eq Wert }. -gt, -lt, -eq, -ne, -like, -match.'},
+  {name:'Measure-Command',cat:'daten',typ:'ps',short:'Ausfuehrungszeit eines Befehls messen.',syntax:'Measure-Command { [Befehl] }',examples:['Measure-Command { Get-ChildItem C:\\ -Recurse }','Measure-Command { Import-Csv C:\\gross.csv }','(Measure-Command { ping google.com }).TotalMilliseconds'],tip:'Gibt TimeSpan-Objekt zurueck. .TotalMilliseconds, .TotalSeconds fuer numerische Auswertung.'},
+  {name:'ConvertTo-Html',cat:'daten',typ:'ps',short:'PowerShell-Objekte als HTML-Tabelle ausgeben.',syntax:'[Objekte] | ConvertTo-Html [-Title Text] [-PreContent] [-PostContent] | Out-File',examples:['Get-Process | ConvertTo-Html -Title "Prozesse" | Out-File C:\\procs.html','Get-Service | Select Name,Status | ConvertTo-Html | Out-File dienste.html','Get-HotFix | ConvertTo-Html -Title "Updates" -PreContent "<h1>Patches</h1>" | Out-File updates.html'],tip:'-PreContent/-PostContent fuer eigene HTML-Abschnitte. -Head fuer CSS einfuegen.'},
+  {name:'Invoke-WebRequest',cat:'daten',typ:'ps',short:'HTTP-Anfragen senden und Web-Inhalte herunterladen.',syntax:'Invoke-WebRequest [URL] [-Method POST] [-Body] [-OutFile Pfad] [-UseBasicParsing]',examples:['(Invoke-WebRequest https://api.github.com/users/microsoft).StatusCode','Invoke-WebRequest https://example.com/file.zip -OutFile C:\\file.zip','$r = Invoke-WebRequest https://api.example.com/data -UseBasicParsing','$r.Content | ConvertFrom-Json'],tip:'-UseBasicParsing = kein IE-Parsing (schneller, unabhaengig von IE). -OutFile fuer Downloads. Alias: iwr, wget, curl.'},
+
+  // === NEUE BEFEHLE: POWERSHELL+ ERWEITERT ===
+  {name:'Get-Process | Where',cat:'powershell',typ:'ps',short:'Prozesse nach Name, CPU oder RAM filtern.',syntax:'Get-Process | Where Name -like "*chrome*" | Select Id,Name,CPU,WorkingSet',examples:['Get-Process | Where Name -like "*chrome*"','Get-Process | Where CPU -gt 50 | Select Name,CPU,Id','Get-Process | Group-Object Name | Sort Count -Descending | Select -First 10'],tip:'WorkingSet = RAM in Bytes. CPU = gesamte CPU-Zeit. Fuer Echtzeit-Snapshot: Get-Counter oder resmon.'},
+  {name:'[System.IO.File]',cat:'powershell',typ:'ps',short:'.NET System.IO direkt nutzen fuer Dateioperationen.',syntax:'[System.IO.File]::[Methode]([Parameter])',examples:['[System.IO.File]::ReadAllText("C:\\datei.txt","UTF8")','[System.IO.File]::WriteAllLines("C:\\out.txt", $array)','[System.IO.File]::Exists("C:\\datei.txt")','[System.IO.Path]::GetFileNameWithoutExtension("C:\\test.log")'],tip:'Direkter .NET-Aufruf. Schneller als Get-Content fuer grosse Dateien. Path fuer Pfad-Operationen.'},
+  {name:'$ErrorActionPreference',cat:'powershell',typ:'ps',short:'Standard-Fehlerverhalten fuer gesamtes Skript setzen.',syntax:'$ErrorActionPreference = "Stop"|"Continue"|"SilentlyContinue"|"Inquire"',examples:['$ErrorActionPreference = "Stop"','$ErrorActionPreference = "SilentlyContinue"','$ErrorActionPreference = "Continue" # Standard'],tip:'Stop = alle Fehler werden Exception. SilentlyContinue = Fehler ignorieren. Gilt fuer ganzes Skript.'},
+  {name:'Select-String -Context',cat:'powershell',typ:'ps',short:'Text suchen mit Kontext-Zeilen davor/dahinter.',syntax:'Select-String -Pattern "Muster" [Datei] -Context [Vorher,Nachher]',examples:['Select-String "ERROR" C:\\app.log -Context 2,3','Get-Content log.txt | Select-String "WARN" -Context 1,1','Select-String -Path *.ps1 -Pattern "TODO" -Context 0,1'],tip:'-Context 2,3 = 2 Zeilen vor dem Treffer, 3 danach. Wie grep -B/-A in Linux.'},
+  {name:'New-TemporaryFile',cat:'powershell',typ:'ps',short:'Temporaere Datei im Temp-Ordner erstellen.',syntax:'$tmp = New-TemporaryFile',examples:['$tmp = New-TemporaryFile','Write-Output "Daten" | Out-File $tmp','$tmp.FullName','Remove-Item $tmp'],tip:'Erstellt eindeutige .tmp Datei in $env:TEMP. Automatisch bereinigen mit Remove-Item oder mit try/finally.'},
+  {name:'Send-MailMessage',cat:'powershell',typ:'ps',short:'E-Mail aus PowerShell senden.',syntax:'Send-MailMessage -SmtpServer [Server] -From [Von] -To [An] -Subject [Betreff] -Body [Text]',examples:['Send-MailMessage -SmtpServer "mail.firma.de" -From "ps@firma.de" -To "admin@firma.de" -Subject "Backup fertig" -Body "Backup abgeschlossen"','Send-MailMessage -SmtpServer "smtp.office365.com" -Port 587 -UseSsl -Credential (Get-Credential) -From "von@firma.de" -To "an@firma.de" -Subject "Test" -Attachments "C:\\report.pdf"'],tip:'-UseSsl -Port 587 fuer Office 365 / Gmail. -Attachments fuer Anlagen. Veraltet -- Send-MgUserMail fuer Graph API.'},
+  {name:'ConvertFrom-StringData',cat:'powershell',typ:'ps',short:'Key=Value Text in Hashtable umwandeln.',syntax:'ConvertFrom-StringData [String]',examples:["ConvertFrom-StringData 'Name=Max\nAlter=30\nStadt=Berlin'",'$conf = Get-Content config.ini | ConvertFrom-StringData','$conf.Name'],tip:'Ideal um .ini-artige Konfigurationsdateien einzulesen. Jede Zeile Key=Value wird zu Hashtable-Eintrag.'},
+  {name:'Export-Clixml / Import-Clixml',cat:'powershell',typ:'ps',short:'PowerShell-Objekte als XML speichern und laden (Serialisierung).',syntax:'[Objekte] | Export-Clixml [Pfad]  |  Import-Clixml [Pfad]',examples:['Get-Process | Export-Clixml C:\\procs.xml','$procs = Import-Clixml C:\\procs.xml','Get-Credential | Export-Clixml C:\\cred.xml','$cred = Import-Clixml C:\\cred.xml'],tip:'Erhalt der Objekttypen und -struktur. Get-Credential exportieren = Passwort DPAPI-verschluesselt gespeichert.'},
+  {name:'Compress-Archive',cat:'powershell',typ:'ps',short:'Dateien und Ordner als ZIP komprimieren.',syntax:'Compress-Archive -Path [Quelle] -DestinationPath [Ziel.zip] [-Update|-Force]',examples:['Compress-Archive -Path C:\\Logs -DestinationPath C:\\logs.zip','Compress-Archive -Path C:\\Logs\\*.log -DestinationPath C:\\logs.zip','Expand-Archive -Path C:\\logs.zip -DestinationPath C:\\Extrahiert'],tip:'-Update fuegt zu bestehendem ZIP hinzu. Expand-Archive extrahiert. Kein externes Tool noetig.'},
+  {name:'Set-Location',cat:'powershell',typ:'ps',short:'Aktuelles Verzeichnis wechseln. Alias: cd, chdir, sl',syntax:'Set-Location [Pfad]  |  cd [Pfad]  |  Push-Location / Pop-Location',examples:['cd C:\\Windows\\System32','Set-Location $env:USERPROFILE','Push-Location C:\\Temp','# ...Befehle...','Pop-Location'],tip:'Push-Location merkt sich den alten Pfad. Pop-Location kehrt zurueck. Alias: cd, sl. Funktion auch fuer Registry: cd HKLM:'},
+  {name:'Get-Alias',cat:'powershell',typ:'ps',short:'Alle PowerShell-Aliase anzeigen.',syntax:'Get-Alias [Name]  |  New-Alias -Name [Name] -Value [Befehl]',examples:['Get-Alias','Get-Alias ls','Get-Alias | Where Definition -like "Get-*"','New-Alias -Name "np" -Value notepad'],tip:'Viele Linux-Befehle (ls, cd, cp, cat) sind Aliase in PS. New-Alias fuer eigene. Set-Alias zum ueberschreiben.'},
+
+  // === NEUE BEFEHLE: SYSTEM ERWEITERT ===
+  {name:'msinfo32',cat:'system',typ:'cmd',short:'Systeminformationen -- Hardware, Treiber, laufende Tasks.',syntax:'msinfo32 [/report Datei.txt] [/nfo Datei.nfo]',examples:['msinfo32','msinfo32 /report C:\\sysinfo.txt','msinfo32 /nfo C:\\sysinfo.nfo'],tip:'/report = Textdatei. /nfo = NFO-Format (nur in msinfo32 oeffenbar). Zeigt BIOS, IRQs, Treiber, Autostart.'},
+  {name:'winver',cat:'system',typ:'cmd',short:'Windows-Version und Build-Nummer grafisch anzeigen.',syntax:'winver',examples:['winver'],tip:'Zeigt Edition, Versionsnummer und Build. Alternativ: (Get-ComputerInfo).WindowsProductName in PS.'},
+  {name:'Get-CimInstance Win32_BIOS',cat:'system',typ:'ps',short:'BIOS-Informationen per PowerShell abfragen.',syntax:'Get-CimInstance Win32_BIOS | Select *',examples:['Get-CimInstance Win32_BIOS | Select Manufacturer,Name,Version,SerialNumber','(Get-CimInstance Win32_BIOS).SerialNumber'],tip:'Zeigt BIOS-Version, Hersteller, Release-Datum und Seriennummer. Gut fuer Inventarisierung.'},
+  {name:'Get-CimInstance Win32_Processor',cat:'system',typ:'ps',short:'CPU-Informationen per PowerShell abfragen.',syntax:'Get-CimInstance Win32_Processor | Select *',examples:['Get-CimInstance Win32_Processor | Select Name,NumberOfCores,NumberOfLogicalProcessors,MaxClockSpeed','(Get-CimInstance Win32_Processor).LoadPercentage'],tip:'NumberOfLogicalProcessors = Threads (inkl. Hyperthreading). LoadPercentage = aktuelle Auslastung.'},
+  {name:'Get-CimInstance Win32_OperatingSystem',cat:'system',typ:'ps',short:'Betriebssystem-Informationen per PowerShell.',syntax:'Get-CimInstance Win32_OperatingSystem | Select *',examples:['Get-CimInstance Win32_OperatingSystem | Select Caption,Version,BuildNumber,OSArchitecture,FreePhysicalMemory','(Get-CimInstance Win32_OperatingSystem).LastBootUpTime'],tip:'LastBootUpTime = letzter Neustart. FreePhysicalMemory in KB. Caption = voller OS-Name.'},
+  {name:'Get-CimInstance Win32_LogicalDisk',cat:'system',typ:'ps',short:'Laufwerke und freien Speicher per PowerShell abfragen.',syntax:'Get-CimInstance Win32_LogicalDisk | Select *',examples:['Get-CimInstance Win32_LogicalDisk | Select DeviceID,@{n="GesGBl";e={[Math]::Round($_.Size/1GB,1)}},@{n="FreiGB";e={[Math]::Round($_.FreeSpace/1GB,1)}}','Get-CimInstance Win32_LogicalDisk | Where DriveType -eq 3'],tip:'DriveType 3 = lokale Festplatte. 4 = Netzlaufwerk. 5 = CD/DVD. Groessen in Bytes.'},
+  {name:'Optimize-Volume',cat:'system',typ:'ps',short:'Laufwerk defragmentieren oder SSD-TRIM ausfuehren.',syntax:'Optimize-Volume -DriveLetter [C] [-Defrag|-ReTrim] [-Verbose]',examples:['Optimize-Volume -DriveLetter C -Verbose','Optimize-Volume -DriveLetter C -ReTrim','Get-Volume | Optimize-Volume -Verbose'],tip:'-ReTrim fuer SSDs. -Defrag fuer HDDs. Analyse vorher: Optimize-Volume -DriveLetter C -Analyze.'},
+  {name:'Get-WindowsCapability',cat:'system',typ:'ps',short:'Optionale Windows-Features anzeigen und installieren.',syntax:'Get-WindowsCapability -Online [| Where State -eq NotPresent]',examples:['Get-WindowsCapability -Online | Where Name -like "RSAT*"','Get-WindowsCapability -Online | Where State -eq Installed','Add-WindowsCapability -Online -Name "Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0"'],tip:'RSAT-Tools installieren ohne Server Manager. State: Installed/NotPresent. Add-WindowsCapability zum Installieren.'},
+  {name:'Invoke-Expression',cat:'system',typ:'ps',short:'String als Befehl ausfuehren (iex).',syntax:'Invoke-Expression [String]  |  iex [String]',examples:['$cmd = "Get-Service wuauserv"; iex $cmd','Invoke-Expression (Get-Content C:\\skript.txt -Raw)'],tip:'Alias: iex. Vorsicht: Sicherheitsrisiko bei nicht-vertrauenswuerdigen Strings! Nie fuer Benutzereingaben.'},
+  {name:'Get-ItemProperty HKLM',cat:'system',typ:'ps',short:'Registry-Werte per PowerShell lesen (HKLM).',syntax:'Get-ItemProperty "HKLM:\\[Pfad]" [-Name Wert]',examples:['Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -Name CurrentBuild','Get-ItemProperty "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters"','Get-ChildItem "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"'],tip:'HKLM: = HKEY_LOCAL_MACHINE. HKCU: = HKEY_CURRENT_USER. Aendern: Set-ItemProperty.'},
+
+  // === NEUE BEFEHLE: DATEISYSTEM ERWEITERT ===
+  {name:'robocopy /LOG',cat:'dateisystem',typ:'cmd',short:'Robocopy mit detailliertem Protokoll.',syntax:'robocopy [Quelle] [Ziel] [Filter] /LOG:[Datei] [/TEE] [/NP]',examples:['robocopy C:\\Quelle D:\\Ziel *.* /LOG:C:\\copy.log','robocopy C:\\Quelle D:\\Ziel /LOG+:C:\\copy.log /TEE','robocopy C:\\Quelle D:\\Ziel /L /NP /LOG:C:\\preview.log'],tip:'/LOG+ = an Log anhaengen. /TEE = sowohl in Datei als auch Konsole. /L = nur anzeigen, nichts kopieren. /NP = kein Fortschritt.'},
+  {name:'xcopy /S /E',cat:'dateisystem',typ:'cmd',short:'Ordnerstruktur rekursiv kopieren.',syntax:'xcopy [Quelle] [Ziel] [/S] [/E] [/H] [/Y] [/D]',examples:['xcopy C:\\Quelle D:\\Ziel /S /E /H /Y','xcopy C:\\Quelle D:\\Ziel /D /Y','xcopy \\\\Server\\Share C:\\Lokal /S /E /Y /Z'],tip:'/S = Unterordner. /E = auch leere Ordner. /H = versteckte Dateien. /D = nur neuere Dateien. /Z = Neustart-faehig.'},
+  {name:'forfiles',cat:'dateisystem',typ:'cmd',short:'Dateien nach Datum filtern und darauf Befehle ausfuehren.',syntax:'forfiles [/p Pfad] [/s] /d [+/-N] /c "Befehl"',examples:['forfiles /p C:\\Logs /s /d -30 /c "cmd /c del @path"','forfiles /p C:\\Backup /s /d -7 /c "cmd /c echo @path"','forfiles /p C:\\Temp /m *.tmp /d -1 /c "cmd /c del @path"'],tip:'/d -30 = aelter als 30 Tage. /d +0 = von heute. @path = Dateipfad. /s = rekursiv. /m = Filter.'},
+  {name:'tree',cat:'dateisystem',typ:'cmd',short:'Verzeichnisstruktur als Baumdiagramm anzeigen.',syntax:'tree [Pfad] [/F] [/A]',examples:['tree C:\\Projekte','tree C:\\Projekte /F','tree C:\\Windows /F /A > C:\\struktur.txt'],tip:'/F = Dateien anzeigen. /A = ASCII-Zeichen statt grafische Linien (fuer Export). Ausgabe umleitbar.'},
+  {name:'attrib',cat:'dateisystem',typ:'cmd',short:'Dateiattribute anzeigen und aendern.',syntax:'attrib [+/-H] [+/-R] [+/-S] [+/-A] [Pfad] [/S] [/D]',examples:['attrib C:\\Datei.txt','attrib +H C:\\Versteckt.txt','attrib -H -S C:\\Windows\\Unhide\\*.* /S','attrib +R C:\\Wichtig.txt'],tip:'+H = ausblenden, -H = sichtbar. +R = Schreibschutz. +S = Systemdatei. +A = Archiv-Bit. /S = rekursiv.'},
+  {name:'pushd / popd',cat:'dateisystem',typ:'cmd',short:'Verzeichniswechsel mit Rueckkehrmoeglihckeit (Stack).',syntax:'pushd [Pfad]  ... Befehle ...  popd',examples:['pushd C:\\Temp','echo Aktuell: %CD%','popd','echo Zurueck: %CD%','pushd \\\\Server\\Share'],tip:'pushd merkt sich den alten Pfad. popd kehrt zurueck. pushd mit UNC-Pfad erstellt automatisch Laufwerksbuchstaben.'},
+  {name:'Get-FileHash -Algorithm',cat:'dateisystem',typ:'ps',short:'Verschiedene Hash-Algorithmen fuer Datei-Integritaet.',syntax:'Get-FileHash [Pfad] -Algorithm [MD5|SHA1|SHA256|SHA512]',examples:['Get-FileHash C:\\setup.exe -Algorithm SHA256','Get-FileHash C:\\iso.img -Algorithm MD5','Get-ChildItem C:\\Downloads | Get-FileHash -Algorithm SHA256 | Format-Table Path,Hash'],tip:'Mehrere Dateien per Pipeline. Hash mit Herstellerangabe vergleichen. SHA256 ist Standard.'},
+  {name:'New-PSDrive',cat:'dateisystem',typ:'ps',short:'Virtuelles Laufwerk oder Provider-Laufwerk erstellen.',syntax:'New-PSDrive -Name [Buchstabe] -PSProvider FileSystem -Root [Pfad]',examples:['New-PSDrive -Name X -PSProvider FileSystem -Root C:\\Projekte','New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT','Remove-PSDrive X'],tip:'Erstellt temporaere PS-Laufwerke. Auch fuer Registry, Zertifikate (Cert:), Functions:. Remove-PSDrive entfernt.'},
+
+  // === NEUE BEFEHLE: NETZWERK ERWEITERT ===
+  {name:'Get-NetFirewallProfile',cat:'netzwerk',typ:'ps',short:'Firewall-Profile (Domain/Private/Public) anzeigen.',syntax:'Get-NetFirewallProfile [-Name Domain|Private|Public]',examples:['Get-NetFirewallProfile','Get-NetFirewallProfile | Select Name,Enabled,DefaultInboundAction','Set-NetFirewallProfile -Profile Domain -DefaultInboundAction Block'],tip:'Zeigt Status und Standardaktionen aller Profile. Set-NetFirewallProfile zum Aendern.'},
+  {name:'Test-Connection -TraceRoute',cat:'netzwerk',typ:'ps',short:'Traceroute in PowerShell (PS 6+).',syntax:'Test-Connection [Host] -TraceRoute -Hops N',examples:['Test-Connection google.com -TraceRoute','Test-Connection 8.8.8.8 -TraceRoute -Hops 20','Test-Connection dc01 -Count 4 -Delay 2'],tip:'-TraceRoute ab PS 6.0. -Delay = Sekunden zwischen Pings. -Count = Anzahl Pings.'},
+  {name:'Resolve-DnsName',cat:'netzwerk',typ:'ps',short:'DNS-Namen aufloesen -- flexibler als nslookup.',syntax:'Resolve-DnsName [Name] [-Type A|MX|SOA|PTR|CNAME] [-Server DNS-IP]',examples:['Resolve-DnsName google.com','Resolve-DnsName google.com -Type MX','Resolve-DnsName firma.local -Server dc01','Resolve-DnsName 192.168.1.1 -Type PTR'],tip:'Gibt strukturierte Objekte zurueck. -Type ALL fuer alle Records. Reverse-DNS: IP-Adresse mit -Type PTR.'},
+  {name:'Get-NetIPInterface',cat:'netzwerk',typ:'ps',short:'Alle Netzwerkschnittstellen mit IP-Einstellungen anzeigen.',syntax:'Get-NetIPInterface [-AddressFamily IPv4|IPv6] [-InterfaceAlias Name]',examples:['Get-NetIPInterface -AddressFamily IPv4','Get-NetIPInterface | Where DHCP -eq Enabled','Set-NetIPInterface -InterfaceAlias "Ethernet" -DHCP Enabled'],tip:'DHCP Enabled/Disabled pro Interface. Set-NetIPInterface zum Aendern von DHCP, MTU, Routing.'},
+  {name:'New-NetFirewallRule',cat:'netzwerk',typ:'ps',short:'Neue Firewall-Regel erstellen.',syntax:'New-NetFirewallRule -DisplayName [Name] -Direction [Inbound|Outbound] -Protocol TCP -LocalPort N -Action Allow|Block',examples:['New-NetFirewallRule -DisplayName "Web HTTP" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow','New-NetFirewallRule -DisplayName "Block Telnet" -Direction Outbound -Protocol TCP -RemotePort 23 -Action Block'],tip:'-Profile Domain,Private,Public. -RemoteAddress fuer IP-basierte Regeln. Enabled $false zum Deaktivieren.'},
+  {name:'Get-NetRoute',cat:'netzwerk',typ:'ps',short:'Routing-Tabelle in PowerShell anzeigen.',syntax:'Get-NetRoute -AddressFamily IPv4 [-DestinationPrefix Netz]',examples:['Get-NetRoute -AddressFamily IPv4','Get-NetRoute | Where DestinationPrefix -eq "0.0.0.0/0"','New-NetRoute -DestinationPrefix "10.0.0.0/8" -InterfaceAlias "Ethernet" -NextHop "192.168.1.1"'],tip:'New-NetRoute und Remove-NetRoute zum Verwalten. NextHop = Gateway. InterfaceMetric beeinfluss Prioritaet.'},
+
+  // === TROUBLESHOOTING BEFEHLE ===
 
   // System & Boot
   {name:'sfc /scannow',cat:'ts',typ:'cmd',short:'Systemdateipruefung — beschaedigte Windows-Dateien reparieren.',syntax:'sfc /scannow',examples:['sfc /scannow','sfc /verifyonly','sfc /scanfile=C:\\Windows\\System32\\ntdll.dll'],tip:'Als Admin! Ergebnis in C:\\Windows\\Logs\\CBS\\CBS.log. Danach dism /Online /Cleanup-Image /RestoreHealth wenn Fehler bleiben.'},
@@ -1626,7 +2414,7 @@ const CMDS = [
   {name:'cipher /u /n',cat:'ts',typ:'cmd',short:'Alle verschluesselten Dateien auf dem System finden.',syntax:'cipher /u /n [/h]',examples:['cipher /u /n','cipher /u /n /h'],tip:'/u aktualisiert EFS-Schluesseldaten. /n verhindert Aktualisierung (nur anzeigen). /h zeigt auch versteckte Dateien.'},
   {name:'secedit /analyze',cat:'ts',typ:'cmd',short:'Sicherheitseinstellungen gegen eine Vorlage analysieren.',syntax:'secedit /analyze /db [Datei.sdb] /cfg [Vorlage.inf] /log [Log.txt]',examples:['secedit /analyze /db C:\\analyse.sdb /cfg C:\\secvorlage.inf /log C:\\analyse.log','secedit /export /cfg C:\\aktuell.inf'],tip:'Vergleicht aktuelle Einstellungen gegen eine Sicherheitsvorlage. /export sichert aktuelle Konfiguration.'},
 
-  // ═══ SICHERHEIT & HAERTUNG ═══
+  // === SICHERHEIT & HAERTUNG ===
   // BitLocker
   {name:'manage-bde -status',cat:'sicherheit',typ:'cmd',short:'BitLocker-Status aller Laufwerke anzeigen.',syntax:'manage-bde -status [Laufwerk:]',examples:['manage-bde -status','manage-bde -status C:','manage-bde -status D:'],tip:'Zeigt Schutzstatus, Verschluesselungsprozentsatz, Schutzmethode und gesperrte/entsperrte Laufwerke.'},
   {name:'manage-bde -on',cat:'sicherheit',typ:'cmd',short:'BitLocker auf einem Laufwerk aktivieren.',syntax:'manage-bde -on [Laufwerk:] -recoverypassword -recoverykey [Pfad]',examples:['manage-bde -on C: -recoverypassword -recoverykey C:\\BitLockerKey','manage-bde -on D: -password','manage-bde -on C: -tpm'],tip:'-recoverypassword generiert 48-stelligen Recovery-Key. -tpm nutzt TPM-Chip. Recovery-Key sicher aufbewahren!'},
@@ -1662,7 +2450,7 @@ const CMDS = [
   {name:'Set-ExecutionPolicy AllSigned',cat:'sicherheit',typ:'ps',short:'PowerShell-Ausfuehrungsrichtlinie haerten.',syntax:'Set-ExecutionPolicy [AllSigned|RemoteSigned|Restricted|Bypass] [-Scope]',examples:['Set-ExecutionPolicy AllSigned -Scope LocalMachine','Set-ExecutionPolicy RemoteSigned -Scope CurrentUser','Get-ExecutionPolicy -List'],tip:'AllSigned = nur signierte Skripte. RemoteSigned = lokale Skripte OK, Remote-Skripte muessen signiert sein. Restricted = keine Skripte.'},
   {name:'Get-MpThreatDetection',cat:'sicherheit',typ:'ps',short:'Erkannte Bedrohungen und Malware-Funde anzeigen.',syntax:'Get-MpThreatDetection',examples:['Get-MpThreatDetection | Select ThreatName,ActionSuccess,DetectionSourceTypeID','Get-MpThreat | Select ThreatName,SeverityID,CategoryID'],tip:'ThreatName zeigt Malware-Namen. ActionSuccess $false = Bedrohung nicht behoben. Remove-MpThreat zum Entfernen.'},
 
-  // ═══ AZURE / CLOUD ═══
+  // === AZURE / CLOUD ===
   {name:'Connect-AzAccount',cat:'azure',typ:'ps',short:'Mit Azure-Konto verbinden (Az PowerShell Modul).',syntax:'Connect-AzAccount [-TenantId ID] [-Subscription Name] [-DeviceCode]',examples:['Connect-AzAccount','Connect-AzAccount -TenantId "12345678-1234-..."','Connect-AzAccount -DeviceCode','Connect-AzAccount -Identity'],tip:'-DeviceCode fuer nicht-interaktive Anmeldung. -Identity fuer Managed Identity in Azure VMs. Install-Module Az zuerst.'},
   {name:'Get-AzSubscription',cat:'azure',typ:'ps',short:'Verfuegbare Azure-Abonnements anzeigen.',syntax:'Get-AzSubscription  |  Set-AzContext -Subscription [Name|ID]',examples:['Get-AzSubscription','Get-AzSubscription | Select Name,Id,State','Set-AzContext -Subscription "Mein Abo"','Set-AzContext -SubscriptionId "12345678-..."'],tip:'Set-AzContext wechselt zwischen Abonnements. Get-AzContext zeigt aktuelles Abonnement.'},
   {name:'Get-AzResourceGroup',cat:'azure',typ:'ps',short:'Azure-Ressourcengruppen anzeigen.',syntax:'Get-AzResourceGroup [-Name Name] [-Location Ort]',examples:['Get-AzResourceGroup','Get-AzResourceGroup -Name "RG-Produktion"','Get-AzResourceGroup | Select ResourceGroupName,Location,ProvisioningState'],tip:'Ressourcengruppen = logische Container fuer Azure-Ressourcen. New-AzResourceGroup zum Erstellen.'},
@@ -1688,7 +2476,7 @@ const CMDS = [
   {name:'az ad user list',cat:'azure',typ:'cmd',short:'Azure AD Benutzer per CLI abfragen.',syntax:'az ad user list [--filter "displayName eq Name"] [-o table]',examples:['az ad user list -o table','az ad user list --filter "startswith(displayName,\'Max\')" -o table','az ad user show --id m.mustermann@firma.de'],tip:'--filter nutzt OData. az ad group list fuer Gruppen. az ad app list fuer App-Registrierungen.'},
   {name:'az group list',cat:'azure',typ:'cmd',short:'Azure Ressourcengruppen per CLI anzeigen.',syntax:'az group list [-o table] [--query "[].{Name:name}"]',examples:['az group list -o table','az group list --query "[].name" -o tsv','az group create --name "RG-Test" --location "germanywestcentral"'],tip:'--query mit JMESPath-Syntax fuer Filterung. az group delete --name RG-Test --yes --no-wait loescht.'},
 
-  // ═══ VIRTUALISIERUNG ═══
+  // === VIRTUALISIERUNG ===
   // Hyper-V
   {name:'Get-VM',cat:'virt',typ:'ps',short:'Alle Hyper-V VMs anzeigen.',syntax:'Get-VM [-Name Name] [-ComputerName Host]',examples:['Get-VM','Get-VM | Select Name,State,MemoryAssigned,CPUUsage','Get-VM | Where State -eq Running','Get-VM -ComputerName HV01'],tip:'State: Running/Off/Paused/Saved. MemoryAssigned in Bytes. Get-VM * zeigt auch AUs. Remote: -ComputerName.'},
   {name:'Start-VM / Stop-VM',cat:'virt',typ:'ps',short:'Hyper-V VM starten oder stoppen.',syntax:'Start-VM -Name [Name]  |  Stop-VM -Name [Name] [-Force|-TurnOff|-Save]',examples:['Start-VM -Name "WebServer01"','Stop-VM -Name "WebServer01" -Force','Stop-VM -Name "WebServer01" -TurnOff','Save-VM -Name "WebServer01"'],tip:'-TurnOff = sofortiges Ausschalten (kein Graceful). -Save = Ruhezustand. -Force = Herunterfahren erzwingen.'},
@@ -1724,13 +2512,421 @@ const CMDS = [
   {name:'docker system prune',cat:'virt',typ:'cmd',short:'Alle ungenutzten Docker-Ressourcen loeschen.',syntax:'docker system prune [-a] [-f] [--volumes]',examples:['docker system prune -f','docker system prune -a -f','docker system prune -a --volumes -f'],tip:'-a entfernt auch unbenutzte Images. --volumes entfernt auch Volumes. Gibt viel Speicher frei.'},
   {name:'docker volume ls',cat:'virt',typ:'cmd',short:'Docker-Volumes anzeigen und verwalten.',syntax:'docker volume [ls|create|rm|inspect] [Name]',examples:['docker volume ls','docker volume create meinvolume','docker volume rm meinvolume','docker volume inspect meinvolume','docker volume prune -f'],tip:'Volumes = persistenter Speicher fuer Container. Ueberlebt Container-Neuerstellen. prune loescht unbenutzte Volumes.'},
   {name:'docker network ls',cat:'virt',typ:'cmd',short:'Docker-Netzwerke anzeigen.',syntax:'docker network [ls|create|rm|inspect|connect] [Name]',examples:['docker network ls','docker network create mein-netz','docker network connect mein-netz webserver','docker network inspect mein-netz'],tip:'Netzwerke verbinden Container. connect haengt laufenden Container ein. bridge = Standard. overlay = Swarm.'},
+
+  // === PAKETMANAGER ===
+  // winget
+  {name:'winget search',cat:'paket',typ:'cmd',short:'Software in der Microsoft-Paketdatenbank suchen.',syntax:'winget search [Begriff] [--source winget|msstore]',examples:['winget search notepad++','winget search "Visual Studio Code"','winget search firefox --source winget'],tip:'Durchsucht winget-Repository und Microsoft Store. --source winget nur offizielle Pakete.'},
+  {name:'winget install',cat:'paket',typ:'cmd',short:'Software per winget installieren.',syntax:'winget install [Name|ID] [-e] [--silent] [--scope machine|user]',examples:['winget install Notepad++.Notepad++','winget install Microsoft.VisualStudioCode --silent','winget install Google.Chrome -e --scope machine','winget install --id Mozilla.Firefox'],tip:'-e = exakte ID. --silent = ohne Dialoge. --scope machine = fuer alle Benutzer (Admin).'},
+  {name:'winget upgrade',cat:'paket',typ:'cmd',short:'Installierte Software per winget aktualisieren.',syntax:'winget upgrade [ID] [--all] [--silent]',examples:['winget upgrade --all','winget upgrade --all --silent','winget upgrade Microsoft.VisualStudioCode'],tip:'--all aktualisiert alle veralteten Programme gleichzeitig. --silent ohne Benutzerinteraktion.'},
+  {name:'winget uninstall',cat:'paket',typ:'cmd',short:'Software per winget deinstallieren.',syntax:'winget uninstall [Name|ID] [-e] [--silent]',examples:['winget uninstall Notepad++.Notepad++','winget uninstall "VLC media player" --silent'],tip:'-e fuer exakte ID-Suche. winget list zeigt alle installierten Pakete mit IDs.'},
+  {name:'winget list',cat:'paket',typ:'cmd',short:'Alle installierten Programme anzeigen und Aktualisierungen pruefen.',syntax:'winget list [--upgrade-available] [--source winget]',examples:['winget list','winget list --upgrade-available','winget list | findstr "Microsoft"'],tip:'--upgrade-available zeigt nur Programme mit verfuegbaren Updates. Gut fuer Patch-Management.'},
+  {name:'winget export / import',cat:'paket',typ:'cmd',short:'Paketliste exportieren und auf neuem PC installieren.',syntax:'winget export -o [Datei.json]  |  winget import -i [Datei.json]',examples:['winget export -o C:\\meine-apps.json','winget import -i C:\\meine-apps.json --ignore-unavailable'],tip:'Ideal fuer Neuinstallation oder Standardisierung von Arbeitsplätzen. --ignore-unavailable ueberspringt fehlende Pakete.'},
+  {name:'winget source',cat:'paket',typ:'cmd',short:'winget Paketquellen verwalten.',syntax:'winget source [list|add|remove|update|reset]',examples:['winget source list','winget source update','winget source reset --force'],tip:'Standardquellen: winget (Microsoft), msstore (Microsoft Store). reset stellt Standardquellen wieder her.'},
+  // Chocolatey
+  {name:'choco install',cat:'paket',typ:'cmd',short:'Paket mit Chocolatey installieren.',syntax:'choco install [Paket] [-y] [--version N] [--source URL]',examples:['choco install googlechrome -y','choco install git vscode notepadplusplus -y','choco install vlc --version 3.0.18 -y'],tip:'-y bestaetigt alle Abfragen. Mehrere Pakete in einem Befehl moeglich. Als Admin ausfuehren!'},
+  {name:'choco upgrade',cat:'paket',typ:'cmd',short:'Chocolatey-Pakete aktualisieren.',syntax:'choco upgrade [all|Paket] [-y]',examples:['choco upgrade all -y','choco upgrade googlechrome -y','choco upgrade chocolatey -y'],tip:'choco upgrade all -y aktualisiert alle Pakete auf einmal. Ideal als geplante Aufgabe.'},
+  {name:'choco uninstall',cat:'paket',typ:'cmd',short:'Paket mit Chocolatey deinstallieren.',syntax:'choco uninstall [Paket] [-y] [--all-versions]',examples:['choco uninstall vlc -y','choco uninstall notepadplusplus --all-versions -y'],tip:'--all-versions entfernt alle installierten Versionen. choco list --local-only zeigt alle installierten Pakete.'},
+  {name:'choco list',cat:'paket',typ:'cmd',short:'Chocolatey-Pakete auflisten.',syntax:'choco list [--local-only] [--outdated]',examples:['choco list --local-only','choco outdated','choco search vscode'],tip:'--local-only nur installierte Pakete. choco outdated zeigt Pakete mit verfuegbaren Updates.'},
+  {name:'choco install chocolatey',cat:'paket',typ:'cmd',short:'Chocolatey installieren (einmalige Installation).',syntax:'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://community.chocolatey.org/install.ps1"))',examples:['# In PowerShell als Admin ausfuehren'],tip:'Offizielle Installationsmethode von chocolatey.org. Nach Installation: choco --version pruefen.'},
+  // Scoop
+  {name:'scoop install',cat:'paket',typ:'cmd',short:'Paket mit Scoop installieren (kein Admin noetig).',syntax:'scoop install [Paket]',examples:['scoop install git','scoop install curl wget','scoop install python nodejs'],tip:'Scoop installiert in %USERPROFILE%\\scoop — kein Admin noetig! Ideal fuer Dev-Tools. scoop --help fuer Uebersicht.'},
+  {name:'scoop update',cat:'paket',typ:'cmd',short:'Scoop und Pakete aktualisieren.',syntax:'scoop update [*|Paket]',examples:['scoop update','scoop update *','scoop update git'],tip:'scoop update zuerst (aktualisiert Scoop selbst), dann scoop update * (alle Pakete).'},
+  {name:'scoop bucket add',cat:'paket',typ:'cmd',short:'Scoop-Repository (Bucket) hinzufuegen.',syntax:'scoop bucket add [Name] [URL]',examples:['scoop bucket add extras','scoop bucket add versions','scoop bucket add java','scoop bucket list'],tip:'extras = Nicht-CLI-Tools. versions = aeltere Versionen. java = JDK-Versionen. bucket list zeigt alle.'},
+  {name:'scoop search',cat:'paket',typ:'cmd',short:'Pakete in Scoop-Buckets suchen.',syntax:'scoop search [Begriff]',examples:['scoop search python','scoop search notepad','scoop search jdk'],tip:'Sucht in allen hinzugefuegten Buckets. Ohne Bucket-Angabe nur Main-Bucket.'},
+  // NuGet / dotnet
+  {name:'dotnet tool install',cat:'paket',typ:'cmd',short:'.NET-Tools global installieren.',syntax:'dotnet tool install -g [Paket]  |  dotnet tool list -g',examples:['dotnet tool install -g dotnet-ef','dotnet tool install -g PowerShell','dotnet tool list -g','dotnet tool update -g dotnet-ef'],tip:'-g = global (alle Projekte). Ohne -g = projektlokal in .config/dotnet-tools.json.'},
+  {name:'pip install',cat:'paket',typ:'cmd',short:'Python-Pakete installieren.',syntax:'pip install [Paket] [--upgrade] [--user] [-r requirements.txt]',examples:['pip install requests','pip install --upgrade pip','pip install -r requirements.txt','pip list --outdated'],tip:'pip list --outdated zeigt veraltete Pakete. pip freeze > requirements.txt exportiert alle Pakete.'},
+  {name:'npm install',cat:'paket',typ:'cmd',short:'Node.js-Pakete installieren.',syntax:'npm install [-g] [Paket]  |  npm update  |  npm list -g',examples:['npm install -g npm','npm install express','npm install --save-dev webpack','npm list -g --depth=0'],tip:'-g = global. --save-dev = nur Entwicklungsabhaengigkeit. npm audit fuer Sicherheitspruefung.'},
+
+  // === IIS & WEBSERVER ===
+  {name:'iisreset',cat:'iis',typ:'cmd',short:'IIS vollstaendig neu starten.',syntax:'iisreset [/restart|/stop|/start|/status|/noforce]',examples:['iisreset /restart','iisreset /stop','iisreset /start','iisreset /status'],tip:'/noforce bricht nicht aktive Verbindungen ab. /restart ist Standard. Als Admin ausfuehren!'},
+  {name:'appcmd list site',cat:'iis',typ:'cmd',short:'IIS-Websites auflisten.',syntax:'appcmd list site [/name:Name] [/state:started|stopped]',examples:['appcmd list site','appcmd list site /state:started','appcmd list site /name:"Default Web Site"'],tip:'appcmd ist das CLI-Tool fuer IIS. %windir%\\system32\\inetsrv\\appcmd.exe'},
+  {name:'appcmd start/stop site',cat:'iis',typ:'cmd',short:'IIS-Website starten oder stoppen.',syntax:'appcmd [start|stop] site /site.name:"Name"',examples:['appcmd start site /site.name:"Default Web Site"','appcmd stop site /site.name:"MeineWebsite"'],tip:'Alle Sites starten: appcmd start site *'},
+  {name:'appcmd list apppool',cat:'iis',typ:'cmd',short:'IIS-Anwendungspools auflisten.',syntax:'appcmd list apppool [/state:started|stopped]',examples:['appcmd list apppool','appcmd list apppool /state:started','appcmd list apppool /processModel.userName:NetworkService'],tip:'Zeigt alle App-Pools mit Status, Managed-Pipeline-Mode und Worker-Prozessen.'},
+  {name:'appcmd recycle apppool',cat:'iis',typ:'cmd',short:'IIS-Anwendungspool recyceln (neu starten).',syntax:'appcmd recycle apppool /apppool.name:"Name"',examples:['appcmd recycle apppool /apppool.name:"DefaultAppPool"','appcmd stop apppool /apppool.name:"MeinPool"','appcmd start apppool /apppool.name:"MeinPool"'],tip:'Recyceln beendet Worker-Prozesse sauber. Schneller als iisreset (andere Sites laufen weiter).'},
+  {name:'appcmd add site',cat:'iis',typ:'cmd',short:'Neue IIS-Website erstellen.',syntax:'appcmd add site /name:"Name" /physicalPath:"Pfad" /bindings:http/*:80:',examples:['appcmd add site /name:"MeineSeite" /physicalPath:"C:\\inetpub\\meineseite" /bindings:http/*:80:','appcmd add site /name:"SSL-Site" /physicalPath:"C:\\wwwroot" /bindings:https/*:443:meinedomain.de'],tip:'bindings Format: Protokoll/IP:Port:Hostname. IP * = alle IPs.'},
+  {name:'appcmd set config',cat:'iis',typ:'cmd',short:'IIS-Konfiguration per CLI aendern.',syntax:'appcmd set config [Pfad] /section:[Section] /[Eigenschaft]:[Wert]',examples:['appcmd set config "MeineSeite/" /section:httpErrors /errorMode:Detailed','appcmd set config /section:requestFiltering /requestLimits.maxAllowedContentLength:104857600','appcmd set config /section:defaultDocument /+files.[value=index.php]'],tip:'Konfiguriert web.config-Einstellungen per CLI. Aenderungen gelten sofort ohne Neustart.'},
+  {name:'Get-WebSite',cat:'iis',typ:'ps',short:'IIS-Websites per PowerShell anzeigen (WebAdministration-Modul).',syntax:'Get-WebSite [-Name Name]  |  Import-Module WebAdministration',examples:['Import-Module WebAdministration','Get-WebSite','Get-WebSite -Name "Default Web Site"','Get-WebSite | Select Name,State,PhysicalPath'],tip:'Modul WebAdministration ist auf IIS-Servern verfuegbar. Get-WebApplication fuer Apps.'},
+  {name:'New-WebSite',cat:'iis',typ:'ps',short:'Neue IIS-Website per PowerShell erstellen.',syntax:'New-WebSite -Name [Name] -Port [Port] -PhysicalPath [Pfad] [-HostHeader Domain]',examples:["New-WebSite -Name 'MeineSeite' -Port 80 -PhysicalPath 'C:\\inetpub\\meineseite'",'New-WebSite -Name "SSL-Site" -Port 443 -PhysicalPath "C:\\wwwroot" -HostHeader "meinedomain.de"','Start-WebSite -Name "MeineSeite"'],tip:'Start-WebSite, Stop-WebSite, Remove-WebSite zum Verwalten. New-WebApplication fuer Unteranwendungen.'},
+  {name:'Get-WebApplication',cat:'iis',typ:'ps',short:'IIS-Webanwendungen anzeigen.',syntax:'Get-WebApplication [-Site SiteName] [-Name AppName]',examples:["Get-WebApplication -Site 'Default Web Site'",'Get-WebApplication | Select Path,PhysicalPath,ApplicationPool'],tip:'New-WebApplication zum Erstellen. ConvertTo-WebApplication konvertiert virtuelles Verzeichnis.'},
+  {name:'Set-WebBinding',cat:'iis',typ:'ps',short:'IIS-Bindings (Port, Hostname, SSL) konfigurieren.',syntax:'Set-WebBinding -Name [Site] -BindingInformation [IP:Port:Host] -PropertyName [Prop] -Value [Wert]',examples:["New-WebBinding -Name 'MeineSeite' -Protocol 'https' -Port 443 -SslFlags 1",'Get-WebBinding -Name "MeineSeite"','Remove-WebBinding -Name "MeineSeite" -Protocol "http" -Port 80'],tip:'SslFlags 1 = SNI (Server Name Indication) fuer mehrere SSL-Zertifikate auf einer IP.'},
+  {name:'netsh http add sslcert',cat:'iis',typ:'cmd',short:'SSL-Zertifikat an IIS-Port binden.',syntax:'netsh http add sslcert ipport=0.0.0.0:443 certhash=[Thumbprint] appid={GUID}',examples:['netsh http show sslcert','netsh http add sslcert ipport=0.0.0.0:443 certhash=ABC123... appid={12345678-1234-1234-1234-123456789012}','netsh http delete sslcert ipport=0.0.0.0:443'],tip:'Thumbprint aus certmgr.msc oder Get-ChildItem Cert:\\LocalMachine\\My. appid = beliebige GUID.'},
+  {name:'Get-WebConfigurationProperty',cat:'iis',typ:'ps',short:'web.config Einstellungen per PowerShell lesen.',syntax:'Get-WebConfigurationProperty -pspath [Site] -filter [XPath] -name [Eigenschaft]',examples:["Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST/Default Web Site' -filter 'system.webServer/security/authentication/windowsAuthentication' -name 'enabled'",'Set-WebConfigurationProperty -pspath "IIS:\Sites\MeineSeite" -filter "system.webServer/defaultDocument" -name "enabled" -value "true"'],tip:'pspath IIS:\\Sites\\[Sitename] fuer PowerShell-Provider. Get-WebConfiguration fuer lesende Zugriffe.'},
+  {name:'Test-NetConnection -Port 80',cat:'iis',typ:'ps',short:'IIS-Port-Erreichbarkeit testen.',syntax:'Test-NetConnection localhost -Port [80|443|8080]',examples:['Test-NetConnection localhost -Port 80','Test-NetConnection meinserver.local -Port 443','(Invoke-WebRequest http://localhost).StatusCode'],tip:'StatusCode 200 = IIS antwortet. Invoke-WebRequest fuer vollstaendigen HTTP-Test inkl. Headers.'},
+  {name:'appcmd list wp',cat:'iis',typ:'cmd',short:'Laufende IIS Worker-Prozesse anzeigen.',syntax:'appcmd list wp',examples:['appcmd list wp','appcmd list wp | findstr "DefaultAppPool"'],tip:'Zeigt PID der Worker-Prozesse. Mit tasklist /FI "PID eq [N]" Details abfragen.'},
+  {name:'%windir%\\system32\\inetsrv\\appcmd',cat:'iis',typ:'cmd',short:'Vollstaendiger appcmd-Pfad wenn nicht im PATH.',syntax:'%windir%\\system32\\inetsrv\\appcmd [Befehl]',examples:['%windir%\\system32\\inetsrv\\appcmd list site'],tip:'appcmd liegt nicht im Standard-PATH. Entweder vollstaendigen Pfad angeben oder ins PATH aufnehmen.'},
 ];
 
 let activeTab = 'alle';
 let searchQuery = '';
 let openCard = null;
 
-// ── TS GUIDE DATA ──
+// -- BATCH SCRIPTING GUIDE --
+const BATCH_GUIDES = [
+  {
+    id:'batch-grundlagen',emoji:'📋',title:'Batch-Skript Grundlagen',
+    subtitle:'Aufbau, Variablen, Echo, Kommentare — der Einstieg in .bat/.cmd Dateien',
+    tabs:[
+      {label:'Grundstruktur',content:`
+        <div class="guide-section-head">&#128196; Erste Schritte</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Batch-Datei erstellen</div><div class="step-desc">Datei mit Endung .bat oder .cmd anlegen. Inhalt mit Texteditor bearbeiten.</div><div class="step-code">notepad meinskript.bat
+# oder:
+New-Item meinskript.bat -ItemType File</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Grundstruktur</div><div class="step-code">@echo off
+:: Kommentar — wird nicht ausgefuehrt
+REM Auch ein Kommentar (aeltere Methode)
+title Mein Batch-Skript
+color 0A
+
+echo Hallo, Welt!
+echo Aktuelles Verzeichnis: %CD%
+echo Benutzername: %USERNAME%
+echo Computername: %COMPUTERNAME%
+
+pause</div><div class="step-note">&#128161; @echo off verhindert dass jeder Befehl angezeigt wird. Immer als erste Zeile verwenden!</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Variablen setzen und nutzen</div><div class="step-code">@echo off
+:: Variable setzen
+set Name=Max Mustermann
+set Zahl=42
+set /a Ergebnis=10+32
+
+:: Variable nutzen
+echo Name: %Name%
+echo Zahl: %Zahl%
+echo Rechnung: %Ergebnis%
+
+:: Benutzereingabe
+set /p Eingabe=Dein Name: 
+echo Hallo, %Eingabe%!</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Batch ausfuehren</div><div class="step-code">meinskript.bat
+:: Als Admin ausfuehren (Rechtsklick → Als Administrator)
+:: Oder in CMD:
+cmd /c meinskript.bat
+:: Mit Parameter:
+meinskript.bat "Parameter1" "Parameter2"</div></div></li>
+        </ol>`},
+      {label:'Umgebungsvariablen',content:`
+        <div class="guide-section-head">&#128293; Wichtige Windows-Variablen</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">System-Variablen</div><div class="step-code">echo %USERNAME%       :: Angemeldeter Benutzer
+echo %COMPUTERNAME%    :: PC-Name
+echo %USERDOMAIN%      :: Domain-Name
+echo %USERPROFILE%     :: C:\Users\Max
+echo %APPDATA%         :: AppData\Roaming
+echo %TEMP%            :: Temp-Ordner
+echo %WINDIR%          :: C:\Windows
+echo %SYSTEMROOT%      :: C:\Windows
+echo %PROGRAMFILES%    :: C:\Program Files
+echo %CD%              :: Aktuelles Verzeichnis
+echo %DATE%            :: Aktuelles Datum
+echo %TIME%            :: Aktuelle Uhrzeit
+echo %ERRORLEVEL%      :: Letzter Exit-Code
+echo %~dp0             :: Verzeichnis des Skripts!</div><div class="step-note">&#128161; %~dp0 ist sehr wichtig — gibt den Ordner des Skripts zurueck, egal von wo es gestartet wird.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Datumsstempel fuer Dateinamen</div><div class="step-code">@echo off
+:: Datum formatieren: YYYY-MM-DD
+for /f "tokens=2 delims==" %%a in ('wmic os get localdatetime /value') do set dt=%%a
+set Datum=%dt:~0,4%-%dt:~4,2%-%dt:~6,2%
+set Uhrzeit=%dt:~8,2%-%dt:~10,2%
+
+echo Backup_%Datum%_%Uhrzeit%.zip
+:: Ergibt: Backup_2024-01-15_14-30.zip</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-bedingungen',emoji:'🔀',title:'Bedingungen und Schleifen',
+    subtitle:'if/else, for-Schleifen, goto, Fehlerbehandlung in Batch',
+    tabs:[
+      {label:'IF-Bedingungen',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">IF-Grundstruktur</div><div class="step-code">@echo off
+set Zahl=5
+
+if %Zahl% EQU 5 (
+    echo Zahl ist 5
+) else (
+    echo Zahl ist nicht 5
+)
+
+:: Vergleichsoperatoren:
+:: EQU  =  gleich
+:: NEQ  =  ungleich
+:: LSS  &lt;  kleiner
+:: LEQ  &lt;= kleiner gleich
+:: GTR  >  groesser
+:: GEQ  >= groesser gleich</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Datei und Ordner pruefen</div><div class="step-code">@echo off
+:: Datei vorhanden?
+if exist "C:\Config\config.ini" (
+    echo Datei gefunden
+) else (
+    echo Datei NICHT gefunden!
+    exit /b 1
+)
+
+:: Ordner vorhanden? Mit Backslash am Ende
+if exist "C:\Backup\" (
+    echo Ordner existiert
+) else (
+    mkdir C:\Backup
+    echo Ordner erstellt
+)</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Fehlercode (ERRORLEVEL) pruefen</div><div class="step-code">@echo off
+ping -n 1 8.8.8.8 >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+    echo Internet erreichbar
+) else (
+    echo Kein Internet!
+)
+
+:: Kurzform:
+ping -n 1 8.8.8.8 >nul && echo OK || echo FEHLER</div><div class="step-note">&#128161; && = wenn Erfolg (ERRORLEVEL 0). || = wenn Fehler. >nul 2>&1 unterdrueckt Ausgabe.</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Admin-Check</div><div class="step-code">@echo off
+net session >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo Bitte als Administrator starten!
+    pause
+    exit /b 1
+)
+echo Admin-Rechte vorhanden.</div></div></li>
+        </ol>`},
+      {label:'FOR-Schleifen',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Dateien durchlaufen</div><div class="step-code">@echo off
+:: Alle .log Dateien im Ordner
+for %%f in (C:\Logs\*.log) do (
+    echo Verarbeite: %%f
+    copy "%%f" "C:\Archiv\" /y
+)
+
+:: Alle Unterordner durchsuchen (/r = rekursiv)
+for /r "C:\Daten" %%f in (*.txt) do (
+    echo Gefunden: %%f
+)</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Zahlen-Schleife</div><div class="step-code">@echo off
+:: Zahlen 1 bis 10
+for /l %%i in (1,1,10) do (
+    echo Durchlauf %%i
+)
+
+:: Countdown 10 bis 1 (Schritt -1)
+for /l %%i in (10,-1,1) do (
+    echo %%i...
+    timeout /t 1 /nobreak >nul
+)
+echo Los!</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Befehlsausgabe verarbeiten</div><div class="step-code">@echo off
+:: IP-Adresse auslesen
+for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr "IPv4"') do (
+    set IP=%%a
+)
+echo Meine IP: %IP%
+
+:: Alle laufenden Dienste
+for /f "skip=1 tokens=1" %%a in ('sc query state= running') do (
+    echo Dienst: %%a
+)</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-funktionen',emoji:'🔧',title:'Funktionen, Fehlerbehandlung & Parameter',
+    subtitle:'Unterprogramme, Rueckgabewerte, Parameter verarbeiten, robuste Skripte',
+    tabs:[
+      {label:'Parameter',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Parameter auslesen</div><div class="step-code">@echo off
+:: Parameter: %1 = erster, %2 = zweiter usw.
+:: Aufruf: meinskript.bat "Server01" "80"
+
+set Server=%~1
+set Port=%~2
+
+if "%Server%"=="" (
+    echo Verwendung: %~nx0 Server Port
+    exit /b 1
+)
+
+echo Server: %Server%
+echo Port: %Port%
+
+:: Alle Parameter:
+echo Alle: %*
+echo Anzahl simulieren via shift...</div><div class="step-note">&#128161; %~1 entfernt Anfuehrungszeichen. %~nx0 = Dateiname des Skripts. %~dp0 = Verzeichnis des Skripts.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Parameter-Schleife (alle Parameter)</div><div class="step-code">@echo off
+:loop
+if "%~1"=="" goto done
+    echo Verarbeite: %~1
+    shift
+    goto loop
+:done
+echo Fertig!</div></div></li>
+        </ol>`},
+      {label:'Unterprogramme',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Funktionen mit CALL und Labels</div><div class="step-code">@echo off
+call :Log "Skript gestartet"
+call :Backup "C:\Daten" "D:\Backup"
+call :Log "Fertig"
+exit /b 0
+
+:: === FUNKTIONEN ===
+:Log
+echo [%TIME%] %~1
+>> C:\skript.log echo [%DATE% %TIME%] %~1
+exit /b 0
+
+:Backup
+set Quelle=%~1
+set Ziel=%~2
+echo Kopiere %Quelle% nach %Ziel%...
+robocopy "%Quelle%" "%Ziel%" /MIR /LOG:C:\backup.log
+exit /b %ERRORLEVEL%</div><div class="step-note">&#128161; exit /b beendet nur die Funktion, nicht das Skript. exit /b %ERRORLEVEL% gibt den Fehlercode weiter.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Rueckgabewert simulieren</div><div class="step-code">@echo off
+call :GetFreeSpace C: SpaceGB
+echo Freier Speicher: %SpaceGB% GB
+exit /b 0
+
+:GetFreeSpace
+for /f "tokens=3" %%a in ('dir %~1 ^| findstr /i "bytes free"') do set %~2=%%a
+exit /b 0</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Vollstaendiges Praxis-Skript</div><div class="step-code">@echo off
+title Backup-Skript v1.0
+color 0A
+
+:: === KONFIGURATION ===
+set Quelle=C:\Daten
+set Ziel=D:\Backup
+set LogDatei=C:\Logs\backup_%DATE:~-4,4%%DATE:~-7,2%%DATE:~0,2%.log
+
+:: === CHECKS ===
+net session >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo FEHLER: Bitte als Admin starten!
+    pause & exit /b 1
+)
+
+if not exist "%Quelle%" (
+    echo FEHLER: Quelle nicht gefunden: %Quelle%
+    pause & exit /b 1
+)
+
+if not exist "%Ziel%" mkdir "%Ziel%"
+
+:: === BACKUP ===
+echo [%TIME%] Starte Backup...
+robocopy "%Quelle%" "%Ziel%" /MIR /R:3 /W:5 /LOG:"%LogDatei%"
+
+if %ERRORLEVEL% LEQ 7 (
+    echo [%TIME%] Backup ERFOLGREICH!
+) else (
+    echo [%TIME%] Backup FEHLGESCHLAGEN! Code: %ERRORLEVEL%
+)
+pause</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-netzwerk',emoji:'🌐',title:'Netzwerk-Aufgaben automatisieren',
+    subtitle:'Pingen, IP-Konfiguration, Laufwerke verbinden, Port-Pruefen per Batch',
+    tabs:[
+      {label:'Netzwerk-Skripte',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Server-Liste anpingen</div><div class="step-code">@echo off
+set Server=DC01 WEB01 SQL01 FILE01
+
+for %%s in (%Server%) do (
+    ping -n 1 -w 500 %%s >nul
+    if %ERRORLEVEL% EQU 0 (
+        echo [OK]   %%s
+    ) else (
+        echo [FAIL] %%s
+    )
+)
+pause</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Netzlaufwerk verbinden</div><div class="step-code">@echo off
+:: Laufwerk trennen falls vorhanden
+net use Z: /delete /y >nul 2>&1
+
+:: Verbinden
+net use Z: \\SERVER01\Freigabe /persistent:yes
+if %ERRORLEVEL% EQU 0 (
+    echo Laufwerk Z: verbunden
+) else (
+    echo FEHLER beim Verbinden!
+)</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">IP-Adresse und DNS erneuern</div><div class="step-code">@echo off
+echo Netzwerk-Reset...
+ipconfig /release
+ipconfig /flushdns
+ipconfig /renew
+echo Fertig!
+ipconfig /all | findstr "IPv4"
+pause</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Subnetz scannen (einfach)</div><div class="step-code">@echo off
+echo Scanne 192.168.1.1 bis 192.168.1.254...
+for /l %%i in (1,1,254) do (
+    ping -n 1 -w 100 192.168.1.%%i >nul
+    if not errorlevel 1 echo Online: 192.168.1.%%i
+)
+echo Scan abgeschlossen.
+pause</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-autostart',emoji:'⚡',title:'Autostart, Dienste & geplante Aufgaben',
+    subtitle:'Batch-Skripte automatisch starten, Dienste verwalten, Tasks planen',
+    tabs:[
+      {label:'Automatisierung',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Geplante Aufgabe aus Batch erstellen</div><div class="step-code">@echo off
+:: Taegliches Backup um 23:00 Uhr einrichten
+schtasks /create ^
+  /tn "NachtBackup" ^
+  /tr "C:\Scripts\backup.bat" ^
+  /sc DAILY ^
+  /st 23:00 ^
+  /ru SYSTEM ^
+  /f
+
+echo Aufgabe erstellt!
+schtasks /query /tn "NachtBackup"</div><div class="step-note">&#128161; /ru SYSTEM = laeuft als Systemkonto (kein Login noetig). /f = ueberschreibt falls vorhanden.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Dienst starten/stoppen per Batch</div><div class="step-code">@echo off
+set Dienst=Spooler
+
+sc query %Dienst% | findstr "RUNNING" >nul
+if %ERRORLEVEL% EQU 0 (
+    echo %Dienst% laeuft bereits
+) else (
+    echo Starte %Dienst%...
+    net start %Dienst%
+)
+
+:: Warten bis Dienst laeuft:
+:wait
+sc query %Dienst% | findstr "RUNNING" >nul
+if %ERRORLEVEL% NEQ 0 (
+    timeout /t 2 /nobreak >nul
+    goto wait
+)
+echo Dienst laeuft!</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Batch-Skript im Autostart</div><div class="step-code">:: Methode 1: Autostart-Ordner (nur aktueller Benutzer)
+copy meinskript.bat "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
+
+:: Methode 2: Registry (alle Benutzer, Admin noetig)
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "MeinSkript" /t REG_SZ /d "C:\Scripts\meinskript.bat" /f
+
+:: Methode 3: Geplante Aufgabe bei Login
+schtasks /create /tn "LoginSkript" /tr "C:\Scripts\meinskript.bat" /sc ONLOGON /ru %USERNAME% /f</div></div></li>
+        </ol>`}
+    ]
+  },
+];
+
+
+// -- TS GUIDE DATA --
 const TS_GUIDES = [
   {
     id:'ts-netzwerk',emoji:'🌐',title:'Kein Internet / Netzwerkprobleme',
@@ -2056,7 +3252,7 @@ Set-NetConnectionProfile -InterfaceAlias "Ethernet" -NetworkCategory Private</di
   },
 ];
 
-// ── POWERSHELL SCRIPTING GUIDES ──
+// -- POWERSHELL SCRIPTING GUIDES --
 const PS_GUIDES = [
   {
     id:'ps-grundlagen',emoji:'📝',title:'PowerShell Skript schreiben — Grundlagen',
@@ -2586,7 +3782,7 @@ Register-ScheduledTask -TaskName "DailyServerReport" -Action $action -Trigger $t
   },
 ];
 
-// ── AD GUIDE DATA ──
+// -- AD GUIDE DATA --
 const AD_GUIDES = [
   {
     id:'user-create', emoji:'👤', title:'Benutzer anlegen',
@@ -2921,7 +4117,7 @@ nltest /dsgetdc:firma.local</div></div></li>
     ]
   },
 
-  // ═══ NEUE GUIDES ═══
+  // === NEUE GUIDES ===
 
   {
     id:'domain-create', emoji:'🌐', title:'Neue Domaene erstellen (AD DS installieren)',
@@ -3415,16 +4611,17 @@ quit</div><div class="step-note">&#128161; Authoritative Restore verhindert dass
   },
 ];
 
-// ── GUIDE STATE ──
+// -- GUIDE STATE --
 let openGuide = null;
 let guideActiveTabs = {};
 
 function toggleGuide(id, event) {
   if (event && event.target.closest('.guide-body')) return;
   openGuide = openGuide === id ? null : id;
-  if (activeTab === 'ad-guide') renderGuide(AD_GUIDES, 'AD Anleitungen', '#fb923c', '&#128218;');
-  else if (activeTab === 'ts-guide') renderGuide(TS_GUIDES, 'TS Anleitungen', '#f87171', '&#128681;');
-  else if (activeTab === 'ps-guide') renderGuide(PS_GUIDES, 'PS Scripting Guide', '#c084fc', '&#128218;');
+  if (activeTab === 'ad-guide')    renderGuide(AD_GUIDES,    'AD Anleitungen',    '#fb923c', '&#128218;');
+  else if (activeTab === 'ts-guide')    renderGuide(TS_GUIDES,    'TS Anleitungen',    '#f87171', '&#128681;');
+  else if (activeTab === 'ps-guide')    renderGuide(PS_GUIDES,    'PS Scripting Guide','#c084fc', '&#128218;');
+  else if (activeTab === 'batch-guide') renderGuide(BATCH_GUIDES, 'Batch Scripting',   '#fbbf24', '&#128203;');
 }
 
 // Add copy buttons to all .step-code elements that don't have one yet
@@ -3459,11 +4656,11 @@ function switchGuideTab(guideId, tabIdx) {
 function renderGuide(guides, title, color, icon) {
   const content = document.getElementById('content');
   document.getElementById('visCount').textContent = guides.length;
-  document.getElementById('topbarTitle').innerHTML = `<span>&gt;</span> ${title}`;
+  document.getElementById('topbarTitle').innerHTML = `<span>&gt;</span> ${title}`; document.getElementById('visCount').textContent = guides.length;
 
   let html = `<div class="cat-header">
     <div class="cat-header-icon" style="background:${color}22;border:1px solid ${color}55">${icon}</div>
-    <div class="cat-header-text"><h2>${title}</h2><p>${guides.length} Anleitungen &mdash; Klicke eine Karte um sie zu oeffnen</p></div>
+    <div class="cat-header-text"><h2>${title}</h2><p>${guides.length} ${currentLang==='en'?'Guides — click a card to open':'Anleitungen — Klicke eine Karte um sie zu oeffnen'}</p></div>
   </div><div class="guide-grid">`;;
 
   guides.forEach(g => {
@@ -3499,7 +4696,124 @@ function renderGuide(guides, title, color, icon) {
   requestAnimationFrame(() => addStepCopyButtons(content));
 }
 
-// ── MOBILE SIDEBAR ──
+// -- SPRACHE (DE/EN) --
+let currentLang = localStorage.getItem('wincmd_lang') || 'de';
+const EN_LABELS = {
+  'alle':'All Commands','dateisystem':'File System','netzwerk':'Network','system':'System',
+  'prozesse':'Processes','benutzer':'Users','daten':'Data & Text','powershell':'PowerShell+',
+  'ad':'Active Directory','ad-guide':'AD Guides','dns':'DNS Server','run':'Win+R Cmds',
+  'ts':'Troubleshooting','ts-guide':'TS Guides','sicherheit':'Security','azure':'Azure / Cloud',
+  'virt':'Virtualization','paket':'Pkg Manager','iis':'IIS & Web','batch-guide':'Batch Guide',
+  'ps-guide':'PS Guide','favoriten':'Favorites','verlauf':'History','eigene':'Custom',
+};
+const EN_DESC = {
+  'alle':'Complete overview','dateisystem':'Files, folders, copy, delete',
+  'netzwerk':'IP, DNS, connections, firewall','system':'Diagnosis, config, services',
+  'prozesse':'Start, stop, monitor tasks','benutzer':'Accounts, groups, permissions',
+  'daten':'Search, filter, redirect, sort','powershell':'PowerShell-only commands',
+  'ad':'Users, groups, GPO, OU, LDAP','ad-guide':'Step-by-step guides',
+  'dns':'Zones, records, diagnosis','run':'Run dialog shortcuts',
+  'ts':'Diagnostic commands','ts-guide':'Step-by-step solutions',
+  'sicherheit':'BitLocker, certs, Defender','azure':'Az PowerShell, CLI, Entra ID',
+  'virt':'Hyper-V, WSL, Docker','paket':'winget, choco, scoop',
+  'iis':'iisreset, appcmd, SSL','batch-guide':'Batch scripting guides',
+  'ps-guide':'Scripting, modules, remoting','favoriten':'Bookmarked commands',
+  'verlauf':'Recently viewed','eigene':'Custom entries',
+};
+
+function getCatLabel(catId) {
+  if (currentLang === 'en' && EN_LABELS[catId]) return EN_LABELS[catId];
+  const c = CATS.find(x => x.id === catId);
+  return c ? c.label : catId;
+}
+function getCatDesc(catId) {
+  if (currentLang === 'en' && EN_DESC[catId]) return EN_DESC[catId];
+  const c = CATS.find(x => x.id === catId);
+  return c ? c.desc : '';
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'de' ? 'en' : 'de';
+  localStorage.setItem('wincmd_lang', currentLang);
+  const btn = document.getElementById('langBtn');
+  if (btn) btn.textContent = currentLang === 'de' ? '🌐 DE' : '🌐 EN';
+  buildNav(); buildBottomNav(); render();
+}
+
+// -- FAVORITEN --
+const FAV_KEY = 'wincmd_favs_v1';
+let favorites = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]'));
+
+function saveFavs() { localStorage.setItem(FAV_KEY, JSON.stringify([...favorites])); }
+
+function toggleFav(cmdName, event) {
+  event.stopPropagation();
+  if (favorites.has(cmdName)) favorites.delete(cmdName);
+  else favorites.add(cmdName);
+  saveFavs();
+  buildNav(); render();
+}
+
+function isFav(name) { return favorites.has(name); }
+
+// -- VERLAUF --
+const HIST_KEY = 'wincmd_hist_v1';
+const MAX_HIST = 30;
+let verlauf = JSON.parse(localStorage.getItem(HIST_KEY) || '[]');
+
+function addVerlauf(cmdName) {
+  verlauf = verlauf.filter(x => x !== cmdName);
+  verlauf.unshift(cmdName);
+  if (verlauf.length > MAX_HIST) verlauf = verlauf.slice(0, MAX_HIST);
+  localStorage.setItem(HIST_KEY, JSON.stringify(verlauf));
+}
+
+// -- EXPORT --
+function showExportModal() { document.getElementById('exportModal').style.display = 'flex'; }
+function hideExportModal() { document.getElementById('exportModal').style.display = 'none'; }
+
+function downloadFile(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  hideExportModal();
+}
+
+function exportData(format) {
+  const allCmds = [...CMDS, ...customCmds];
+  const filtered = getFiltered().map(c => allCmds.find(x => x.name === c.name) || c);
+
+  if (format === 'markdown') {
+    const cat = CATS.find(c => c.id === activeTab) || { label: 'Alle Befehle' };
+    let md = `# ${getCatLabel(activeTab)}\n\n| ${currentLang==='en'?'Command':'Befehl'} | ${currentLang==='en'?'Description':'Beschreibung'} | Typ |\n|--------|-------------|-----|\n`;
+    filtered.forEach(c => { md += `| \`${c.name}\` | ${c.short} | ${c.typ.toUpperCase()} |\n`; });
+    md += `\n_Exportiert von WinCMD Ref — ${new Date().toLocaleDateString('de-DE')}_\n`;
+    downloadFile(md, `wincmd_${activeTab}.md`, 'text/markdown');
+  } else if (format === 'csv') {
+    let csv = 'Name;Kategorie;Typ;Beschreibung;Syntax;Tipp\n';
+    allCmds.filter(c => c.cat !== 'run').forEach(c => {
+      const row = [c.name, c.cat, c.typ, c.short, c.syntax||'', c.tip||'']
+        .map(v => `"${String(v).replace(/"/g,'""')}"`).join(';');
+      csv += row + '\n';
+    });
+    downloadFile(csv, 'wincmd_alle_befehle.csv', 'text/csv;charset=utf-8');
+  } else if (format === 'json') {
+    const data = allCmds.map(c => ({ name:c.name, cat:c.cat, typ:c.typ, short:c.short, syntax:c.syntax, tip:c.tip }));
+    downloadFile(JSON.stringify(data, null, 2), 'wincmd_befehle.json', 'application/json');
+  } else if (format === 'favoriten') {
+    const favCmds = allCmds.filter(c => favorites.has(c.name));
+    let md = `# ⭐ Meine Favoriten\n\n| Befehl | Beschreibung | Typ |\n|--------|-------------|-----|\n`;
+    favCmds.forEach(c => { md += `| \`${c.name}\` | ${c.short} | ${c.typ.toUpperCase()} |\n`; });
+    md += `\n_${favCmds.length} Favoriten — exportiert ${new Date().toLocaleDateString('de-DE')}_\n`;
+    downloadFile(md, 'wincmd_favoriten.md', 'text/markdown');
+  }
+}
+
+// -- MOBILE SIDEBAR --
 function openSidebar() {
   document.getElementById('sidebar').classList.add('open');
   document.getElementById('sidebar-overlay').classList.add('visible');
@@ -3511,7 +4825,7 @@ function closeSidebar() {
   document.body.style.overflow = '';
 }
 
-// ── BOTTOM NAV ──
+// -- BOTTOM NAV --
 function buildBottomNav() {
   const inner = document.getElementById('bottom-nav-inner');
   inner.innerHTML = '';
@@ -3519,7 +4833,7 @@ function buildBottomNav() {
     const el = document.createElement('div');
     el.className = 'bnav-item' + (cat.id === activeTab ? ' active' : '');
     el.dataset.id = cat.id;
-    el.innerHTML = `<span class="bnav-icon">${cat.icon}</span><span class="bnav-label">${cat.label.replace(' Befehle','').replace('Alle','Alle')}</span>`;
+    el.innerHTML = `<span class="bnav-icon">${cat.icon}</span><span class="bnav-label">${getCatLabel(cat.id)}</span>`;
     el.onclick = () => { selectTab(cat.id); };
     inner.appendChild(el);
   });
@@ -3530,15 +4844,18 @@ function buildNav() {
   nav.innerHTML = '';
   CATS.forEach(cat => {
     const count = cat.id === 'alle' ? CMDS.length + customCmds.length
-      : cat.id === 'ad-guide' ? AD_GUIDES.length
-      : cat.id === 'ts-guide' ? TS_GUIDES.length
-      : cat.id === 'ps-guide' ? PS_GUIDES.length
-      : cat.id === 'eigene' ? customCmds.length
-      : cat.id === 'powershell' ? CMDS.filter(c => c.typ === 'ps' && c.cat !== 'ad' && c.cat !== 'dns').length
+      : cat.id === 'ad-guide'    ? AD_GUIDES.length
+      : cat.id === 'ts-guide'    ? TS_GUIDES.length
+      : cat.id === 'ps-guide'    ? PS_GUIDES.length
+      : cat.id === 'batch-guide' ? BATCH_GUIDES.length
+      : cat.id === 'favoriten'   ? favorites.size
+      : cat.id === 'verlauf'     ? verlauf.length
+      : cat.id === 'eigene'      ? customCmds.length
+      : cat.id === 'powershell'  ? CMDS.filter(c => c.typ === 'ps' && c.cat !== 'ad' && c.cat !== 'dns').length
       : CMDS.filter(c => c.cat === cat.id).length;
     const el = document.createElement('div');
     el.className = 'sidebar-item' + (cat.id === activeTab ? ' active' : '');
-    el.innerHTML = `<span class="cat-icon">${cat.icon}</span><span>${cat.label}</span><span class="cat-count">${count}</span>`;
+    el.innerHTML = `<span class="cat-icon">${cat.icon}</span><span>${getCatLabel(cat.id)}</span><span class="cat-count">${count}</span>`;
     el.onclick = () => selectTab(cat.id);
     nav.appendChild(el);
   });
@@ -3586,9 +4903,14 @@ function badgeHtml(typ, cat) {
 }
 
 function toggleCard(idx, event) {
-  // Nur schliessen wenn Klick auf den Kopf-Bereich (nicht auf Detail-Inhalt)
   if (event && event.target.closest('.cmd-detail')) return;
-  openCard = openCard === idx ? null : idx;
+  const wasOpen = openCard === idx;
+  openCard = wasOpen ? null : idx;
+  // Verlauf tracken wenn Karte geoeffnet wird
+  if (!wasOpen) {
+    const all = [...CMDS, ...customCmds];
+    if (all[idx]) { addVerlauf(all[idx].name); }
+  }
   render();
 }
 
@@ -3666,7 +4988,8 @@ function cardHtml(c, globalIdx) {
     if (badges.length) winBadges = `<div class="run-wins">${badges.join('')}</div>`;
   }
   const isCustom = c._custom;
-  return `<div class="cmd-card${isOpen ? ' open' : ''}${isCustom?' custom-card':''}" onclick="toggleCard(${globalIdx}, event)">
+  const isFaved = isFav(c.name);
+  return `<div class="cmd-card${isOpen ? ' open' : ''}${isCustom?' custom-card':''}${isFaved?' fav-card':''}" onclick="toggleCard(${globalIdx}, event)">
     <div class="cmd-head">
       <div class="cmd-name-wrap">
         <div class="cmd-name">${hl(c.name, q)}${isCustom?'<span class="custom-badge">Eigener</span>':''}</div>
@@ -3674,8 +4997,9 @@ function cardHtml(c, globalIdx) {
         <div class="cmd-short">${hl(c.short, q)}</div>
       </div>
       ${badgeHtml(c.typ, c.cat)}
-      <div style="display:flex;gap:4px;align-items:center;flex-shrink:0">
-        ${isCustom ? `<button class="icon-btn del-btn" onclick="event.stopPropagation();deleteCustomCmd(${globalIdx})" title="Loeschen">✕</button>` : ''}
+      <div style="display:flex;gap:3px;align-items:center;flex-shrink:0">
+        <button class="fav-btn${isFaved?' active':''}" onclick="toggleFav('${c.name.replace(/'/g,String.fromCharCode(92)+"'")}',event)" title="${isFaved?'Favorit entfernen':'Als Favorit merken'}">&#11088;</button>
+        ${isCustom ? `<button class="icon-btn del-btn" onclick="event.stopPropagation();deleteCustomCmd(${globalIdx})" title="Loeschen">&#10005;</button>` : ''}
         <div class="cmd-arrow">&#9660;</div>
       </div>
     </div>${detail}
@@ -3684,6 +5008,10 @@ function cardHtml(c, globalIdx) {
 
 function getFiltered() {
   const all = [...CMDS, ...customCmds];
+  if (activeTab === 'favoriten') return all.filter(c => favorites.has(c.name));
+  if (activeTab === 'verlauf') {
+    return verlauf.map(name => all.find(c => c.name === name)).filter(Boolean);
+  }
   return all.filter(c => {
     const matchTab = activeTab === 'alle'
       || c.cat === activeTab
@@ -3695,7 +5023,7 @@ function getFiltered() {
   });
 }
 
-// ── EIGENE BEFEHLE ──
+// -- EIGENE BEFEHLE --
 let customCmds = [];
 const CUSTOM_KEY = 'wincmd_custom_v1';
 
@@ -3759,12 +5087,41 @@ function saveNewCmd() {
 }
 
 function render() {
-  // AD-Guide: eigener Render-Pfad
-  if (activeTab === 'ad-guide') { renderGuide(AD_GUIDES, 'AD Anleitungen', '#fb923c', '&#128218;'); return; }
-  // TS-Guide: eigener Render-Pfad
-  if (activeTab === 'ts-guide') { renderGuide(TS_GUIDES, 'TS Anleitungen', '#f87171', '&#128681;'); return; }
-  // PS-Guide: eigener Render-Pfad
-  if (activeTab === 'ps-guide') { renderGuide(PS_GUIDES, 'PS Scripting Guide', '#c084fc', '&#128218;'); return; }
+  if (activeTab === 'ad-guide')    { renderGuide(AD_GUIDES,    'AD Anleitungen',    '#fb923c', '&#128218;'); return; }
+  if (activeTab === 'ts-guide')    { renderGuide(TS_GUIDES,    'TS Anleitungen',    '#f87171', '&#128681;'); return; }
+  if (activeTab === 'ps-guide')    { renderGuide(PS_GUIDES,    'PS Scripting Guide','#c084fc', '&#128218;'); return; }
+  if (activeTab === 'batch-guide') { renderGuide(BATCH_GUIDES, 'Batch Scripting',   '#fbbf24', '&#128203;'); return; }
+
+  // Favoriten
+  if (activeTab === 'favoriten') {
+    const favCmds = [...CMDS,...customCmds].filter(c => favorites.has(c.name));
+    const allC = [...CMDS,...customCmds];
+    document.getElementById('visCount').textContent = favCmds.length;
+    document.getElementById('topbarTitle').innerHTML = '<span>&gt;</span> &#11088; Favoriten';
+    let html = `<div class="cat-header">
+      <div class="cat-header-icon" style="background:#fbbf2422;border:1px solid #fbbf2455">&#11088;</div>
+      <div class="cat-header-text"><h2>${getCatLabel('favoriten')}</h2><p>${favCmds.length} ${currentLang==='en'?'saved commands':'gemerkte Befehle'}</p></div>
+    </div>`;
+    if (!favCmds.length) html += `<div class="empty"><div class="e-icon">&#11088;</div><p>Noch keine Favoriten.<br>Klicke auf den Stern &#11088; auf einer Karte um sie zu merken.</p></div>`;
+    else html += `<div class="cmd-grid">${favCmds.map(c=>cardHtml(c,allC.indexOf(c))).join('')}</div>`;
+    document.getElementById('content').innerHTML = html; return;
+  }
+
+  // Verlauf
+  if (activeTab === 'verlauf') {
+    const allC = [...CMDS,...customCmds];
+    const histCmds = verlauf.map(n=>allC.find(c=>c.name===n)).filter(Boolean);
+    document.getElementById('visCount').textContent = histCmds.length;
+    document.getElementById('topbarTitle').innerHTML = '<span>&gt;</span> &#128336; Verlauf';
+    let html = `<div class="cat-header">
+      <div class="cat-header-icon" style="background:#94a3b822;border:1px solid #94a3b855">&#128336;</div>
+      <div class="cat-header-text"><h2>${getCatLabel('verlauf')}</h2><p>${currentLang==='en'?'Recently viewed (max.':'Zuletzt angesehene (max.'} ${MAX_HIST})</p></div>
+      <button onclick="verlauf=[];localStorage.removeItem('${HIST_KEY}');render();" style="margin-left:auto;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;color:var(--text2);cursor:pointer;font-size:11px;">Leeren</button>
+    </div>`;
+    if (!histCmds.length) html += `<div class="empty"><div class="e-icon">&#128336;</div><p>Noch kein Verlauf.<br>Oeffne einen Befehl um ihn hier zu sehen.</p></div>`;
+    else html += `<div class="cmd-grid">${histCmds.map(c=>cardHtml(c,allC.indexOf(c))).join('')}</div>`;
+    document.getElementById('content').innerHTML = html; return;
+  }
 
   const filtered = getFiltered();
   const content = document.getElementById('content');
@@ -3787,7 +5144,7 @@ function render() {
       html += `<div class="section-block">
         <div class="section-title" style="border-left-color:${cat.color}">
           <span class="section-title-icon">${cat.icon}</span>
-          <div><div class="section-title-name">${cat.label}</div><div class="section-title-desc">${cat.desc}</div></div>
+          <div><div class="section-title-name">${getCatLabel(cat.id)}</div><div class="section-title-desc">${getCatDesc(cat.id)}</div></div>
           <span class="section-title-count">${catCmds.length} Befehle</span>
         </div>
         <div class="cmd-grid">${catCmds.map(c => cardHtml(c, CMDS.indexOf(c))).join('')}</div>
@@ -3797,7 +5154,7 @@ function render() {
     html += `<div class="section-block">
       <div class="section-title" style="border-left-color:#fb923c;cursor:pointer" onclick="selectTab('ad-guide')">
         <span class="section-title-icon">&#128218;</span>
-        <div><div class="section-title-name">AD Anleitungen</div><div class="section-title-desc">Schritt-fuer-Schritt Wege &amp; Tipps — klicken zum Oeffnen</div></div>
+        <div><div class="section-title-name">${getCatLabel('ad-guide')}</div><div class="section-title-desc">${getCatDesc('ad-guide')} — ${currentLang==='en'?'click to open':'klicken zum Oeffnen'}</div></div>
         <span class="section-title-count">${AD_GUIDES.length} Guides</span>
       </div>
     </div>`;
@@ -3807,7 +5164,7 @@ function render() {
       html += `<div class="section-block">
         <div class="section-title" style="border-left-color:#f87171;cursor:pointer" onclick="selectTab('ts')">
           <span class="section-title-icon">&#128295;</span>
-          <div><div class="section-title-name">Troubleshooting</div><div class="section-title-desc">Diagnose-Befehle fuer haeufige Probleme</div></div>
+          <div><div class="section-title-name">${getCatLabel('ts')}</div><div class="section-title-desc">${getCatDesc('ts')}</div></div>
           <span class="section-title-count">${tsCmds.length} Befehle</span>
         </div>
         <div class="cmd-grid">${tsCmds.map(c => cardHtml(c, [...CMDS,...customCmds].indexOf(c))).join('')}</div>
@@ -3817,7 +5174,7 @@ function render() {
     html += `<div class="section-block">
       <div class="section-title" style="border-left-color:#f87171;cursor:pointer" onclick="selectTab('ts-guide')">
         <span class="section-title-icon">&#128681;</span>
-        <div><div class="section-title-name">TS Anleitungen</div><div class="section-title-desc">Schritt-fuer-Schritt Problemloesungen — klicken zum Oeffnen</div></div>
+        <div><div class="section-title-name">${getCatLabel('ts-guide')}</div><div class="section-title-desc">${getCatDesc('ts-guide')}</div></div>
         <span class="section-title-count">${TS_GUIDES.length} Guides</span>
       </div>
     </div>`;
@@ -3827,7 +5184,7 @@ function render() {
       html += `<div class="section-block">
         <div class="section-title" style="border-left-color:#fb923c;cursor:pointer" onclick="selectTab('sicherheit')">
           <span class="section-title-icon">&#128274;</span>
-          <div><div class="section-title-name">Sicherheit</div><div class="section-title-desc">BitLocker, Zertifikate, Defender, AppLocker</div></div>
+          <div><div class="section-title-name">${getCatLabel('sicherheit')}</div><div class="section-title-desc">${getCatDesc('sicherheit')}</div></div>
           <span class="section-title-count">${sichCmds.length} Befehle</span>
         </div>
         <div class="cmd-grid">${sichCmds.slice(0,6).map(c=>cardHtml(c,[...CMDS,...customCmds].indexOf(c))).join('')}</div>
@@ -3839,7 +5196,7 @@ function render() {
       html += `<div class="section-block">
         <div class="section-title" style="border-left-color:#38bdf8;cursor:pointer" onclick="selectTab('azure')">
           <span class="section-title-icon">&#9729;</span>
-          <div><div class="section-title-name">Azure / Cloud</div><div class="section-title-desc">Az PowerShell, Azure CLI, Entra ID</div></div>
+          <div><div class="section-title-name">${getCatLabel('azure')}</div><div class="section-title-desc">${getCatDesc('azure')}</div></div>
           <span class="section-title-count">${azCmds.length} Befehle</span>
         </div>
         <div class="cmd-grid">${azCmds.slice(0,4).map(c=>cardHtml(c,[...CMDS,...customCmds].indexOf(c))).join('')}</div>
@@ -3851,7 +5208,7 @@ function render() {
       html += `<div class="section-block">
         <div class="section-title" style="border-left-color:#a3e635;cursor:pointer" onclick="selectTab('virt')">
           <span class="section-title-icon">&#128011;</span>
-          <div><div class="section-title-name">Virtualisierung</div><div class="section-title-desc">Hyper-V, WSL, Docker, Container</div></div>
+          <div><div class="section-title-name">${getCatLabel('virt')}</div><div class="section-title-desc">${getCatDesc('virt')}</div></div>
           <span class="section-title-count">${virtCmds.length} Befehle</span>
         </div>
         <div class="cmd-grid">${virtCmds.slice(0,4).map(c=>cardHtml(c,[...CMDS,...customCmds].indexOf(c))).join('')}</div>
@@ -3861,7 +5218,7 @@ function render() {
     html += `<div class="section-block">
       <div class="section-title" style="border-left-color:#c084fc;cursor:pointer" onclick="selectTab('ps-guide')">
         <span class="section-title-icon">&#128218;</span>
-        <div><div class="section-title-name">PS Scripting Guide</div><div class="section-title-desc">Anleitungen: Skripte, Module, Remoting — klicken zum Oeffnen</div></div>
+        <div><div class="section-title-name">${getCatLabel('ps-guide')}</div><div class="section-title-desc">${getCatDesc('ps-guide')}</div></div>
         <span class="section-title-count">${PS_GUIDES.length} Guides</span>
       </div>
     </div>`;
@@ -3871,7 +5228,7 @@ function render() {
       html += `<div class="section-block">
         <div class="section-title" style="border-left-color:#e879f9;cursor:pointer" onclick="selectTab('run')">
           <span class="section-title-icon">&#9654;</span>
-          <div><div class="section-title-name">Win+R Befehle</div><div class="section-title-desc">Ausfuehren-Dialog Shortcuts — klicken zum Oeffnen</div></div>
+          <div><div class="section-title-name">${getCatLabel('run')}</div><div class="section-title-desc">${getCatDesc('run')}</div></div>
           <span class="section-title-count">${runCmds.length} Befehle</span>
         </div>
       </div>`;
@@ -3916,10 +5273,10 @@ function render() {
   if (activeTab === 'eigene') {
     let html = `<div class="cat-header">
       <div class="cat-header-icon" style="background:#facc1522;border:1px solid #facc1555">&#10010;</div>
-      <div class="cat-header-text"><h2>Eigene Befehle</h2><p>${customCmds.length} selbst erstellte Eintraege &mdash; lokal gespeichert</p></div>
+      <div class="cat-header-text"><h2>${getCatLabel('eigene')}</h2><p>${customCmds.length} ${currentLang==='en'?'custom entries — saved locally':'selbst erstellte Eintraege — lokal gespeichert'}</p></div>
     </div>`;
     if (customCmds.length === 0) {
-      html += `<div class="empty"><div class="e-icon">&#128196;</div><p>Noch keine eigenen Befehle.<br>Klicke auf <b style="color:#facc15">+</b> unten rechts um einen hinzuzufuegen.</p></div>`;
+      html += `<div class="empty"><div class="e-icon">&#128196;</div><p>${currentLang==='en'?'No custom commands yet.<br>Click <b style="color:#facc15">+</b> bottom right to add one.':'Noch keine eigenen Befehle.<br>Klicke auf <b style="color:#facc15">+</b> unten rechts um einen hinzuzufuegen.'}</p></div>`;
     } else {
       const allCmds = [...CMDS, ...customCmds];
       html += `<div class="cmd-grid">${customCmds.map(c => cardHtml(c, allCmds.indexOf(c))).join('')}</div>`;
@@ -3932,10 +5289,10 @@ function render() {
   if (!searchQuery) {
     header = `<div class="cat-header">
       <div class="cat-header-icon" style="background:${activeCat.color}22;border:1px solid ${activeCat.color}55">${activeCat.icon}</div>
-      <div class="cat-header-text"><h2>${activeCat.label}</h2><p>${activeCat.desc} &mdash; ${filtered.length} Befehle</p></div>
+      <div class="cat-header-text"><h2>${getCatLabel(activeCat.id)}</h2><p>${getCatDesc(activeCat.id)} &mdash; ${filtered.length} ${currentLang==='en'?'commands':'Befehle'}</p></div>
     </div>`;
   } else {
-    header = `<div class="cat-header"><div class="cat-header-text"><h2>Suche: "${searchQuery}"</h2><p>${filtered.length} Treffer</p></div></div>`;
+    header = `<div class="cat-header"><div class="cat-header-text"><h2>${currentLang==='en'?'Search':'Suche'}: "${searchQuery}"</h2><p>${filtered.length} ${currentLang==='en'?'results':'Treffer'}</p></div></div>`;
   }
   content.innerHTML = header + `<div class="cmd-grid">${filtered.map(c => cardHtml(c, allCmds2.indexOf(c))).join('')}</div>`;
 }
@@ -3944,6 +5301,403 @@ loadCustomCmds();
 buildNav();
 buildBottomNav();
 render();
+// Language button init
+const lb = document.getElementById('langBtn');
+if (lb) lb.textContent = currentLang === 'de' ? '🌐 DE' : '🌐 EN';
+
+// == THEMES ==
+const THEMES = [
+  {id:'dark',      name:'Dark',       desc:'Standard dunkel',   bg:'#0a0c10', text:'#e2e8f0'},
+  {id:'light',     name:'Light',      desc:'Hell fuer tagsüber', bg:'#f8fafc', text:'#0f172a'},
+  {id:'matrix',    name:'Matrix',     desc:'Grüner Terminal',   bg:'#001100', text:'#00ff41'},
+  {id:'ocean',     name:'Ocean',      desc:'Tiefes Blau',       bg:'#0a1628', text:'#e0f2fe'},
+  {id:'purple',    name:'Purple',     desc:'Lila Nacht',        bg:'#0d0017', text:'#f0e6ff'},
+  {id:'solarized', name:'Solarized',  desc:'Klassisch',         bg:'#002b36', text:'#fdf6e3'},
+];
+let currentTheme = localStorage.getItem('wincmd_theme') || 'dark';
+
+function applyTheme(id) {
+  currentTheme = id;
+  localStorage.setItem('wincmd_theme', id);
+  document.documentElement.setAttribute('data-theme', id === 'dark' ? '' : id);
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', THEMES.find(t=>t.id===id)?.bg || '#0a0c10');
+  buildThemeGrid();
+}
+
+function buildThemeGrid() {
+  const g = document.getElementById('themeGrid');
+  if (!g) return;
+  g.innerHTML = THEMES.map(t => `
+    <button class="theme-btn${currentTheme===t.id?' active':''}" onclick="applyTheme('${t.id}')"
+      style="background:${t.bg};color:${t.text}">
+      <div class="theme-btn-name">${t.name}</div>
+      <div class="theme-btn-desc">${t.desc}</div>
+    </button>`).join('');
+}
+
+function showThemePicker() { buildThemeGrid(); document.getElementById('themePicker').style.display='flex'; }
+function hideThemePicker() { document.getElementById('themePicker').style.display='none'; }
+
+// Apply saved theme on load
+applyTheme(currentTheme);
+
+// == NOTIZEN ==
+const NOTIZ_KEY = 'wincmd_notizen_v1';
+let notizen = JSON.parse(localStorage.getItem(NOTIZ_KEY) || '{}');
+
+function saveNotiz(cmdName, text) {
+  if (text.trim()) notizen[cmdName] = text;
+  else delete notizen[cmdName];
+  localStorage.setItem(NOTIZ_KEY, JSON.stringify(notizen));
+  // Rebuild card to show/hide 📝 badge
+  buildNav();
+}
+
+function hasNotiz(name) { return !!notizen[name]; }
+
+// Inject notiz section into cmd-detail when card opens
+function injectNotiz(cmdName, detailEl) {
+  if (!detailEl) return;
+  const existing = detailEl.querySelector('.notiz-section');
+  if (existing) return;
+  const saved = notizen[cmdName] || '';
+  const sec = document.createElement('div');
+  sec.className = 'notiz-section';
+  sec.innerHTML = `<div class="notiz-label">&#128196; Meine Notiz</div>
+    <textarea class="notiz-area" placeholder="Notiz zu diesem Befehl..." onclick="event.stopPropagation()">${saved}</textarea>
+    <div class="notiz-saved" id="notiz-saved-${cmdName.replace(/[^a-z0-9]/gi,'_')}">&#10003; Gespeichert</div>`;
+  detailEl.appendChild(sec);
+  const ta = sec.querySelector('textarea');
+  ta.addEventListener('input', () => {
+    saveNotiz(cmdName, ta.value);
+    const s = document.getElementById('notiz-saved-' + cmdName.replace(/[^a-z0-9]/gi,'_'));
+    if (s) { s.style.display='block'; setTimeout(()=>s.style.display='none', 1500); }
+  });
+}
+
+// Patch toggleCard to inject notiz after render
+const _origToggleCard = toggleCard;
+function toggleCard(idx, event) {
+  if (event && event.target.closest('.cmd-detail')) return;
+  const wasOpen = openCard === idx;
+  openCard = wasOpen ? null : idx;
+  if (!wasOpen) {
+    const all = [...CMDS, ...customCmds];
+    if (all[idx]) addVerlauf(all[idx].name);
+  }
+  render();
+  if (!wasOpen && openCard === idx) {
+    requestAnimationFrame(() => {
+      const all = [...CMDS, ...customCmds];
+      const cmd = all[idx];
+      if (cmd) {
+        const cards = document.querySelectorAll('.cmd-card.open .cmd-detail');
+        cards.forEach(d => injectNotiz(cmd.name, d));
+      }
+    });
+  }
+}
+
+// == LERNKARTEN ==
+let lernQueue = [];
+let lernIdx = 0;
+let lernOk = 0;
+let lernFail = 0;
+let lernRevealed = false;
+
+function startLernmodus() {
+  const all = [...CMDS, ...customCmds].filter(c => c.cat !== 'run' && !c._custom);
+  // Aktive Kategorie oder alle
+  const pool = activeTab === 'alle' || ['favoriten','verlauf','eigene'].includes(activeTab)
+    ? all : all.filter(c => c.cat === activeTab);
+  if (!pool.length) { alert('Keine Befehle in dieser Kategorie!'); return; }
+  // Shuffle
+  lernQueue = [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(pool.length, 20));
+  lernIdx = 0; lernOk = 0; lernFail = 0;
+  document.getElementById('lernModal').style.display = 'flex';
+  renderLernCard();
+}
+
+function renderLernCard() {
+  const el = document.getElementById('lernContent');
+  if (lernIdx >= lernQueue.length) {
+    const pct = Math.round((lernOk / lernQueue.length) * 100);
+    el.innerHTML = `<div class="lern-done">
+      <div class="lern-done-emoji">${pct>=80?'🏆':pct>=50?'👍':'💪'}</div>
+      <div class="lern-done-title">${pct>=80?'Hervorragend!':pct>=50?'Gut gemacht!':'Weiter üben!'}</div>
+      <div class="lern-done-sub">✅ ${lernOk} richtig &nbsp;|&nbsp; ❌ ${lernFail} falsch &nbsp;|&nbsp; ${pct}% korrekt</div>
+      <button class="lern-restart" onclick="startLernmodus()">Nochmal (neue Karten)</button>
+    </div>`;
+    document.getElementById('lernFill').style.width = '100%';
+    document.getElementById('lernScore').textContent = lernOk+'/'+lernQueue.length;
+    return;
+  }
+  lernRevealed = false;
+  const c = lernQueue[lernIdx];
+  const pct = Math.round((lernIdx / lernQueue.length) * 100);
+  document.getElementById('lernFill').style.width = pct + '%';
+  document.getElementById('lernScore').textContent = (lernIdx+1)+'/'+lernQueue.length+' | ✅'+lernOk+' ❌'+lernFail;
+  el.innerHTML = `<div class="lern-card">
+    <div class="lern-cat-badge">${c.cat.toUpperCase()} · ${c.typ.toUpperCase()}</div>
+    <div class="lern-question">${c.name}</div>
+    <div class="lern-hint">${currentLang==='en'?'What does this command do?':'Was macht dieser Befehl?'}</div>
+    <div class="lern-answer" id="lernAns">
+      <div class="lern-answer-text">${c.short}</div>
+      <div class="lern-answer-syntax">${c.syntax||''}</div>
+      ${c.tip?`<div class="lern-answer-tip">💡 ${c.tip}</div>`:''}
+    </div>
+    <div class="lern-actions" id="lernActs">
+      <button class="lern-btn lern-btn-show" onclick="revealLern()">${currentLang==='en'?'Show Answer':'Antwort zeigen'}</button>
+      <button class="lern-btn lern-btn-skip" onclick="lernNext(0)">${currentLang==='en'?'Skip':'Überspringen'}</button>
+    </div>
+  </div>`;
+}
+
+function revealLern() {
+  if (lernRevealed) return;
+  lernRevealed = true;
+  const ans = document.getElementById('lernAns');
+  const acts = document.getElementById('lernActs');
+  if (ans) ans.classList.add('show');
+  if (acts) acts.innerHTML = `
+    <button class="lern-btn lern-btn-ok"   onclick="lernNext(1)">✅ ${currentLang==='en'?'Got it':'Gewusst'}</button>
+    <button class="lern-btn lern-btn-fail" onclick="lernNext(-1)">❌ ${currentLang==='en'?'Not yet':'Nicht gewusst'}</button>
+    <button class="lern-btn lern-btn-skip" onclick="lernNext(0)">Weiter</button>`;
+}
+
+function lernNext(result) {
+  if (result === 1) lernOk++;
+  if (result === -1) lernFail++;
+  lernIdx++;
+  renderLernCard();
+}
+
+function closeLernmodus() { document.getElementById('lernModal').style.display='none'; }
+
+// == KEYBOARD SHORTCUTS ==
+function showShortcuts() { document.getElementById('shortcutOverlay').style.display='flex'; }
+function hideShortcuts() { document.getElementById('shortcutOverlay').style.display='none'; }
+
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName.toLowerCase();
+  const inInput = ['input','textarea','select'].includes(tag);
+  const anyModal = ['themePicker','lernModal','shortcutOverlay','addModal','exportModal']
+    .some(id => document.getElementById(id)?.style.display === 'flex');
+
+  // Esc — close modals or clear search
+  if (e.key === 'Escape') {
+    if (anyModal) {
+      ['themePicker','lernModal','shortcutOverlay','addModal','exportModal']
+        .forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+      closeSidebar();
+    } else {
+      const s = document.getElementById('searchInput');
+      if (s && s.value) { s.value=''; handleSearch(''); }
+    }
+    return;
+  }
+  if (inInput || anyModal) return;
+
+  switch(e.key) {
+    case '/': e.preventDefault(); document.getElementById('searchInput')?.focus(); break;
+    case 't': case 'T': showThemePicker(); break;
+    case 'k': case 'K': startLernmodus(); break;
+    case 'e': case 'E': showExportModal(); break;
+    case 's': case 'S': shareLink(); break;
+    case 'l': case 'L': toggleLang(); break;
+    case 'f': case 'F': selectTab('favoriten'); break;
+    case '?': showShortcuts(); break;
+    default:
+      if (e.key >= '1' && e.key <= '9') {
+        const idx = parseInt(e.key) - 1;
+        if (CATS[idx]) selectTab(CATS[idx].id);
+      }
+  }
+});
+
+// == LINK TEILEN ==
+function shareLink() {
+  const params = new URLSearchParams();
+  if (activeTab !== 'alle') params.set('tab', activeTab);
+  if (searchQuery) params.set('q', searchQuery);
+  const url = location.href.split('?')[0] + (params.toString() ? '?' + params.toString() : '');
+
+  if (navigator.share) {
+    navigator.share({ title: 'WinCMD Ref', text: 'Windows Befehlsreferenz', url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.querySelector('[onclick="shareLink()"]');
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Kopiert!';
+        btn.style.color = '#22c55e';
+        setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2000);
+      }
+    });
+  }
+}
+
+// Read URL params on load
+(function() {
+  const p = new URLSearchParams(location.search);
+  if (p.get('tab')) { activeTab = p.get('tab'); }
+  if (p.get('q'))   { searchQuery = p.get('q'); const si = document.getElementById('searchInput'); if(si) si.value = searchQuery; }
+  if (activeTab !== 'alle' || searchQuery) { buildNav(); buildBottomNav(); render(); }
+})();
+
+// == SWIPE GESTEN ==
+(function() {
+  let sx = 0, sy = 0, st = 0;
+  const THRESH = 60, MAX_Y = 100, MAX_T = 450;
+
+  function onTouchStart(e) {
+    const t = e.target;
+    if (t.closest('.guide-tabs,.step-code,.code-box,.example-line,#bottom-nav,textarea,input,.modal-box')) return;
+    if (document.getElementById('sidebar').classList.contains('open')) return;
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+    st = Date.now();
+  }
+
+  function onTouchEnd(e) {
+    if (!sx) return;
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = Math.abs(e.changedTouches[0].clientY - sy);
+    const dt = Date.now() - st;
+    sx = 0;
+    if (Math.abs(dx) < THRESH || dy > MAX_Y || dt > MAX_T) return;
+
+    const ids = CATS.map(c => c.id);
+    const ci  = ids.indexOf(activeTab);
+    if (ci < 0) return;
+
+    if (dx < 0 && ci < ids.length - 1) { selectTab(ids[ci + 1]); showSwipeToast(); }
+    else if (dx > 0 && ci > 0)         { selectTab(ids[ci - 1]); showSwipeToast(); }
+  }
+
+  // Edge swipe from left = open sidebar
+  function onEdgeStart(e) {
+    if (e.touches[0].clientX < 22) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }
+  }
+  function onEdgeEnd(e) {
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = Math.abs(e.changedTouches[0].clientY - sy);
+    if (sx < 22 && dx > 60 && dy < 80 && Date.now() - st < 400) openSidebar();
+  }
+
+  const main = document.getElementById('main');
+  if (main) {
+    main.addEventListener('touchstart', onTouchStart, { passive: true });
+    main.addEventListener('touchend', onTouchEnd, { passive: true });
+  }
+  document.addEventListener('touchstart', onEdgeStart, { passive: true });
+  document.addEventListener('touchend', onEdgeEnd, { passive: true });
+})();
+
+function showSwipeToast() {
+  let el = document.getElementById('swipeToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'swipeToast';
+    el.style.cssText = 'position:fixed;bottom:calc(var(--bottom-nav-h) + 14px);left:50%;transform:translateX(-50%) translateY(8px);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:6px 16px;font-size:11px;color:var(--text);opacity:0;transition:opacity 0.2s,transform 0.2s;z-index:90;pointer-events:none;font-family:\'JetBrains Mono\',monospace;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+    document.body.appendChild(el);
+  }
+  el.textContent = getCatLabel(activeTab);
+  el.style.opacity = '1';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(-50%) translateY(8px)'; }, 1400);
+}
+
+// == WILLKOMMEN POPUP ==
+const WELCOME_KEY = 'wincmd_welcome_v1';
+
+function showWelcome() {
+  document.getElementById('welcomeModal').style.display = 'flex';
+}
+
+function closeWelcome(neverAgain = false) {
+  document.getElementById('welcomeModal').style.display = 'none';
+  if (neverAgain) localStorage.setItem(WELCOME_KEY, 'seen');
+  else sessionStorage.setItem(WELCOME_KEY, 'seen');
+}
+
+// Show welcome on first visit (not if already seen this session or permanently dismissed)
+(function() {
+  const perm = localStorage.getItem(WELCOME_KEY);
+  const sess = sessionStorage.getItem(WELCOME_KEY);
+  if (!perm && !sess) {
+    setTimeout(() => showWelcome(), 400);
+  }
+})();
+
+// == IMPRESSUM ==
+function showImpressum() {
+  document.getElementById('impressumModal').style.display = 'flex';
+  closeSidebar();
+}
+function hideImpressum() {
+  document.getElementById('impressumModal').style.display = 'none';
+}
+
+// == PWA MANIFEST ==
+(function() {
+  const manifest = {
+    name: 'WinCMD Referenz',
+    short_name: 'WinCMD',
+    description: 'Windows CMD & PowerShell Befehlsreferenz — 820+ Befehle, 53 Guides',
+    start_url: './',
+    display: 'standalone',
+    orientation: 'any',
+    background_color: '#0a0c10',
+    theme_color: '#0a0c10',
+    lang: 'de',
+    icons: [
+      {
+        src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="80" fill="#0078d4"/><text x="60" y="370" font-family="monospace" font-weight="bold" font-size="280" fill="white">&gt;_</text></svg>'),
+        sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable'
+      }
+    ]
+  };
+  try {
+    const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+    const url = URL.createObjectURL(blob);
+    const link = document.getElementById('pwa-manifest');
+    if (link) link.href = url;
+  } catch(e) {}
+
+  // Service Worker für Offline
+  if ('serviceWorker' in navigator) {
+    try {
+      const swCode = `
+const CACHE = 'wincmd-v2';
+self.addEventListener('install', e => {
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+  ));
+});
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.open(CACHE).then(cache =>
+      cache.match(e.request).then(cached => {
+        const fresh = fetch(e.request).then(r => {
+          if (r.ok) cache.put(e.request, r.clone());
+          return r;
+        }).catch(() => cached);
+        return cached || fresh;
+      })
+    )
+  );
+});`;
+      const swBlob = new Blob([swCode], {type:'application/javascript'});
+      const swUrl = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swUrl).catch(() => {});
+    } catch(e) {}
+  }
+})();
 </script>
 </body>
 </html>
