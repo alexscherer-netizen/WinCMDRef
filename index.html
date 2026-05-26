@@ -1318,7 +1318,7 @@
   <div class="sidebar-search">
     <div class="search-wrap">
       <span class="search-icon">&#9906;</span>
-      <input type="text" id="searchInput" placeholder="Befehl suchen..." oninput="handleSearch(this.value)">
+      <input type="text" id="searchInput" id="searchInput" placeholder="Befehl suchen..." oninput="handleSearch(this.value)">
     </div>
   </div>
   <div class="sidebar-section">Kategorien</div>
@@ -1327,9 +1327,9 @@
     <div style="color:var(--text2)">Windows Befehlsreferenz</div>
     <div style="margin-top:4px">930+ Befehle · 53 Guides · 110 Win+R</div>
     <div class="sidebar-footer-links">
-      <button onclick="showImpressum()">Impressum</button>
-      <button onclick="showImpressum()">Datenschutz</button>
-      <button onclick="showWelcome()">Hilfe</button>
+      <button id="btnImpressum" onclick="showImpressum()">Impressum</button>
+      <button id="btnDatenschutz" onclick="showImpressum()">Datenschutz</button>
+      <button id="btnHilfe" onclick="showWelcome()">Hilfe</button>
     </div>
   </div>
 </nav>
@@ -1345,12 +1345,11 @@
       <div class="stat-pill" style="border-color:#166534"><b style="color:var(--green)">Beide</b></div>
     </div>
     <div class="topbar-actions">
-      <button class="topbar-icon-btn" id="langBtn" onclick="toggleLang()" title="Sprache wechseln (L)">&#127760; DE</button>
-      <button class="topbar-icon-btn" onclick="showThemePicker()" title="Theme wechseln (T)">&#127912;</button>
-      <button class="topbar-icon-btn" onclick="startLernmodus()" title="Lernkarten-Modus (K)">&#127924;</button>
-      <button class="topbar-icon-btn" onclick="shareLink()" title="Link teilen (S)">&#128279;</button>
-      <button class="topbar-icon-btn" onclick="showExportModal()" title="Exportieren (E)">&#128228;</button>
-      <button class="topbar-icon-btn" onclick="showShortcuts()" title="Tastaturkuerzel (?)">&#9000;</button>
+      <button class="topbar-icon-btn" id="themeBtn" onclick="showThemePicker()" title="Theme wechseln (T)">&#127912;</button>
+      <button class="topbar-icon-btn" id="lernBtn" onclick="startLernmodus()" title="Lernkarten-Modus (K)">&#127924;</button>
+      <button class="topbar-icon-btn" id="shareBtn" onclick="shareLink()" title="Link teilen (S)">&#128279;</button>
+      <button class="topbar-icon-btn" id="exportBtn" onclick="showExportModal()" title="Exportieren (E)">&#128228;</button>
+      <button class="topbar-icon-btn" id="shortcutBtn" onclick="showShortcuts()" title="Tastaturkuerzel (?)">&#9000;</button>
     </div>
   </div>
   <div id="content"></div>
@@ -1378,7 +1377,7 @@
         <div class="export-option-desc">Nur deine Favoriten als Markdown</div>
       </button>
     </div>
-    <button class="export-close" onclick="hideExportModal()">Schliessen</button>
+    <button class="export-close" onclick="hideExportModal()" id="exportCloseBtn">Schliessen</button>
   </div>
 </div>
 
@@ -1387,7 +1386,7 @@
   <div class="theme-box">
     <div class="theme-title">&#127912; Theme waehlen</div>
     <div class="theme-grid" id="themeGrid"></div>
-    <button class="theme-close" onclick="hideThemePicker()">Schliessen</button>
+    <button class="theme-close" onclick="hideThemePicker()" id="themeCloseBtn">Schliessen</button>
   </div>
 </div>
 
@@ -1414,7 +1413,6 @@
       <div class="shortcut-row"><span class="shortcut-key">K</span><span class="shortcut-desc">Lernkarten-Modus starten</span></div>
       <div class="shortcut-row"><span class="shortcut-key">E</span><span class="shortcut-desc">Export-Dialog oeffnen</span></div>
       <div class="shortcut-row"><span class="shortcut-key">S</span><span class="shortcut-desc">Link zur aktuellen Ansicht kopieren</span></div>
-      <div class="shortcut-row"><span class="shortcut-key">L</span><span class="shortcut-desc">Sprache DE/EN umschalten</span></div>
       <div class="shortcut-row"><span class="shortcut-key">F</span><span class="shortcut-desc">Zu Favoriten springen</span></div>
       <div class="shortcut-row"><span class="shortcut-key">?</span><span class="shortcut-desc">Diese Hilfe anzeigen</span></div>
       <div class="shortcut-row"><span class="shortcut-key">1–9</span><span class="shortcut-desc">Kategorie 1–9 auswaehlen</span></div>
@@ -1478,8 +1476,8 @@
         &#128274; <b>Datenschutz:</b> Diese App speichert Deine Daten ausschlie&szlig;lich lokal in Deinem Browser (localStorage). Es werden keine pers&ouml;nlichen Daten an Server &uuml;bertragen oder gespeichert.<br><br>
         &#9888; <b>Externe Ressourcen:</b> Diese Seite l&auml;dt Schriftarten (JetBrains Mono, Syne) von <b>Google Fonts</b>. Dabei wird Deine IP-Adresse an Google-Server &uuml;bertragen. Bei Nutzung &uuml;ber GitHub Pages gelten zus&auml;tzlich die <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">Datenschutzbestimmungen von GitHub</a>.
       </div>
-      <button class="welcome-start-btn" onclick="closeWelcome()">Los geht&apos;s &#8594;</button>
-      <div class="welcome-nochmal" onclick="closeWelcome(true)">Nicht mehr anzeigen</div>
+      <button class="welcome-start-btn" onclick="closeWelcome()" id="welcomeStartBtn">Los geht's &#8594;</button>
+      <div class="welcome-nochmal" onclick="closeWelcome(true)" id="welcomeNeverBtn">Nicht mehr anzeigen</div>
     </div>
   </div>
 </div>
@@ -1538,33 +1536,33 @@
     <div class="modal-title">&#10010; Eigenen Befehl hinzufuegen</div>
 
     <div class="modal-row">
-      <label class="modal-label">Befehlsname *</label>
+      <label class="modal-label" id="ml-name">Befehlsname *</label>
       <input id="inp-name" class="modal-input" type="text" placeholder="z.B. mycommand oder Get-MyTool">
     </div>
 
     <div class="modal-row">
-      <label class="modal-label">Kurzbeschreibung *</label>
+      <label class="modal-label" id="ml-short">Kurzbeschreibung *</label>
       <input id="inp-short" class="modal-input" type="text" placeholder="Was macht der Befehl?">
     </div>
 
     <div class="modal-row">
-      <label class="modal-label">Syntax</label>
+      <label class="modal-label" id="ml-syntax">Syntax</label>
       <input id="inp-syntax" class="modal-input" type="text" placeholder="Befehl [Parameter] [Optionen]">
     </div>
 
     <div class="modal-row">
-      <label class="modal-label">Beispiele (eine Zeile pro Beispiel)</label>
+      <label class="modal-label" id="ml-examples">Beispiele (eine Zeile pro Beispiel)</label>
       <textarea id="inp-examples" class="modal-textarea" placeholder="mycommand -param wert&#10;mycommand /option"></textarea>
     </div>
 
     <div class="modal-row">
-      <label class="modal-label">Tipp / Erklaerung</label>
+      <label class="modal-label" id="ml-tip">Tipp / Erklaerung</label>
       <textarea id="inp-tip" class="modal-textarea" placeholder="Nuetzliche Hinweise, Varianten, Fallstricke..."></textarea>
     </div>
 
     <div class="modal-row-2">
       <div>
-        <label class="modal-label">Kategorie</label>
+        <label class="modal-label" id="ml-cat">Kategorie</label>
         <select id="inp-cat" class="modal-select">
           <option value="system">System</option>
           <option value="netzwerk">Netzwerk</option>
@@ -1580,7 +1578,7 @@
         </select>
       </div>
       <div>
-        <label class="modal-label">Typ</label>
+        <label class="modal-label" id="ml-typ">Typ</label>
         <select id="inp-typ" class="modal-select">
           <option value="cmd">CMD</option>
           <option value="ps">PowerShell</option>
@@ -1592,10 +1590,10 @@
 
     <div class="modal-err" id="modal-err"></div>
     <div class="modal-btns">
-      <button class="btn-cancel" onclick="hideAddModal()">Abbrechen</button>
-      <button class="btn-save" onclick="saveNewCmd()">Speichern</button>
+      <button class="btn-cancel" onclick="hideAddModal()" id="addCancelBtn">Abbrechen</button>
+      <button class="btn-save" onclick="saveNewCmd()" id="addSaveBtn">Speichern</button>
     </div>
-    <div class="hint-text" style="margin-top:12px">&#128274; Gespeichert lokal in deinem Browser (localStorage). Bleibt auch nach Neustart erhalten.</div>
+    <div class="hint-text" id="addHintText" style="margin-top:12px">&#128274; Gespeichert lokal in deinem Browser (localStorage). Bleibt auch nach Neustart erhalten.</div>
   </div>
 </div>
 
@@ -2556,6 +2554,16 @@ const CMDS = [
   {name:'appcmd list wp',cat:'iis',typ:'cmd',short:'Laufende IIS Worker-Prozesse anzeigen.',syntax:'appcmd list wp',examples:['appcmd list wp','appcmd list wp | findstr "DefaultAppPool"'],tip:'Zeigt PID der Worker-Prozesse. Mit tasklist /FI "PID eq [N]" Details abfragen.'},
   {name:'%windir%\\system32\\inetsrv\\appcmd',cat:'iis',typ:'cmd',short:'Vollstaendiger appcmd-Pfad wenn nicht im PATH.',syntax:'%windir%\\system32\\inetsrv\\appcmd [Befehl]',examples:['%windir%\\system32\\inetsrv\\appcmd list site'],tip:'appcmd liegt nicht im Standard-PATH. Entweder vollstaendigen Pfad angeben oder ins PATH aufnehmen.'},
 ];
+
+function getCatLabel(catId) {
+  const cat = CATS.find(x => x.id === catId);
+  return cat ? cat.label : catId;
+}
+function getCatDesc(catId) {
+  const cat = CATS.find(x => x.id === catId);
+  return cat ? cat.desc : '';
+}
+
 
 let activeTab = 'alle';
 let searchQuery = '';
@@ -4618,10 +4626,10 @@ let guideActiveTabs = {};
 function toggleGuide(id, event) {
   if (event && event.target.closest('.guide-body')) return;
   openGuide = openGuide === id ? null : id;
-  if (activeTab === 'ad-guide')    renderGuide(AD_GUIDES,    'AD Anleitungen',    '#fb923c', '&#128218;');
-  else if (activeTab === 'ts-guide')    renderGuide(TS_GUIDES,    'TS Anleitungen',    '#f87171', '&#128681;');
-  else if (activeTab === 'ps-guide')    renderGuide(PS_GUIDES,    'PS Scripting Guide','#c084fc', '&#128218;');
-  else if (activeTab === 'batch-guide') renderGuide(BATCH_GUIDES, 'Batch Scripting',   '#fbbf24', '&#128203;');
+  if (activeTab === 'ad-guide')    renderGuide(AD_GUIDES,    getCatLabel('ad-guide'),    '#fb923c', '&#128218;');
+  else if (activeTab === 'ts-guide')    renderGuide(TS_GUIDES,    getCatLabel('ts-guide'),    '#f87171', '&#128681;');
+  else if (activeTab === 'ps-guide')    renderGuide(PS_GUIDES,    getCatLabel('ps-guide'),'#c084fc', '&#128218;');
+  else if (activeTab === 'batch-guide') renderGuide(BATCH_GUIDES, getCatLabel('batch-guide'),   '#fbbf24', '&#128203;');
 }
 
 // Add copy buttons to all .step-code elements that don't have one yet
@@ -4660,7 +4668,7 @@ function renderGuide(guides, title, color, icon) {
 
   let html = `<div class="cat-header">
     <div class="cat-header-icon" style="background:${color}22;border:1px solid ${color}55">${icon}</div>
-    <div class="cat-header-text"><h2>${title}</h2><p>${guides.length} ${currentLang==='en'?'Guides — click a card to open':'Anleitungen — Klicke eine Karte um sie zu oeffnen'}</p></div>
+    <div class="cat-header-text"><h2>${title}</h2><p>${guides.length} Anleitungen — Klicke eine Karte um sie zu oeffnen</p></div>
   </div><div class="guide-grid">`;;
 
   guides.forEach(g => {
@@ -4696,51 +4704,7 @@ function renderGuide(guides, title, color, icon) {
   requestAnimationFrame(() => addStepCopyButtons(content));
 }
 
-// -- SPRACHE (DE/EN) --
-let currentLang = localStorage.getItem('wincmd_lang') || 'de';
-const EN_LABELS = {
-  'alle':'All Commands','dateisystem':'File System','netzwerk':'Network','system':'System',
-  'prozesse':'Processes','benutzer':'Users','daten':'Data & Text','powershell':'PowerShell+',
-  'ad':'Active Directory','ad-guide':'AD Guides','dns':'DNS Server','run':'Win+R Cmds',
-  'ts':'Troubleshooting','ts-guide':'TS Guides','sicherheit':'Security','azure':'Azure / Cloud',
-  'virt':'Virtualization','paket':'Pkg Manager','iis':'IIS & Web','batch-guide':'Batch Guide',
-  'ps-guide':'PS Guide','favoriten':'Favorites','verlauf':'History','eigene':'Custom',
-};
-const EN_DESC = {
-  'alle':'Complete overview','dateisystem':'Files, folders, copy, delete',
-  'netzwerk':'IP, DNS, connections, firewall','system':'Diagnosis, config, services',
-  'prozesse':'Start, stop, monitor tasks','benutzer':'Accounts, groups, permissions',
-  'daten':'Search, filter, redirect, sort','powershell':'PowerShell-only commands',
-  'ad':'Users, groups, GPO, OU, LDAP','ad-guide':'Step-by-step guides',
-  'dns':'Zones, records, diagnosis','run':'Run dialog shortcuts',
-  'ts':'Diagnostic commands','ts-guide':'Step-by-step solutions',
-  'sicherheit':'BitLocker, certs, Defender','azure':'Az PowerShell, CLI, Entra ID',
-  'virt':'Hyper-V, WSL, Docker','paket':'winget, choco, scoop',
-  'iis':'iisreset, appcmd, SSL','batch-guide':'Batch scripting guides',
-  'ps-guide':'Scripting, modules, remoting','favoriten':'Bookmarked commands',
-  'verlauf':'Recently viewed','eigene':'Custom entries',
-};
-
-function getCatLabel(catId) {
-  if (currentLang === 'en' && EN_LABELS[catId]) return EN_LABELS[catId];
-  const c = CATS.find(x => x.id === catId);
-  return c ? c.label : catId;
-}
-function getCatDesc(catId) {
-  if (currentLang === 'en' && EN_DESC[catId]) return EN_DESC[catId];
-  const c = CATS.find(x => x.id === catId);
-  return c ? c.desc : '';
-}
-
-function toggleLang() {
-  currentLang = currentLang === 'de' ? 'en' : 'de';
-  localStorage.setItem('wincmd_lang', currentLang);
-  const btn = document.getElementById('langBtn');
-  if (btn) btn.textContent = currentLang === 'de' ? '🌐 DE' : '🌐 EN';
-  buildNav(); buildBottomNav(); render();
-}
-
-// -- FAVORITEN --
+// -- FAVORITEN// -- FAVORITEN --
 const FAV_KEY = 'wincmd_favs_v1';
 let favorites = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]'));
 
@@ -4789,7 +4753,7 @@ function exportData(format) {
 
   if (format === 'markdown') {
     const cat = CATS.find(c => c.id === activeTab) || { label: 'Alle Befehle' };
-    let md = `# ${getCatLabel(activeTab)}\n\n| ${currentLang==='en'?'Command':'Befehl'} | ${currentLang==='en'?'Description':'Beschreibung'} | Typ |\n|--------|-------------|-----|\n`;
+    let md = `# ${getCatLabel(activeTab)}\n\n| Befehl | Beschreibung | Typ |\n|--------|-------------|-----|\n`;
     filtered.forEach(c => { md += `| \`${c.name}\` | ${c.short} | ${c.typ.toUpperCase()} |\n`; });
     md += `\n_Exportiert von WinCMD Ref — ${new Date().toLocaleDateString('de-DE')}_\n`;
     downloadFile(md, `wincmd_${activeTab}.md`, 'text/markdown');
@@ -4806,9 +4770,9 @@ function exportData(format) {
     downloadFile(JSON.stringify(data, null, 2), 'wincmd_befehle.json', 'application/json');
   } else if (format === 'favoriten') {
     const favCmds = allCmds.filter(c => favorites.has(c.name));
-    let md = `# ⭐ Meine Favoriten\n\n| Befehl | Beschreibung | Typ |\n|--------|-------------|-----|\n`;
+    let md = `# ⭐ Meine Favoriten\n\n| Befehl | Beschreibung | Type |\n|--------|-------------|-----|\n`;
     favCmds.forEach(c => { md += `| \`${c.name}\` | ${c.short} | ${c.typ.toUpperCase()} |\n`; });
-    md += `\n_${favCmds.length} Favoriten — exportiert ${new Date().toLocaleDateString('de-DE')}_\n`;
+    md += `\n_${favCmds.length} Favoriten — exportiert ${new Date().toLocaleDateString(de-DE)}_\n`;
     downloadFile(md, 'wincmd_favoriten.md', 'text/markdown');
   }
 }
@@ -4902,17 +4866,7 @@ function badgeHtml(typ, cat) {
   return '<span class="badge badge-both">CMD+PS</span>';
 }
 
-function toggleCard(idx, event) {
-  if (event && event.target.closest('.cmd-detail')) return;
-  const wasOpen = openCard === idx;
-  openCard = wasOpen ? null : idx;
-  // Verlauf tracken wenn Karte geoeffnet wird
-  if (!wasOpen) {
-    const all = [...CMDS, ...customCmds];
-    if (all[idx]) { addVerlauf(all[idx].name); }
-  }
-  render();
-}
+
 
 function copyText(text, btnEl) {
   navigator.clipboard.writeText(text).then(() => {
@@ -4992,7 +4946,7 @@ function cardHtml(c, globalIdx) {
   return `<div class="cmd-card${isOpen ? ' open' : ''}${isCustom?' custom-card':''}${isFaved?' fav-card':''}" onclick="toggleCard(${globalIdx}, event)">
     <div class="cmd-head">
       <div class="cmd-name-wrap">
-        <div class="cmd-name">${hl(c.name, q)}${isCustom?'<span class="custom-badge">Eigener</span>':''}</div>
+        <div class="cmd-name">${hl(c.name, q)}${isCustom?`<span class="custom-badge">Eigener</span>`:''}</div>
         ${winBadges}
         <div class="cmd-short">${hl(c.short, q)}</div>
       </div>
@@ -5087,20 +5041,20 @@ function saveNewCmd() {
 }
 
 function render() {
-  if (activeTab === 'ad-guide')    { renderGuide(AD_GUIDES,    'AD Anleitungen',    '#fb923c', '&#128218;'); return; }
-  if (activeTab === 'ts-guide')    { renderGuide(TS_GUIDES,    'TS Anleitungen',    '#f87171', '&#128681;'); return; }
-  if (activeTab === 'ps-guide')    { renderGuide(PS_GUIDES,    'PS Scripting Guide','#c084fc', '&#128218;'); return; }
-  if (activeTab === 'batch-guide') { renderGuide(BATCH_GUIDES, 'Batch Scripting',   '#fbbf24', '&#128203;'); return; }
+  if (activeTab === 'ad-guide')    { renderGuide(AD_GUIDES,    getCatLabel('ad-guide'),    '#fb923c', '&#128218;'); return; }
+  if (activeTab === 'ts-guide')    { renderGuide(TS_GUIDES,    getCatLabel('ts-guide'),    '#f87171', '&#128681;'); return; }
+  if (activeTab === 'ps-guide')    { renderGuide(PS_GUIDES,    getCatLabel('ps-guide'),'#c084fc', '&#128218;'); return; }
+  if (activeTab === 'batch-guide') { renderGuide(BATCH_GUIDES, getCatLabel('batch-guide'),   '#fbbf24', '&#128203;'); return; }
 
   // Favoriten
   if (activeTab === 'favoriten') {
     const favCmds = [...CMDS,...customCmds].filter(c => favorites.has(c.name));
     const allC = [...CMDS,...customCmds];
     document.getElementById('visCount').textContent = favCmds.length;
-    document.getElementById('topbarTitle').innerHTML = '<span>&gt;</span> &#11088; Favoriten';
+    document.getElementById('topbarTitle').innerHTML = `<span>&gt;</span> &#11088; ${getCatLabel('favoriten')}`;
     let html = `<div class="cat-header">
       <div class="cat-header-icon" style="background:#fbbf2422;border:1px solid #fbbf2455">&#11088;</div>
-      <div class="cat-header-text"><h2>${getCatLabel('favoriten')}</h2><p>${favCmds.length} ${currentLang==='en'?'saved commands':'gemerkte Befehle'}</p></div>
+      <div class="cat-header-text"><h2>${getCatLabel('favoriten')}</h2><p>${favCmds.length} gemerkte Befehle</p></div>
     </div>`;
     if (!favCmds.length) html += `<div class="empty"><div class="e-icon">&#11088;</div><p>Noch keine Favoriten.<br>Klicke auf den Stern &#11088; auf einer Karte um sie zu merken.</p></div>`;
     else html += `<div class="cmd-grid">${favCmds.map(c=>cardHtml(c,allC.indexOf(c))).join('')}</div>`;
@@ -5112,10 +5066,10 @@ function render() {
     const allC = [...CMDS,...customCmds];
     const histCmds = verlauf.map(n=>allC.find(c=>c.name===n)).filter(Boolean);
     document.getElementById('visCount').textContent = histCmds.length;
-    document.getElementById('topbarTitle').innerHTML = '<span>&gt;</span> &#128336; Verlauf';
+    document.getElementById('topbarTitle').innerHTML = `<span>&gt;</span> &#128336; ${getCatLabel('verlauf')}`;
     let html = `<div class="cat-header">
       <div class="cat-header-icon" style="background:#94a3b822;border:1px solid #94a3b855">&#128336;</div>
-      <div class="cat-header-text"><h2>${getCatLabel('verlauf')}</h2><p>${currentLang==='en'?'Recently viewed (max.':'Zuletzt angesehene (max.'} ${MAX_HIST})</p></div>
+      <div class="cat-header-text"><h2>${getCatLabel('verlauf')}</h2><p>Zuletzt angesehene (max. ${MAX_HIST})</p></div>
       <button onclick="verlauf=[];localStorage.removeItem('${HIST_KEY}');render();" style="margin-left:auto;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;color:var(--text2);cursor:pointer;font-size:11px;">Leeren</button>
     </div>`;
     if (!histCmds.length) html += `<div class="empty"><div class="e-icon">&#128336;</div><p>Noch kein Verlauf.<br>Oeffne einen Befehl um ihn hier zu sehen.</p></div>`;
@@ -5127,7 +5081,7 @@ function render() {
   const content = document.getElementById('content');
   document.getElementById('visCount').textContent = filtered.length;
   const activeCat = CATS.find(c => c.id === activeTab);
-  document.getElementById('topbarTitle').innerHTML = `<span>&gt;</span> ${activeCat.label}`;
+  document.getElementById('topbarTitle').innerHTML = `<span>&gt;</span> ${getCatLabel(activeCat.id)}`;
 
   if (filtered.length === 0) {
     content.innerHTML = `<div class="empty"><div class="e-icon">&#128269;</div><p>Keine Befehle gefunden fuer "${searchQuery}".</p></div>`;
@@ -5154,7 +5108,7 @@ function render() {
     html += `<div class="section-block">
       <div class="section-title" style="border-left-color:#fb923c;cursor:pointer" onclick="selectTab('ad-guide')">
         <span class="section-title-icon">&#128218;</span>
-        <div><div class="section-title-name">${getCatLabel('ad-guide')}</div><div class="section-title-desc">${getCatDesc('ad-guide')} — ${currentLang==='en'?'click to open':'klicken zum Oeffnen'}</div></div>
+        <div><div class="section-title-name">${getCatLabel('ad-guide')}</div><div class="section-title-desc">${getCatDesc('ad-guide')} — klicken zum Oeffnen</div></div>
         <span class="section-title-count">${AD_GUIDES.length} Guides</span>
       </div>
     </div>`;
@@ -5273,10 +5227,10 @@ function render() {
   if (activeTab === 'eigene') {
     let html = `<div class="cat-header">
       <div class="cat-header-icon" style="background:#facc1522;border:1px solid #facc1555">&#10010;</div>
-      <div class="cat-header-text"><h2>${getCatLabel('eigene')}</h2><p>${customCmds.length} ${currentLang==='en'?'custom entries — saved locally':'selbst erstellte Eintraege — lokal gespeichert'}</p></div>
+      <div class="cat-header-text"><h2>${getCatLabel('eigene')}</h2><p>${customCmds.length} selbst erstellte Eintraege — lokal gespeichert</p></div>
     </div>`;
     if (customCmds.length === 0) {
-      html += `<div class="empty"><div class="e-icon">&#128196;</div><p>${currentLang==='en'?'No custom commands yet.<br>Click <b style="color:#facc15">+</b> bottom right to add one.':'Noch keine eigenen Befehle.<br>Klicke auf <b style="color:#facc15">+</b> unten rechts um einen hinzuzufuegen.'}</p></div>`;
+      html += `<div class="empty"><div class="e-icon">&#128196;</div><p>Noch keine eigenen Befehle.<br>Klicke auf <b style="color:#facc15">+</b> unten rechts um einen hinzuzufuegen.</p></div>`;
     } else {
       const allCmds = [...CMDS, ...customCmds];
       html += `<div class="cmd-grid">${customCmds.map(c => cardHtml(c, allCmds.indexOf(c))).join('')}</div>`;
@@ -5289,10 +5243,10 @@ function render() {
   if (!searchQuery) {
     header = `<div class="cat-header">
       <div class="cat-header-icon" style="background:${activeCat.color}22;border:1px solid ${activeCat.color}55">${activeCat.icon}</div>
-      <div class="cat-header-text"><h2>${getCatLabel(activeCat.id)}</h2><p>${getCatDesc(activeCat.id)} &mdash; ${filtered.length} ${currentLang==='en'?'commands':'Befehle'}</p></div>
+      <div class="cat-header-text"><h2>${getCatLabel(activeCat.id)}</h2><p>${getCatDesc(activeCat.id)} &mdash; ${filtered.length} Befehle</p></div>
     </div>`;
   } else {
-    header = `<div class="cat-header"><div class="cat-header-text"><h2>${currentLang==='en'?'Search':'Suche'}: "${searchQuery}"</h2><p>${filtered.length} ${currentLang==='en'?'results':'Treffer'}</p></div></div>`;
+    header = `<div class="cat-header"><div class="cat-header-text"><h2>Suche: "${searchQuery}"</h2><p>${filtered.length} Treffer</p></div></div>`;
   }
   content.innerHTML = header + `<div class="cmd-grid">${filtered.map(c => cardHtml(c, allCmds2.indexOf(c))).join('')}</div>`;
 }
@@ -5301,9 +5255,7 @@ loadCustomCmds();
 buildNav();
 buildBottomNav();
 render();
-// Language button init
-const lb = document.getElementById('langBtn');
-if (lb) lb.textContent = currentLang === 'de' ? '🌐 DE' : '🌐 EN';
+
 
 // == THEMES ==
 const THEMES = [
@@ -5440,15 +5392,15 @@ function renderLernCard() {
   el.innerHTML = `<div class="lern-card">
     <div class="lern-cat-badge">${c.cat.toUpperCase()} · ${c.typ.toUpperCase()}</div>
     <div class="lern-question">${c.name}</div>
-    <div class="lern-hint">${currentLang==='en'?'What does this command do?':'Was macht dieser Befehl?'}</div>
+    <div class="lern-hint">Was macht dieser Befehl?</div>
     <div class="lern-answer" id="lernAns">
       <div class="lern-answer-text">${c.short}</div>
       <div class="lern-answer-syntax">${c.syntax||''}</div>
       ${c.tip?`<div class="lern-answer-tip">💡 ${c.tip}</div>`:''}
     </div>
     <div class="lern-actions" id="lernActs">
-      <button class="lern-btn lern-btn-show" onclick="revealLern()">${currentLang==='en'?'Show Answer':'Antwort zeigen'}</button>
-      <button class="lern-btn lern-btn-skip" onclick="lernNext(0)">${currentLang==='en'?'Skip':'Überspringen'}</button>
+      <button class="lern-btn lern-btn-show" onclick="revealLern()">Antwort zeigen</button>
+      <button class="lern-btn lern-btn-skip" onclick="lernNext(0)">Überspringen</button>
     </div>
   </div>`;
 }
@@ -5460,8 +5412,8 @@ function revealLern() {
   const acts = document.getElementById('lernActs');
   if (ans) ans.classList.add('show');
   if (acts) acts.innerHTML = `
-    <button class="lern-btn lern-btn-ok"   onclick="lernNext(1)">✅ ${currentLang==='en'?'Got it':'Gewusst'}</button>
-    <button class="lern-btn lern-btn-fail" onclick="lernNext(-1)">❌ ${currentLang==='en'?'Not yet':'Nicht gewusst'}</button>
+    <button class="lern-btn lern-btn-ok"   onclick="lernNext(1)">✅ Gewusst</button>
+    <button class="lern-btn lern-btn-fail" onclick="lernNext(-1)">❌ Nicht gewusst</button>
     <button class="lern-btn lern-btn-skip" onclick="lernNext(0)">Weiter</button>`;
 }
 
@@ -5504,7 +5456,6 @@ document.addEventListener('keydown', e => {
     case 'k': case 'K': startLernmodus(); break;
     case 'e': case 'E': showExportModal(); break;
     case 's': case 'S': shareLink(); break;
-    case 'l': case 'L': toggleLang(); break;
     case 'f': case 'F': selectTab('favoriten'); break;
     case '?': showShortcuts(); break;
     default:
@@ -5547,13 +5498,20 @@ function shareLink() {
 
 // == SWIPE GESTEN ==
 (function() {
+  // Kategoriewechsel per Swipe
   let sx = 0, sy = 0, st = 0;
-  const THRESH = 60, MAX_Y = 100, MAX_T = 450;
+  const THRESH = 80;   // mind. 80px horizontal
+  const MAX_Y  = 60;   // max. 60px vertikal (kein Scrollen)
+  const MAX_T  = 350;  // max. 350ms (keine langsamen Wischgesten)
+  const MIN_RATIO = 2; // horizontal muss mind. 2x so gross wie vertikal sein
 
   function onTouchStart(e) {
+    // Ignore: Scrollbereiche, Inputs, offene Sidebar, Modals
     const t = e.target;
-    if (t.closest('.guide-tabs,.step-code,.code-box,.example-line,#bottom-nav,textarea,input,.modal-box')) return;
+    if (t.closest('.guide-tabs,.step-code,.code-box,.example-line,#bottom-nav,textarea,input,.modal-box,#sidebar,#fab')) return;
     if (document.getElementById('sidebar').classList.contains('open')) return;
+    // Nur einzelner Finger
+    if (e.touches.length !== 1) return;
     sx = e.touches[0].clientX;
     sy = e.touches[0].clientY;
     st = Date.now();
@@ -5561,37 +5519,40 @@ function shareLink() {
 
   function onTouchEnd(e) {
     if (!sx) return;
-    const dx = e.changedTouches[0].clientX - sx;
-    const dy = Math.abs(e.changedTouches[0].clientY - sy);
-    const dt = Date.now() - st;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const dx   = endX - sx;
+    const dy   = Math.abs(endY - sy);
+    const dt   = Date.now() - st;
     sx = 0;
-    if (Math.abs(dx) < THRESH || dy > MAX_Y || dt > MAX_T) return;
 
+    // Strenge Pruefung: eindeutige horizontale Geste
+    if (Math.abs(dx) < THRESH) return;  // zu kurz
+    if (dy > MAX_Y) return;             // zu vertikal
+    if (dt > MAX_T) return;             // zu langsam
+    if (Math.abs(dx) / (dy + 1) < MIN_RATIO) return; // nicht horizontal genug
+
+    // Kategoriewechsel
     const ids = CATS.map(c => c.id);
     const ci  = ids.indexOf(activeTab);
     if (ci < 0) return;
 
-    if (dx < 0 && ci < ids.length - 1) { selectTab(ids[ci + 1]); showSwipeToast(); }
-    else if (dx > 0 && ci > 0)         { selectTab(ids[ci - 1]); showSwipeToast(); }
-  }
-
-  // Edge swipe from left = open sidebar
-  function onEdgeStart(e) {
-    if (e.touches[0].clientX < 22) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }
-  }
-  function onEdgeEnd(e) {
-    const dx = e.changedTouches[0].clientX - sx;
-    const dy = Math.abs(e.changedTouches[0].clientY - sy);
-    if (sx < 22 && dx > 60 && dy < 80 && Date.now() - st < 400) openSidebar();
+    if (dx < 0 && ci < ids.length - 1) {
+      selectTab(ids[ci + 1]);
+      showSwipeToast();
+    } else if (dx > 0 && ci > 0) {
+      selectTab(ids[ci - 1]);
+      showSwipeToast();
+    }
   }
 
   const main = document.getElementById('main');
   if (main) {
     main.addEventListener('touchstart', onTouchStart, { passive: true });
-    main.addEventListener('touchend', onTouchEnd, { passive: true });
+    main.addEventListener('touchend',   onTouchEnd,   { passive: true });
   }
-  document.addEventListener('touchstart', onEdgeStart, { passive: true });
-  document.addEventListener('touchend', onEdgeEnd, { passive: true });
+  // Kein Edge-Swipe mehr -- zu fehleranfaellig auf kleinen Bildschirmen
+  // Sidebar oeffnen per Hamburger-Button (#menu-btn)
 })();
 
 function showSwipeToast() {
