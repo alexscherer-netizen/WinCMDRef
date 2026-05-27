@@ -1576,7 +1576,7 @@
   <div id="navItems"></div>
   <div class="sidebar-footer">
     <div style="color:var(--text2)">Windows Befehlsreferenz</div>
-    <div style="margin-top:4px">930+ Befehle · 53 Guides · 110 Win+R</div>
+    <div style="margin-top:4px">950+ Befehle · 60+ Guides · 110 Win+R</div>
     <div class="sidebar-footer-links">
       <button id="btnImpressum" onclick="showImpressum()">Impressum</button>
       <button id="btnDatenschutz" onclick="showImpressum()">Datenschutz</button>
@@ -2713,7 +2713,16 @@ const CMDS = [
   {name:'New-NetFirewallRule',cat:'netzwerk',typ:'ps',short:'Neue Firewall-Regel erstellen.',syntax:'New-NetFirewallRule -DisplayName [Name] -Direction [Inbound|Outbound] -Protocol TCP -LocalPort N -Action Allow|Block',examples:['New-NetFirewallRule -DisplayName "Web HTTP" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow','New-NetFirewallRule -DisplayName "Block Telnet" -Direction Outbound -Protocol TCP -RemotePort 23 -Action Block'],tip:'-Profile Domain,Private,Public. -RemoteAddress fuer IP-basierte Regeln. Enabled $false zum Deaktivieren.'},
   {name:'Get-NetRoute',cat:'netzwerk',typ:'ps',short:'Routing-Tabelle in PowerShell anzeigen.',syntax:'Get-NetRoute -AddressFamily IPv4 [-DestinationPrefix Netz]',examples:['Get-NetRoute -AddressFamily IPv4','Get-NetRoute | Where DestinationPrefix -eq "0.0.0.0/0"','New-NetRoute -DestinationPrefix "10.0.0.0/8" -InterfaceAlias "Ethernet" -NextHop "192.168.1.1"'],tip:'New-NetRoute und Remove-NetRoute zum Verwalten. NextHop = Gateway. InterfaceMetric beeinfluss Prioritaet.'},
 
-  // === TROUBLESHOOTING BEFEHLE ===
+  // === NTDSUTIL BEFEHLE (AD) ===
+  {name:'ntdsutil snapshot activate instance ntds',cat:'ad',typ:'cmd',short:'ntdsutil: Snapshot des AD erstellen.',syntax:'ntdsutil\nsnapshot\nactivate instance ntds\ncreate\nlist all\nquit\nquit\nquit',examples:['ntdsutil "snapshot" "activate instance ntds" "create" "list all" "quit" "quit" "quit'],tip:'Erstellt Volume Shadow Copy des NTDS.dit. GUID des Snapshots merken fuer spaeteres Einbinden. Als Admin auf DC!'},
+  {name:'ntdsutil snapshot mount',cat:'ad',typ:'cmd',short:'ntdsutil: Snapshot einbinden (mounten).',syntax:'ntdsutil\nsnapshot\nactivate instance ntds\nmount {GUID}\nlist all\nquit\nquit\nquit',examples:['ntdsutil "snapshot" "activate instance ntds" "mount {GUID}" "quit" "quit" "quit"'],tip:'Bindet Snapshot als Laufwerk ein (z.B. C:\\$SNAP_...). NTDS.dit dann unter ...\\Windows\\NTDS\\ntds.dit erreichbar.'},
+  {name:'ntdsutil snapshot unmount',cat:'ad',typ:'cmd',short:'ntdsutil: Eingebundenen Snapshot wieder trennen.',syntax:'ntdsutil\nsnapshot\nunmount {GUID}\nquit\nquit\nquit',examples:['ntdsutil "snapshot" "unmount {GUID}" "quit" "quit" "quit"'],tip:'Snapshot-Pfad wird nach unmount nicht mehr verfuegbar. GUID aus list all ermitteln.'},
+  {name:'ntdsutil snapshot delete',cat:'ad',typ:'cmd',short:'ntdsutil: Snapshot loeschen.',syntax:'ntdsutil\nsnapshot\ndelete {GUID}\nquit\nquit\nquit',examples:['ntdsutil "snapshot" "activate instance ntds" "delete {GUID}" "quit" "quit" "quit"'],tip:'Loescht den Snapshot dauerhaft. Nicht mehr mountbar. Alte Snapshots regelmaessig bereinigen.'},
+  {name:'ntdsutil snapshot list all',cat:'ad',typ:'cmd',short:'ntdsutil: Alle vorhandenen Snapshots auflisten.',syntax:'ntdsutil\nsnapshot\nlist all\nquit\nquit\nquit',examples:['ntdsutil "snapshot" "list all" "quit" "quit" "quit"'],tip:'Zeigt GUIDs und Erstellungszeiten aller Snapshots. Grundlage fuer mount/delete Befehle.'},
+  {name:'dsamain',cat:'ad',typ:'cmd',short:'AD-Snapshot als LDAP-Server starten (offline lesen).',syntax:'dsamain /dbpath [Pfad\\ntds.dit] /ldapport [50000]',examples:['dsamain /dbpath "C:\\$SNAP_202401_VOLUME{GUID}\\Windows\\NTDS\\ntds.dit" /ldapport 50000','dsamain /dbpath D:\\Snapshot\\ntds.dit /ldapport 50000 /ldapsport 50001'],tip:'Startet offline LDAP-Dienst. Dann mit ADUC, ldp.exe oder PowerShell auf Port 50000 verbinden. Als Admin!'},
+  {name:'ldp.exe /server localhost /port 50000',cat:'ad',typ:'cmd',short:'LDP.exe mit Snapshot-LDAP-Port verbinden.',syntax:'ldp.exe  dann: Connection -> Connect -> localhost:50000',examples:['ldp.exe'],tip:'Grafisches LDAP-Browser-Tool. Mit dsamain-Snapshot verbinden: Connection > Connect > Server: localhost, Port: 50000. Dann Browse > Search fuer AD-Objekte.'},
+  {name:'Get-ADObject -Server localhost:50000',cat:'ad',typ:'ps',short:'AD-Snapshot per PowerShell abfragen (nach dsamain).',syntax:'Get-ADObject -Filter * -Server localhost:50000 -SearchBase "DC=firma,DC=local"',examples:['Get-ADUser -Filter * -Server localhost:50000 | Select Name,SamAccountName','Get-ADObject -Filter {Name -eq "MaxMustermann"} -Server localhost:50000 -Properties *'],tip:'Verbindet sich mit dem dsamain-LDAP auf Port 50000. Perfekt um geloeschte Objekte oder alte Attributwerte zu lesen.'},
+
 
   // System & Boot
   {name:'sfc /scannow',cat:'ts',typ:'cmd',short:'Systemdateipruefung — beschaedigte Windows-Dateien reparieren.',syntax:'sfc /scannow',examples:['sfc /scannow','sfc /verifyonly','sfc /scanfile=C:\\Windows\\System32\\ntdll.dll'],tip:'Als Admin! Ergebnis in C:\\Windows\\Logs\\CBS\\CBS.log. Danach dism /Online /Cleanup-Image /RestoreHealth wenn Fehler bleiben.'},
@@ -5505,9 +5514,127 @@ quit</div><div class="step-note">&#128161; Authoritative Restore verhindert dass
         </ol>`}
     ]
   },
-];
+  {
+    id:'ad-ntdsutil-snapshot',emoji:'📸',title:'ntdsutil — AD-Snapshot erstellen und einbinden',
+    subtitle:'Volume Shadow Copy der AD-Datenbank (NTDS.dit) erstellen, mounten, lesen und loeschen',
+    tabs:[
+      {label:'Snapshot erstellen',content:`
+        <div class="guide-section-head">Was ist ein AD-Snapshot?</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">!</span><div class="step-content"><div class="step-title">Grundlagen</div><div class="step-desc">Ein AD-Snapshot ist eine Volume Shadow Copy (VSS) der Active Directory Datenbank (NTDS.dit). Er erlaubt es, den AD-Zustand zu einem bestimmten Zeitpunkt zu lesen — ohne den DC neu zu starten oder den AD-Dienst zu stoppen. Ideal fuer: geloeschte Objekte wiederherstellen, alte Attributwerte lesen, Vergleiche vor/nach Aenderungen.</div></div></li>
+        </ol>
+        <div class="guide-section-head">Snapshot erstellen (interaktiv)</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">ntdsutil starten (als Administrator auf dem DC)</div><div class="step-code">ntdsutil</div><div class="step-note">&#9888; Muss direkt auf dem Domaenencontroller ausgefuehrt werden. Kein Remote-Aufruf.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">In den Snapshot-Kontext wechseln</div><div class="step-code">ntdsutil: snapshot</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">NTDS-Instanz aktivieren</div><div class="step-code">snapshot: activate instance ntds</div><div class="step-note">&#128161; Aktiviert die AD DS-Instanz. Ausgabe: "Active instance set to ntds"</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Snapshot erstellen</div><div class="step-code">snapshot: create</div><div class="step-note">&#128161; Erstellt einen neuen VSS-Snapshot. Ausgabe: "Snapshot set {GUID1} generated successfully." und "Snapshot {GUID2} created successfully."</div></div></li>
+          <li class="step"><span class="step-num">5</span><div class="step-content"><div class="step-title">Alle Snapshots auflisten — GUID merken!</div><div class="step-code">snapshot: list all</div><div class="step-note">&#128161; Ausgabe zeigt Index (1, 2, ...), GUID und Erstellungszeit. Den Index oder die GUID fuer mount benoetigt.</div></div></li>
+          <li class="step"><span class="step-num">6</span><div class="step-content"><div class="step-title">ntdsutil beenden</div><div class="step-code">snapshot: quit
+ntdsutil: quit</div></div></li>
+        </ol>
+        <div class="guide-section-head">Snapshot als Einzeiler (Skript-freundlich)</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">7</span><div class="step-content"><div class="step-title">Snapshot per CMD-Einzeiler erstellen</div><div class="step-code">ntdsutil "snapshot" "activate instance ntds" "create" "list all" "quit" "quit" "quit"</div><div class="step-note">&#128161; Fuer geplante Aufgaben und Skripte. Ausgabe enthaelt GUID fuer spaeteres Mounten.</div></div></li>
+          <li class="step"><span class="step-num">8</span><div class="step-content"><div class="step-title">PowerShell: Snapshot erstellen und GUID speichern</div><div class="step-code">$output = ntdsutil "snapshot" "activate instance ntds" "create" "list all" "quit" "quit" "quit" 2>&1
+$guid = ($output | Select-String -Pattern '\{[A-F0-9-]{36}\}' | Select-Object -Last 1).Matches.Value
+Write-Host "Snapshot GUID: $guid" -ForegroundColor Green
+$guid | Out-File "C:\AD-Backup\snapshot_guid.txt" -Append</div></div></li>
+        </ol>`},
+      {label:'Snapshot einbinden',content:`
+        <div class="guide-section-head">Snapshot mounten und NTDS.dit lesen</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">ntdsutil starten und Snapshot einbinden</div><div class="step-code">ntdsutil</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Snapshot mounten (per Index oder GUID)</div><div class="step-code">ntdsutil: snapshot
+snapshot: activate instance ntds
+snapshot: mount 1
+# Oder per GUID:
+snapshot: mount {12345678-1234-1234-1234-123456789ABC}</div><div class="step-note">&#128161; Ausgabe: "Snapshot {GUID} mounted as C:\$SNAP_202401011200_VOLUMEC$\" — diesen Pfad merken!</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Pfad zur NTDS.dit im Snapshot</div><div class="step-code"># Der gemountete Pfad + Windows\NTDS\ntds.dit:
+C:\$SNAP_202401011200_VOLUMEC$\Windows\NTDS\ntds.dit
 
-// -- GUIDE STATE --
+# Pfad aus list all ermitteln:
+snapshot: list all</div><div class="step-note">&#128161; Das Laufwerk ist read-only! Fuer dsamain muss die Datei ggf. in einen Schreibpfad kopiert werden.</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">ntdsutil beenden (Snapshot bleibt gemountet)</div><div class="step-code">snapshot: quit
+ntdsutil: quit</div></div></li>
+        </ol>
+        <div class="guide-section-head">dsamain — Snapshot als LDAP-Server starten</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">5</span><div class="step-content"><div class="step-title">ntds.dit kopieren (noetig fuer dsamain)</div><div class="step-code">mkdir C:\AD-Snapshot
+copy "C:\$SNAP_202401011200_VOLUMEC$\Windows\NTDS\ntds.dit" C:\AD-Snapshot\ntds.dit
+copy "C:\$SNAP_202401011200_VOLUMEC$\Windows\NTDS\*.log" C:\AD-Snapshot\</div><div class="step-note">&#128161; dsamain benoetigt Schreibzugriff fuer interne Operationen. Read-only-Pfad funktioniert nicht direkt.</div></div></li>
+          <li class="step"><span class="step-num">6</span><div class="step-content"><div class="step-title">dsamain starten (AD offline als LDAP-Server)</div><div class="step-code">dsamain /dbpath C:\AD-Snapshot\ntds.dit /ldapport 50000</div><div class="step-note">&#9888; Fenster offen lassen! dsamain laeuft im Vordergrund. STRG+C zum Beenden.</div></div></li>
+          <li class="step"><span class="step-num">7</span><div class="step-content"><div class="step-title">Snapshot-AD per PowerShell abfragen</div><div class="step-code"># In einem neuen PowerShell-Fenster:
+Get-ADUser -Filter * -Server "localhost:50000" -Properties * |
+    Select Name, SamAccountName, EmailAddress, LastLogonDate |
+    Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">8</span><div class="step-content"><div class="step-title">Spezifisches Objekt aus Snapshot lesen</div><div class="step-code">Get-ADObject -Filter {SamAccountName -eq "mmustermann"}
+    -Server "localhost:50000"
+    -Properties * |
+    Select-Object Name, DistinguishedName, WhenCreated, @{
+        Name="Mitglied von"
+        Expression={(Get-ADUser $_.SamAccountName -Server "localhost:50000" -Properties MemberOf).MemberOf}
+    }</div></div></li>
+          <li class="step"><span class="step-num">9</span><div class="step-content"><div class="step-title">ADUC mit Snapshot-DC verbinden (GUI)</div><div class="step-code"># Active Directory-Benutzer und -Computer oeffnen
+# Dann: Aktion > Domaincontroller wechseln > "Anderen DC angeben"
+# Eingabe: localhost:50000
+
+# Oder ldp.exe:
+ldp.exe
+# Connection > Connect > Server: localhost, Port: 50000, Check: SSL deaktivieren</div></div></li>
+          <li class="step"><span class="step-num">10</span><div class="step-content"><div class="step-title">dsamain beenden und aufraemen</div><div class="step-code"># dsamain mit STRG+C beenden
+# Dann Snapshot unmounten:
+ntdsutil "snapshot" "unmount {GUID}" "quit" "quit" "quit"
+# Temporaere Dateien loeschen:
+Remove-Item C:\AD-Snapshot -Recurse -Force</div></div></li>
+        </ol>`},
+      {label:'Objekte wiederherstellen',content:`
+        <div class="guide-section-head">Geloeschtes Objekt aus Snapshot wiederherstellen</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Geloeschtes Objekt im Snapshot finden</div><div class="step-code"># dsamain muss laufen (Port 50000)
+# Geloeschte Objekte sind im CN=Deleted Objects Container:
+Get-ADObject -Filter {isDeleted -eq $true -and Name -like "*Mustermann*"}
+    -Server "localhost:50000"
+    -IncludeDeletedObjects
+    -Properties * |
+    Select Name, LastKnownParent, WhenChanged</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Attribute aus Snapshot in Live-AD exportieren</div><div class="step-code"># Attributwerte aus Snapshot lesen
+$SnapUser = Get-ADUser "mmustermann"
+    -Server "localhost:50000"
+    -Properties Department,Title,Manager,MemberOf,telephoneNumber
+
+# Attribute in Live-AD wiederherstellen
+Set-ADUser "mmustermann"
+    -Department $SnapUser.Department
+    -Title      $SnapUser.Title
+    -Manager    $SnapUser.Manager
+
+Write-Host "Attribute wiederhergestellt" -ForegroundColor Green</div><div class="step-note">&#128161; Das Objekt muss im Live-AD existieren. Fuer vollstaendige Wiederherstellung geloeschter Objekte: Restore-ADObject nutzen oder Authoritative Restore via DSRM.</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Gruppenmitgliedschaften vergleichen</div><div class="step-code"># Snapshot-Gruppen
+$SnapGruppen = (Get-ADUser "mmustermann" -Server "localhost:50000" -Properties MemberOf).MemberOf
+
+# Live-AD-Gruppen
+$LiveGruppen = (Get-ADUser "mmustermann" -Properties MemberOf).MemberOf
+
+# Vergleich
+Compare-Object $SnapGruppen $LiveGruppen |
+    ForEach-Object {
+        if ($_.SideIndicator -eq "<=") { Write-Host "Fehlt in Live-AD: $($_.InputObject)" -ForegroundColor Red }
+        else { Write-Host "Neu in Live-AD: $($_.InputObject)" -ForegroundColor Green }
+    }</div></div></li>
+        </ol>
+        <div class="guide-section-head">Snapshot verwalten</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Alle Snapshots anzeigen</div><div class="step-code">ntdsutil "snapshot" "list all" "quit" "quit" "quit"</div></div></li>
+          <li class="step"><span class="step-num">5</span><div class="step-content"><div class="step-title">Snapshot loeschen</div><div class="step-code">ntdsutil "snapshot" "activate instance ntds" "delete {GUID}" "quit" "quit" "quit"</div><div class="step-warn">&#9888; Snapshot-Loeschung ist unwiderruflich!</div></div></li>
+          <li class="step"><span class="step-num">6</span><div class="step-content"><div class="step-title">Regelmaessige Snapshots per geplanter Aufgabe</div><div class="step-code">$Action = New-ScheduledTaskAction -Execute "cmd.exe" -Argument '/c ntdsutil "snapshot" "activate instance ntds" "create" "quit" "quit" "quit" >> C:\Logs\snapshots.log 2>&1'
+$Trigger = New-ScheduledTaskTrigger -Daily -At "01:00"
+Register-ScheduledTask -TaskName "AD-Snapshot-Taeglich" -Action $Action -Trigger $Trigger -RunLevel Highest -Description "Taeglicher AD-Snapshot" -Force
+Write-Host "Aufgabe erstellt" -ForegroundColor Green</div><div class="step-note">&#128161; Alte Snapshots regelmaessig bereinigen — jeder Snapshot belegt Speicherplatz (VSS-Bereich).</div></div></li>
+        </ol>`}
+    ]
+  },
+];
 let openGuide = null;
 let guideActiveTabs = {};
 
@@ -6045,54 +6172,42 @@ function render() {
 
 
 // ══ CHANGELOG DATA ══
+// ══════════════════════════════════════════════════════════════
+// CHANGELOG — Neuen Eintrag OBEN einfuegen wenn etwas geaendert wird
+// Format: { date: 'Mon YYYY', badge: 'new'|'update'|'fix', title: '...', items: ['...'] }
+// badge: 'new' = gruen, 'update' = lila, 'fix' = orange
+// Maximal 5 Eintraege — aeltere loeschen
+// ══════════════════════════════════════════════════════════════
 const CHANGELOG = [
   {
     date: 'Mai 2025',
     badge: 'new',
+    title: 'ntdsutil — AD-Snapshot erstellen & einbinden',
+    items: ['Snapshot erstellen', 'dsamain LDAP-Server', 'Objekte wiederherstellen', 'Gruppen vergleichen', 'Geplante Snapshots', '+7 AD-Befehle'],
+  },
+  {
+    date: 'Mai 2025',
+    badge: 'new',
+    title: 'Dashboard als Startseite',
+    items: ['Stats-Karten', 'Tipp des Tages', 'Zuletzt angesehen', 'Kategorien-Grid', 'Changelog-Widget'],
+  },
+  {
+    date: 'Mai 2025',
+    badge: 'new',
     title: 'PS Skripte — 12 fertige PowerShell-Skripte',
-    items: ['Dienste remote verwalten', 'AD-Benutzer aus CSV', 'Backup mit Robocopy', 'Hardware-Inventar', 'Netzwerk-Scanner', 'Ereignisprotokoll', 'Passwort-Ablauf', 'Software-Inventar'],
+    items: ['Dienste remote', 'AD-Benutzer aus CSV', 'Backup Robocopy', 'Hardware-Inventar', 'Netzwerk-Scanner', 'Passwort-Ablauf'],
   },
   {
     date: 'Mai 2025',
     badge: 'new',
-    title: 'Impressum & Datenschutz (DSGVO + GitHub)',
-    items: ['3-Tab-Layout', 'GitHub Pages Datenschutz', 'EU-US Data Privacy Framework', 'Feedback-Button'],
+    title: 'Impressum, DSGVO & Feedback-Button',
+    items: ['§ 5 TMG Impressum', 'DSGVO 3-Tab-Layout', 'GitHub Pages Datenschutz', 'Feedback per E-Mail'],
   },
   {
     date: 'Mai 2025',
-    badge: 'new',
-    title: '931 Befehle — Kategorien erweitert',
-    items: ['IIS +10', 'Sicherheit +11', 'Daten +12', 'PowerShell +11', 'System +10', 'Dateisystem +8', 'Netzwerk +6'],
-  },
-  {
-    date: 'Apr 2025',
-    badge: 'new',
-    title: 'Themes, Lernkarten, PWA, Shortcuts, Notizen',
-    items: ['6 Themes', 'Lernkarten-Modus', 'PWA installierbar', 'Tastaturkürzel', 'Notizen je Befehl', 'Link teilen'],
-  },
-  {
-    date: 'Apr 2025',
-    badge: 'new',
-    title: 'Favoriten, Verlauf, Export, Paketmanager, IIS',
-    items: ['⭐ Favoriten', '🕐 Verlauf', '📥 Export CSV/MD/JSON', 'winget/choco/scoop', 'iisreset/appcmd'],
-  },
-  {
-    date: 'Apr 2025',
-    badge: 'new',
-    title: 'Sicherheit, Azure, Virtualisierung, PS Guide',
-    items: ['BitLocker', 'Az PowerShell', 'Hyper-V', 'WSL', 'Docker', 'PS Scripting Guide'],
-  },
-  {
-    date: 'Mrz 2025',
-    badge: 'new',
-    title: 'TS Anleitungen — 10 Troubleshooting Guides',
-    items: ['Kein Internet', 'BSOD analysieren', 'Performance', 'DNS', 'Dienste debuggen', 'Windows Update'],
-  },
-  {
-    date: 'Mrz 2025',
-    badge: 'update',
-    title: 'Mobile UX — Swipe, Touch-Flächen, Safe Area',
-    items: ['Swipe-Gesten', '44px Touch-Targets', 'Safe Area Support', 'Bottom Nav verbessert'],
+    badge: 'fix',
+    title: 'Sidebar-Navigation & Script-Fehler behoben',
+    items: ['Sidebar-Klick repariert', 'Hoisting-Fehler behoben', 'Swipe-Gesten entschärft'],
   },
 ];
 
