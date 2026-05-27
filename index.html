@@ -1260,6 +1260,217 @@
   .fav-card{border-color:#fbbf2444 !important;}
   .fav-card.open{border-color:#fbbf24 !important;}
 
+  /* ══ DASHBOARD ══ */
+  .db-wrap { max-width: 100%; }
+
+  /* Hero */
+  .db-hero {
+    background: linear-gradient(135deg, #0d1f3c 0%, #0a0c10 60%, #1a0030 100%);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .db-hero::before {
+    content: '>_';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 64px;
+    font-weight: 700;
+    color: #0078d4;
+    opacity: 0.08;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .db-hero-icon { font-size: 36px; flex-shrink: 0; }
+  .db-hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .db-hero-sub { font-size: 12px; color: #7dd3fc; line-height: 1.6; }
+
+  /* Stats row */
+  .db-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .db-stat {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .db-stat:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .db-stat:active { transform: scale(0.97); }
+  .db-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .db-stat-label { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* Section title */
+  .db-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .db-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Changelog */
+  .db-changelog { margin-bottom: 20px; }
+  .db-change-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid #22d3ee;
+    border-radius: 10px;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+    cursor: default;
+    transition: border-color 0.15s;
+  }
+  .db-change-card:first-child { border-left-color: #22c55e; }
+  .db-change-card:nth-child(2) { border-left-color: #a78bfa; }
+  .db-change-card:nth-child(3) { border-left-color: #fb923c; }
+  .db-change-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .db-change-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+  .badge-new    { background: #064e3b; color: #6ee7b7; border: 1px solid #047857; }
+  .badge-update { background: #1e1b4b; color: #a5b4fc; border: 1px solid #3730a3; }
+  .badge-fix    { background: #431407; color: #fdba74; border: 1px solid #9a3412; }
+  .db-change-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .db-change-date { font-size: 10px; color: var(--text3); flex-shrink: 0; }
+  .db-change-items {
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.6;
+    padding-left: 4px;
+  }
+  .db-change-items span {
+    display: inline-block;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin: 1px 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+  }
+
+  /* Category grid */
+  .db-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .db-cat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .db-cat-card:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-1px); }
+  .db-cat-card:active { transform: scale(0.97); }
+  .db-cat-icon { font-size: 18px; flex-shrink: 0; }
+  .db-cat-info { min-width: 0; }
+  .db-cat-name { font-size: 11px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .db-cat-count { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+  /* Quick access recent commands */
+  .db-recent { margin-bottom: 20px; }
+  .db-recent-empty { font-size: 12px; color: var(--text3); padding: 8px 0; }
+
+  /* Tip of the day */
+  .db-tip {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid #fbbf24;
+    border-radius: 10px;
+    padding: 13px 15px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .db-tip-icon { font-size: 18px; flex-shrink: 0; }
+  .db-tip-title { font-size: 10px; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .db-tip-text  { font-size: 11px; color: var(--text2); line-height: 1.6; }
+  .db-tip-cmd   { font-family: 'JetBrains Mono', monospace; color: var(--blue-bright); cursor: pointer; text-decoration: underline; }
+  .db-tip-cmd:hover { color: var(--blue); }
+
+  @media (max-width: 767px) {
+    .db-hero { padding: 16px 16px; gap: 12px; }
+    .db-hero-title { font-size: 16px; }
+    .db-hero-icon { font-size: 28px; }
+    .db-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .db-stat-num { font-size: 18px; }
+    .db-cat-grid { grid-template-columns: repeat(2, 1fr); gap: 7px; }
+    .db-change-title { font-size: 11px; }
+  }
+  @media (max-width: 380px) {
+    .db-stats { grid-template-columns: repeat(2, 1fr); }
+    .db-cat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
   /* == WILLKOMMEN POPUP == */
   #welcomeModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:16px;}
   .welcome-box{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:520px;overflow:hidden;max-height:90vh;overflow-y:auto;}
@@ -1297,8 +1508,48 @@
   .impressum-close{width:100%;margin-top:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:9px;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
   .impressum-close:hover{background:var(--bg4);}
 
-  /* Sidebar footer link */
-  .sidebar-footer-links{display:flex;gap:12px;justify-content:center;margin-top:8px;}
+  /* Impressum Tabs */
+  .imp-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px;}
+  .imp-tab{flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:8px 6px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;font-family:'JetBrains Mono',monospace;transition:color 0.15s,border-color 0.15s;-webkit-tap-highlight-color:transparent;}
+  .imp-tab:hover{color:var(--text2);}
+  .imp-tab.active{color:var(--blue-bright);border-bottom-color:var(--blue-bright);}
+  .imp-panel{display:none;}
+  .imp-panel.active{display:block;}
+
+  /* Feedback Button */
+  #feedbackBtn{
+    position:fixed;
+    bottom:calc(var(--bottom-nav-h) + 72px);
+    right:16px;
+    background:var(--bg2);
+    border:1px solid var(--border2);
+    border-radius:24px;
+    padding:8px 14px;
+    font-size:11px;
+    font-weight:600;
+    color:var(--text2);
+    cursor:pointer;
+    z-index:55;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    box-shadow:0 2px 12px rgba(0,0,0,0.3);
+    transition:background 0.15s,border-color 0.15s,transform 0.1s;
+    font-family:'JetBrains Mono',monospace;
+    white-space:nowrap;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #feedbackBtn:hover{background:var(--bg3);border-color:var(--blue);color:var(--text);transform:translateY(-1px);}
+  #feedbackBtn:active{transform:scale(0.96);}
+  #feedbackBtn .fb-icon{font-size:14px;}
+  @media(max-width:767px){
+    #feedbackBtn{
+      bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom,0px) + 68px);
+      right:14px;
+      padding:7px 12px;
+      font-size:10px;
+    }
+  }
   .sidebar-footer-links button{background:none;border:none;color:var(--text3);font-size:10px;cursor:pointer;padding:2px 0;text-decoration:underline;}
   .sidebar-footer-links button:hover{color:var(--text2);}
 </style>
@@ -1485,38 +1736,138 @@
 <!-- IMPRESSUM & DSGVO MODAL -->
 <div id="impressumModal" onclick="if(event.target===this)hideImpressum()">
   <div class="impressum-box">
+
+    <!-- Header -->
     <div class="impressum-title">&#128196; Impressum &amp; Datenschutz</div>
 
-    <div class="impressum-section">
-      <div class="impressum-h">Angaben gem&auml;&szlig; &sect; 5 TMG</div>
-      <div class="impressum-p">
-        Alexander Scherer<br>
-        Mertenstra&szlig;e 18<br>
-        13587 Berlin<br><br>
-        E-Mail: <a href="mailto:info@alexander-scherer.com">info@alexander-scherer.com</a>
+    <!-- Tabs -->
+    <div class="imp-tabs">
+      <button class="imp-tab active" onclick="switchImpTab(0,this)">Impressum</button>
+      <button class="imp-tab" onclick="switchImpTab(1,this)">Datenschutz</button>
+      <button class="imp-tab" onclick="switchImpTab(2,this)">GitHub &amp; Hosting</button>
+    </div>
+
+    <!-- Tab 0: Impressum -->
+    <div class="imp-panel active" id="imp0">
+      <div class="impressum-section">
+        <div class="impressum-h">Angaben gem&auml;&szlig; &sect; 5 TMG</div>
+        <div class="impressum-p">
+          <b>Alexander Scherer</b><br>
+          Mertenstra&szlig;e 18<br>
+          13587 Berlin<br>
+          Deutschland
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">Kontakt</div>
+        <div class="impressum-p">
+          E-Mail: <a href="mailto:info@alexander-scherer.com">info@alexander-scherer.com</a><br>
+          Website: <a href="https://alexander-scherer.com" target="_blank" rel="noopener">alexander-scherer.com</a>
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">Verantwortlich f&uuml;r den Inhalt gem&auml;&szlig; &sect; 55 Abs. 2 RStV</div>
+        <div class="impressum-p">
+          Alexander Scherer, Mertenstra&szlig;e 18, 13587 Berlin
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">Haftungsausschluss</div>
+        <div class="impressum-p">
+          Die Inhalte dieser App wurden mit gr&ouml;&szlig;ter Sorgfalt erstellt. F&uuml;r die Richtigkeit, Vollst&auml;ndigkeit und Aktualit&auml;t kann keine Gew&auml;hr &uuml;bernommen werden. Die Nutzung der dargestellten Befehle und Skripte erfolgt auf eigene Verantwortung. Der Betreiber &uuml;bernimmt keine Haftung f&uuml;r Sch&auml;den, die durch die Nutzung oder Nichtnutzung der bereitgestellten Informationen entstehen.
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">Urheberrecht</div>
+        <div class="impressum-p">
+          Die Inhalte dieser App unterliegen dem deutschen Urheberrecht. Die Vervielf&auml;ltigung, Bearbeitung, Verbreitung und jede Art der Verwertung au&szlig;erhalb der Grenzen des Urheberrechtes bed&uuml;rfen der schriftlichen Zustimmung des Autors.
+        </div>
       </div>
     </div>
 
-    <div class="impressum-section">
-      <div class="impressum-h">Haftungsausschluss</div>
-      <div class="impressum-p">
-        Die Inhalte dieser Seite wurden mit gr&ouml;&szlig;ter Sorgfalt erstellt. F&uuml;r die Richtigkeit, Vollst&auml;ndigkeit und Aktualit&auml;t der Inhalte kann keine Gew&auml;hr &uuml;bernommen werden. Die Nutzung der Befehle und Skripte erfolgt auf eigene Verantwortung.
+    <!-- Tab 1: Datenschutz -->
+    <div class="imp-panel" id="imp1">
+      <div class="impressum-section">
+        <div class="impressum-h">1. Datenschutz auf einen Blick</div>
+        <div class="impressum-p">
+          <b>Keine Cookies. Kein Tracking. Keine Analyse.</b><br>
+          Diese App verwendet keinerlei Cookies, Tracking-Dienste oder Analyse-Software (z.B. Google Analytics, Matomo). Es werden keine Nutzerdaten gesammelt, gespeichert oder an Dritte weitergegeben.
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">2. Lokale Datenspeicherung (localStorage)</div>
+        <div class="impressum-p">
+          Folgende Daten werden ausschlie&szlig;lich <b>lokal in Deinem Browser</b> gespeichert und verlassen Dein Ger&auml;t nicht:<br><br>
+          &bull; <b>Favoriten</b> — gemerkte Befehle<br>
+          &bull; <b>Verlauf</b> — zuletzt angesehene Befehle<br>
+          &bull; <b>Notizen</b> — eigene Notizen zu Befehlen<br>
+          &bull; <b>Theme</b> — gew&auml;hltes Farbschema<br>
+          &bull; <b>Eigene Befehle</b> — selbst erstellte Eintr&auml;ge<br><br>
+          Diese Daten k&ouml;nnen jederzeit &uuml;ber die Browser-Einstellungen gel&ouml;scht werden. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragserf&uuml;llung / berechtigtes Interesse).
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">3. Google Fonts</div>
+        <div class="impressum-p">
+          Diese Seite l&auml;dt Schriftarten (<b>JetBrains Mono, Syne</b>) von Google Fonts (fonts.googleapis.com). Dabei wird beim Laden der Seite eine Verbindung zu Google-Servern aufgebaut, wobei Deine <b>IP-Adresse</b> an Google &uuml;bermittelt wird.<br><br>
+          <b>Anbieter:</b> Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA<br>
+          <b>Datenschutz:</b> <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a><br>
+          <b>Rechtsgrundlage:</b> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einheitlicher Darstellung).<br><br>
+          Wenn Du die &Uuml;bertragung an Google verhindern m&ouml;chtest, kannst Du die Schriftarten lokal bereitstellen oder im Browser blockieren.
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">4. Betroffenenrechte</div>
+        <div class="impressum-p">
+          Da keine personenbezogenen Daten serverseitig gespeichert werden, entfallen die meisten Auskunftspflichten. F&uuml;r Fragen zum Datenschutz wende Dich an:<br><br>
+          <a href="mailto:info@alexander-scherer.com">info@alexander-scherer.com</a>
+        </div>
       </div>
     </div>
 
-    <div class="impressum-section">
-      <div class="impressum-h">Datenschutzerkl&auml;rung</div>
-      <div class="impressum-p">
-        <b>Lokale Datenspeicherung:</b> Diese App speichert Favoriten, Verlauf, Notizen, Theme und Spracheinstellung ausschlie&szlig;lich im localStorage Deines Browsers. Es werden keine Daten an externe Server &uuml;bertragen.<br><br>
-        <b>Google Fonts:</b> Diese Seite nutzt Schriftarten von Google Fonts (JetBrains Mono, Syne). Beim Laden der Seite wird eine Verbindung zu Google-Servern hergestellt, wobei Deine IP-Adresse &uuml;bermittelt wird. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einheitlicher Darstellung). Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA.<br><br>
-        <b>GitHub Pages:</b> Diese App wird &uuml;ber GitHub Pages bereitgestellt. GitHub erhebt dabei Serverprotokolldaten (IP-Adresse, Zeitpunkt, Browser). Weitere Informationen: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">GitHub Privacy Statement</a>.<br><br>
-        <b>Keine Cookies, kein Tracking, keine Analyse-Tools.</b> Diese App verwendet weder Cookies noch Tracking-Dienste oder Analyse-Software.
+    <!-- Tab 2: GitHub -->
+    <div class="imp-panel" id="imp2">
+      <div class="impressum-section">
+        <div class="impressum-h">Hosting &uuml;ber GitHub Pages</div>
+        <div class="impressum-p">
+          Diese App wird &uuml;ber <b>GitHub Pages</b> (github.io) gehostet, einem Dienst der GitHub Inc.<br><br>
+          <b>Anbieter:</b> GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA<br>
+          <b>Muttergesellschaft:</b> Microsoft Corporation, Redmond, Washington, USA
+        </div>
       </div>
-    </div>
-
-    <div class="impressum-section">
-      <div class="impressum-h">Verantwortlich f&uuml;r den Inhalt</div>
-      <div class="impressum-p">Alexander Scherer, Mertenstra&szlig;e 18, 13587 Berlin</div>
+      <div class="impressum-section">
+        <div class="impressum-h">Automatisch erhobene Daten durch GitHub</div>
+        <div class="impressum-p">
+          GitHub erhebt beim Aufruf dieser Seite automatisch folgende Server-Protokolldaten:<br><br>
+          &bull; <b>IP-Adresse</b> des anfragenden Ger&auml;ts<br>
+          &bull; <b>Datum und Uhrzeit</b> des Zugriffs<br>
+          &bull; <b>Browser-Typ</b> und Betriebssystem<br>
+          &bull; <b>Referrer-URL</b> (zuvor besuchte Seite)<br>
+          &bull; <b>Hostname</b> des zugreifenden Rechners<br><br>
+          Diese Daten werden von GitHub erhoben und verarbeitet. Der Betreiber dieser App hat keinen Zugriff auf diese Protokolldaten.
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">Rechtsgrundlage &amp; Datenschutz GitHub</div>
+        <div class="impressum-p">
+          Rechtsgrundlage f&uuml;r die Nutzung von GitHub Pages: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an kostenlosem und zuverl&auml;ssigem Hosting).<br><br>
+          GitHub ist unter dem <b>EU-US Data Privacy Framework</b> zertifiziert. Weitere Informationen:<br>
+          <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener">GitHub Privacy Statement</a><br>
+          <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#data-collection" target="_blank" rel="noopener">GitHub Pages: Datenerhebung</a>
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">Datenverarbeitung ausserhalb der EU</div>
+        <div class="impressum-p">
+          GitHub Pages-Server stehen in den USA. Die &Uuml;bertragung erfolgt auf Basis des EU-US Data Privacy Framework (Angemessenheitsbeschluss der EU-Kommission gem. Art. 45 DSGVO). GitHub Inc. ist unter der Zertifizierungsnummer 2001-99 registriert.
+        </div>
+      </div>
+      <div class="impressum-section">
+        <div class="impressum-h">Quellcode</div>
+        <div class="impressum-p">
+          Der Quellcode dieser App ist &ouml;ffentlich auf GitHub verf&uuml;gbar. Pull Requests und Issues sind willkommen.
+        </div>
+      </div>
     </div>
 
     <button class="impressum-close" onclick="hideImpressum()">Schlie&szlig;en</button>
@@ -1529,6 +1880,12 @@
 
 <!-- FAB -->
 <button id="fab" onclick="showAddModal()" title="Eigenen Befehl hinzufuegen">+</button>
+
+<!-- FEEDBACK BUTTON -->
+<button id="feedbackBtn" onclick="sendFeedback()" title="Feedback senden">
+  <span class="fb-icon">&#128172;</span>
+  <span>Feedback</span>
+</button>
 
 <!-- ADD MODAL -->
 <div id="addModal" onclick="if(event.target===this)hideAddModal()">
@@ -1620,6 +1977,7 @@ const CATS = [
   {id:'paket',      icon:'&#128230;', label:'Paketmanager',      desc:'winget, chocolatey, scoop, NuGet', color:'#fb923c'},
   {id:'iis',        icon:'&#127760;', label:'IIS & Webserver',   desc:'iisreset, appcmd, SSL, Web.config', color:'#67e8f9'},
   {id:'batch-guide',icon:'&#128203;', label:'Batch Scripting',   desc:'.bat/.cmd Anleitungen Schritt fuer Schritt', color:'#fbbf24'},
+  {id:'ps-skripte', icon:'&#128196;', label:'PS Skripte',        desc:'Fertige PowerShell-Skripte fuer den Alltag', color:'#22d3ee'},
   {id:'favoriten',  icon:'&#11088;',  label:'Favoriten',         desc:'Gemerkte Lieblingsmerkbefehle', color:'#fbbf24'},
   {id:'verlauf',    icon:'&#128336;', label:'Verlauf',           desc:'Zuletzt angesehene Befehle', color:'#94a3b8'},
   {id:'eigene',     icon:'&#10010;',  label:'Eigene Befehle',   desc:'Selbst erstellte und gespeicherte Eintraege',  color:'#facc15'},
@@ -2933,6 +3291,536 @@ schtasks /create /tn "LoginSkript" /tr "C:\Scripts\meinskript.bat" /sc ONLOGON /
   },
 ];
 
+
+// -- PS SKRIPTE DATA --
+const PS_SKRIPTE = [
+  {
+    id:'pss-dienste',emoji:'⚙️',title:'Dienste remote verwalten',
+    subtitle:'Dienst-Status pruefen, starten, stoppen und Starttyp aendern auf Remote-PCs',
+    tabs:[
+      {label:'Skript',content:`
+        <div class="guide-section-head">Dienst remote abfragen und verwalten</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Dienst-Status auf Remote-PC pruefen</div><div class="step-code">Get-Service RemoteRegistry -ComputerName client01.test.local</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Starttyp auf Automatisch setzen</div><div class="step-code">Set-Service RemoteRegistry -ComputerName client01.test.local -StartupType Automatic</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Dienst starten</div><div class="step-code">Set-Service RemoteRegistry -ComputerName client01.test.local -Status Running</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Mehrere PCs auf einmal (Liste)</div><div class="step-code">$PCs = @("client01","client02","client03")
+foreach ($pc in $PCs) {
+    $svc = Get-Service RemoteRegistry -ComputerName $pc -ErrorAction SilentlyContinue
+    if ($svc.Status -ne "Running") {
+        Set-Service RemoteRegistry -ComputerName $pc -StartupType Automatic
+        Set-Service RemoteRegistry -ComputerName $pc -Status Running
+        Write-Host "$pc - gestartet" -ForegroundColor Green
+    } else {
+        Write-Host "$pc - laeuft bereits" -ForegroundColor Gray
+    }
+}</div></div></li>
+        </ol>`},
+      {label:'Alle Dienste pruefen',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Alle gestoppten Automatic-Dienste finden</div><div class="step-code">Get-Service -ComputerName client01.test.local |
+    Where-Object { $_.StartType -eq "Automatic" -and $_.Status -eq "Stopped" } |
+    Select-Object Name, DisplayName, Status |
+    Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Dienste als CSV exportieren</div><div class="step-code">Get-Service -ComputerName client01.test.local |
+    Select-Object Name, DisplayName, Status, StartType |
+    Export-Csv -Path "C:\Reports\Dienste_$($env:COMPUTERNAME).csv" -NoTypeInformation -Encoding UTF8</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-user-anlegen',emoji:'👤',title:'AD-Benutzer aus CSV anlegen',
+    subtitle:'Massenerstellung von AD-Benutzern aus einer CSV-Datei mit allen Attributen',
+    tabs:[
+      {label:'Skript',content:`
+        <div class="guide-section-head">CSV-Format (benutzer.csv)</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">CSV-Struktur</div><div class="step-code">Vorname,Nachname,Abteilung,Passwort
+Max,Mustermann,IT,P@ssw0rd1
+Erika,Musterfrau,HR,P@ssw0rd2</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Benutzer aus CSV anlegen</div><div class="step-code">Import-Module ActiveDirectory
+$CSV = Import-Csv -Path "C:\Scripts\benutzer.csv" -Delimiter ","
+
+foreach ($user in $CSV) {
+    $UPN      = "$($user.Vorname.ToLower()).$($user.Nachname.ToLower())@firma.local"
+    $SAM      = "$($user.Vorname.Substring(0,1).ToLower())$($user.Nachname.ToLower())"
+    $FullName = "$($user.Vorname) $($user.Nachname)"
+    $PW       = ConvertTo-SecureString $user.Passwort -AsPlainText -Force
+
+    try {
+        New-ADUser
+            -Name            $FullName
+            -GivenName       $user.Vorname
+            -Surname         $user.Nachname
+            -SamAccountName  $SAM
+            -UserPrincipalName $UPN
+            -Department      $user.Abteilung
+            -AccountPassword $PW
+            -Enabled         $true
+            -Path            "OU=Benutzer,DC=firma,DC=local"
+            -ChangePasswordAtLogon $true
+
+        Write-Host "Erstellt: $FullName ($SAM)" -ForegroundColor Green
+    } catch {
+        Write-Host "Fehler bei $FullName : $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+Write-Host "Fertig!" -ForegroundColor Cyan</div></div></li>
+        </ol>`},
+      {label:'Benutzer deaktivieren',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Alle deaktivierten Benutzer auflisten</div><div class="step-code">Search-ADAccount -AccountDisabled -UsersOnly |
+    Select-Object Name, SamAccountName, LastLogonDate |
+    Sort-Object LastLogonDate |
+    Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Benutzer die 90 Tage nicht angemeldet waren deaktivieren</div><div class="step-code">$Grenze = (Get-Date).AddDays(-90)
+Get-ADUser -Filter {LastLogonDate -lt $Grenze -and Enabled -eq $true}
+    -Properties LastLogonDate |
+    ForEach-Object {
+        Disable-ADAccount -Identity $_
+        Write-Host "Deaktiviert: $($_.Name) - Letzter Login: $($_.LastLogonDate)" -ForegroundColor Yellow
+    }</div><div class="step-warn">Vorsicht: Vorher mit -WhatIf testen! Get-ADUser ... | Disable-ADAccount -WhatIf</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-backup',emoji:'💾',title:'Backup-Skript mit Robocopy',
+    subtitle:'Automatisches Backup mit Protokoll, E-Mail-Benachrichtigung und Fehlerbehandlung',
+    tabs:[
+      {label:'Skript',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Vollstaendiges Backup-Skript</div><div class="step-code">#Requires -RunAsAdministrator
+param(
+    [string]$Quelle  = "C:\Daten",
+    [string]$Ziel    = "D:\Backup",
+    [string]$LogPfad = "C:\Logs\Backup"
+)
+
+# Datum-Stempel fuer Log
+$Datum   = Get-Date -Format "yyyy-MM-dd_HH-mm"
+$LogFile = "$LogPfad\Backup_$Datum.log"
+
+# Log-Verzeichnis erstellen
+if (-not (Test-Path $LogPfad)) { New-Item $LogPfad -ItemType Directory | Out-Null }
+
+# Backup ausfuehren
+Write-Host "Starte Backup: $Quelle -> $Ziel" -ForegroundColor Cyan
+$Result = robocopy $Quelle $Ziel /MIR /R:3 /W:10 /LOG:$LogFile /NP /NDL /NC
+
+# Ergebnis pruefen (Robocopy Exit-Codes 0-7 = OK)
+if ($LASTEXITCODE -le 7) {
+    Write-Host "Backup ERFOLGREICH (Code $LASTEXITCODE)" -ForegroundColor Green
+} else {
+    Write-Host "Backup FEHLGESCHLAGEN (Code $LASTEXITCODE)" -ForegroundColor Red
+    # Optional: E-Mail senden
+    Send-MailMessage -SmtpServer "mail.firma.local"
+        -From "backup@firma.local" -To "admin@firma.local"
+        -Subject "FEHLER: Backup $Datum"
+        -Body "Robocopy Exit-Code: $LASTEXITCODE. Log: $LogFile"
+}
+
+# Alte Logs loeschen (aelter als 30 Tage)
+Get-ChildItem $LogPfad -Filter "*.log" |
+    Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30) } |
+    Remove-Item -Force
+Write-Host "Logs bereinigt." -ForegroundColor Gray</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Als geplante Aufgabe registrieren</div><div class="step-code">$Action  = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File C:\Scripts\backup.ps1"
+$Trigger = New-ScheduledTaskTrigger -Daily -At "02:00"
+Register-ScheduledTask -TaskName "NachtBackup" -Action $Action -Trigger $Trigger -RunLevel Highest -Force
+Write-Host "Aufgabe registriert" -ForegroundColor Green</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-inventar',emoji:'📋',title:'Systeminfo / Hardware-Inventar',
+    subtitle:'Alle PCs im Netzwerk abfragen: CPU, RAM, Festplatte, OS, IP-Adresse',
+    tabs:[
+      {label:'Einzelner PC',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Vollstaendige Systeminfo eines PCs</div><div class="step-code">$PC = "client01.test.local"  # Oder: $env:COMPUTERNAME
+
+$Info = [PSCustomObject]@{
+    PC          = $PC
+    OS          = (Get-CimInstance -ComputerName $PC Win32_OperatingSystem).Caption
+    CPU         = (Get-CimInstance -ComputerName $PC Win32_Processor).Name
+    RAM_GB      = [Math]::Round((Get-CimInstance -ComputerName $PC Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
+    Disk_C_GB   = [Math]::Round((Get-CimInstance -ComputerName $PC Win32_LogicalDisk -Filter "DeviceID='C:'").Size / 1GB, 1)
+    Frei_C_GB   = [Math]::Round((Get-CimInstance -ComputerName $PC Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace / 1GB, 1)
+    IP          = (Resolve-DnsName $PC -ErrorAction SilentlyContinue).IPAddress
+    Letzter_Boot = (Get-CimInstance -ComputerName $PC Win32_OperatingSystem).LastBootUpTime
+}
+
+$Info | Format-List</div></div></li>
+        </ol>`},
+      {label:'Alle PCs aus AD',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Alle Computer aus AD inventarisieren</div><div class="step-code">Import-Module ActiveDirectory
+
+$PCs = Get-ADComputer -Filter {OperatingSystem -like "Windows*"} |
+       Select-Object -ExpandProperty Name
+
+$Ergebnisse = foreach ($PC in $PCs) {
+    if (-not (Test-Connection $PC -Count 1 -Quiet -TimeoutSeconds 2)) {
+        [PSCustomObject]@{ PC=$PC; Status="Offline"; OS=""; RAM_GB=""; Frei_C_GB="" }
+        continue
+    }
+    try {
+        [PSCustomObject]@{
+            PC       = $PC
+            Status   = "Online"
+            OS       = (Get-CimInstance -ComputerName $PC Win32_OperatingSystem -ErrorAction Stop).Caption
+            RAM_GB   = [Math]::Round((Get-CimInstance -ComputerName $PC Win32_ComputerSystem).TotalPhysicalMemory/1GB,1)
+            Frei_C_GB= [Math]::Round((Get-CimInstance -ComputerName $PC Win32_LogicalDisk -Filter "DeviceID='C:'").FreeSpace/1GB,1)
+        }
+    } catch {
+        [PSCustomObject]@{ PC=$PC; Status="Fehler: $($_.Exception.Message)"; OS=""; RAM_GB=""; Frei_C_GB="" }
+    }
+}
+
+$Ergebnisse | Export-Csv "C:\Reports\Inventar_$(Get-Date -Format 'yyyyMMdd').csv" -NoTypeInformation -Encoding UTF8
+$Ergebnisse | Format-Table -AutoSize
+Write-Host "Exportiert nach C:\Reports\" -ForegroundColor Cyan</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-netzwerk-scan',emoji:'🌐',title:'Netzwerk-Scanner und Port-Checker',
+    subtitle:'Subnetz nach aktiven Hosts scannen, offene Ports pruefen, DNS aufloesen',
+    tabs:[
+      {label:'Subnetz scannen',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Alle aktiven Hosts im Subnetz finden</div><div class="step-code">$Subnetz  = "192.168.1"
+$Ergebnis = [System.Collections.Generic.List[PSCustomObject]]::new()
+
+1..254 | ForEach-Object -Parallel {
+    $IP = "$using:Subnetz.$_"
+    if (Test-Connection $IP -Count 1 -Quiet -TimeoutSeconds 1) {
+        $DNS = try { [System.Net.Dns]::GetHostEntry($IP).HostName } catch { "unbekannt" }
+        [PSCustomObject]@{ IP=$IP; Hostname=$DNS; Status="Online" }
+    }
+} -ThrottleLimit 50 | ForEach-Object { $Ergebnis.Add($_) }
+
+$Ergebnis | Sort-Object { [Version]$_.IP } | Format-Table -AutoSize
+Write-Host "$($Ergebnis.Count) Hosts gefunden" -ForegroundColor Cyan</div><div class="step-note">ForEach-Object -Parallel benoetigt PowerShell 7+. Fuer PS 5.1 Runspaces oder Jobs nutzen.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Port-Status einer Host-Liste pruefen</div><div class="step-code">$Hosts = @("dc01","web01","sql01","file01")
+$Ports = @(80, 443, 3389, 445, 22)
+
+$Ergebnis = foreach ($Host in $Hosts) {
+    foreach ($Port in $Ports) {
+        $Test = Test-NetConnection $Host -Port $Port -WarningAction SilentlyContinue
+        [PSCustomObject]@{
+            Host  = $Host
+            Port  = $Port
+            Offen = $Test.TcpTestSucceeded
+        }
+    }
+}
+$Ergebnis | Format-Table -AutoSize</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-gpupdate',emoji:'🔄',title:'Gruppenrichtlinien remote aktualisieren',
+    subtitle:'GPUpdate auf mehreren PCs gleichzeitig ausfuehren und Ergebnis pruefen',
+    tabs:[
+      {label:'Skript',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">GPUpdate auf Remote-PC ausfuehren</div><div class="step-code">Invoke-GPUpdate -Computer "client01.test.local" -Force</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Alle PCs einer OU aktualisieren</div><div class="step-code">Import-Module ActiveDirectory, GroupPolicy
+
+$PCs = Get-ADComputer -Filter * -SearchBase "OU=Clients,DC=firma,DC=local" |
+       Select-Object -ExpandProperty Name
+
+foreach ($PC in $PCs) {
+    if (Test-Connection $PC -Count 1 -Quiet -TimeoutSeconds 2) {
+        try {
+            Invoke-GPUpdate -Computer $PC -Force -ErrorAction Stop
+            Write-Host "$PC - GPUpdate gestartet" -ForegroundColor Green
+        } catch {
+            Write-Host "$PC - Fehler: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "$PC - Offline" -ForegroundColor Yellow
+    }
+}</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Angewendete GPOs pruefen</div><div class="step-code">Invoke-Command -ComputerName client01.test.local -ScriptBlock {
+    gpresult /r
+}
+
+# Oder als HTML-Report:
+Invoke-Command -ComputerName client01.test.local -ScriptBlock {
+    gpresult /H "C:\Temp\GPReport.html" /F
+}
+Copy-Item "\\client01\C$\Temp\GPReport.html" "C:\Reports\GPReport_client01.html"</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-event-auswertung',emoji:'📊',title:'Ereignisprotokoll auswerten',
+    subtitle:'Failed Logons, Systemfehler, Dienst-Abstauerze per Skript finden und exportieren',
+    tabs:[
+      {label:'Anmelde-Fehler',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Fehlgeschlagene Anmeldungen der letzten 24h</div><div class="step-code">$Events = Get-WinEvent -FilterHashtable @{
+    LogName   = "Security"
+    Id        = 4625
+    StartTime = (Get-Date).AddHours(-24)
+} -ErrorAction SilentlyContinue
+
+$Events | ForEach-Object {
+    [PSCustomObject]@{
+        Zeit       = $_.TimeCreated
+        Benutzer   = $_.Properties[5].Value
+        Workstation= $_.Properties[13].Value
+        IP         = $_.Properties[19].Value
+        Grund      = $_.Properties[8].Value
+    }
+} | Sort-Object Zeit -Descending | Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Gesperrte Konten finden (EventID 4740)</div><div class="step-code">Get-WinEvent -FilterHashtable @{LogName="Security"; Id=4740} -MaxEvents 50 |
+    ForEach-Object {
+        [PSCustomObject]@{
+            Zeit       = $_.TimeCreated
+            Konto      = $_.Properties[0].Value
+            AusgeloestVon = $_.Properties[1].Value
+            DC         = $_.MachineName
+        }
+    } | Sort-Object Zeit -Descending | Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Systemfehler und kritische Ereignisse</div><div class="step-code">Get-WinEvent -FilterHashtable @{
+    LogName   = "System"
+    Level     = 1,2  # 1=Kritisch, 2=Fehler
+    StartTime = (Get-Date).AddDays(-7)
+} | Select-Object TimeCreated, ProviderName, Id, Message |
+    Export-Csv "C:\Reports\Fehler_$(Get-Date -Format 'yyyyMMdd').csv" -NoTypeInformation -Encoding UTF8
+
+Write-Host "Report exportiert" -ForegroundColor Green</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-disk-cleanup',emoji:'🧹',title:'Festplatte bereinigen und analysieren',
+    subtitle:'Groesste Dateien finden, Temp bereinigen, alte Logs loeschen, Speicher freigeben',
+    tabs:[
+      {label:'Analyse',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Top 20 groesste Dateien auf C:</div><div class="step-code">Get-ChildItem "C:\" -Recurse -File -ErrorAction SilentlyContinue |
+    Sort-Object Length -Descending |
+    Select-Object -First 20 FullName,
+        @{Name="Groesse_MB"; Expression={[Math]::Round($_.Length/1MB,1)}},
+        LastWriteTime |
+    Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Ordnergroessen auf erster Ebene</div><div class="step-code">Get-ChildItem "C:\" -Directory -ErrorAction SilentlyContinue |
+    ForEach-Object {
+        $Groesse = (Get-ChildItem $_.FullName -Recurse -File -ErrorAction SilentlyContinue |
+                    Measure-Object Length -Sum).Sum
+        [PSCustomObject]@{
+            Ordner   = $_.Name
+            Groesse_GB = [Math]::Round($Groesse/1GB,2)
+        }
+    } | Sort-Object Groesse_GB -Descending | Format-Table -AutoSize</div></div></li>
+        </ol>`},
+      {label:'Bereinigung',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Temp-Dateien bereinigen</div><div class="step-code"># Benutzer-Temp
+$Vorher = (Get-ChildItem $env:TEMP -Recurse -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum
+Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
+# System-Temp
+Remove-Item "C:\Windows\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
+# Prefetch (Admin noetig)
+Remove-Item "C:\Windows\Prefetch\*" -Force -ErrorAction SilentlyContinue
+
+$Nachher = (Get-ChildItem $env:TEMP -Recurse -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum
+$Freigegeben = [Math]::Round(($Vorher - $Nachher)/1MB,1)
+Write-Host "$Freigegeben MB freigegeben" -ForegroundColor Green</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Log-Dateien aelter als 30 Tage loeschen</div><div class="step-code">$LogOrdner = @("C:\Logs","C:\Windows\Logs","C:\inetpub\logs")
+$Grenze    = (Get-Date).AddDays(-30)
+$Geloescht = 0
+
+foreach ($Ordner in $LogOrdner) {
+    if (Test-Path $Ordner) {
+        Get-ChildItem $Ordner -Recurse -File -Filter "*.log" |
+        Where-Object { $_.LastWriteTime -lt $Grenze } |
+        ForEach-Object { Remove-Item $_.FullName -Force; $Geloescht++ }
+    }
+}
+Write-Host "$Geloescht Log-Dateien geloescht" -ForegroundColor Green</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Windows Update Cache leeren</div><div class="step-code">Stop-Service wuauserv -Force
+Remove-Item "C:\Windows\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
+Start-Service wuauserv
+Write-Host "Update-Cache geleert" -ForegroundColor Green</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-passwort-ablauf',emoji:'🔑',title:'Ablaufende Passwoerter melden',
+    subtitle:'AD-Benutzer mit ablaufendem Passwort finden und per E-Mail benachrichtigen',
+    tabs:[
+      {label:'Skript',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Benutzer mit ablaufendem Passwort (14 Tage)</div><div class="step-code">Import-Module ActiveDirectory
+
+$MaxAge = (Get-ADDefaultDomainPasswordPolicy).MaxPasswordAge.Days
+$Warnung = 14  # Tage vor Ablauf
+
+Get-ADUser -Filter {Enabled -eq $true -and PasswordNeverExpires -eq $false}
+    -Properties PasswordLastSet, EmailAddress |
+    ForEach-Object {
+        $Ablauf = $_.PasswordLastSet.AddDays($MaxAge)
+        $Tage   = ($Ablauf - (Get-Date)).Days
+
+        if ($Tage -ge 0 -and $Tage -le $Warnung) {
+            [PSCustomObject]@{
+                Name          = $_.Name
+                SamAccountName= $_.SamAccountName
+                Email         = $_.EmailAddress
+                LaeufAb       = $Ablauf.ToString("dd.MM.yyyy")
+                NochTage      = $Tage
+            }
+        }
+    } | Sort-Object NochTage | Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Automatische E-Mail-Benachrichtigung</div><div class="step-code">$MaxAge = (Get-ADDefaultDomainPasswordPolicy).MaxPasswordAge.Days
+
+Get-ADUser -Filter {Enabled -eq $true -and PasswordNeverExpires -eq $false}
+    -Properties PasswordLastSet,EmailAddress,DisplayName |
+    Where-Object { $_.EmailAddress } |
+    ForEach-Object {
+        $Ablauf = $_.PasswordLastSet.AddDays($MaxAge)
+        $Tage   = ($Ablauf - (Get-Date)).Days
+
+        if ($Tage -ge 0 -and $Tage -le 14) {
+            Send-MailMessage
+                -SmtpServer "mail.firma.local"
+                -From       "it@firma.local"
+                -To         $_.EmailAddress
+                -Subject    "Ihr Passwort lauft in $Tage Tagen ab"
+                -Body       ("Hallo " + $_.DisplayName + ", Ihr Passwort lauft am " + $Ablauf + " ab. Bitte aendern Sie es zeitnah. Gruss IT-Abteilung")
+            Write-Host "Mail an $($_.EmailAddress) gesendet ($Tage Tage)" -ForegroundColor Green
+        }
+    }</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-software-inventar',emoji:'📦',title:'Installierte Software inventarisieren',
+    subtitle:'Alle installierten Programme eines PCs oder aller PCs auflesen und exportieren',
+    tabs:[
+      {label:'Lokal',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Installierte Software per Registry</div><div class="step-code">$RegPfade = @(
+    "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
+    "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*",
+    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
+)
+
+Get-ItemProperty $RegPfade -ErrorAction SilentlyContinue |
+    Where-Object { $_.DisplayName -and $_.DisplayName -ne "" } |
+    Select-Object DisplayName, DisplayVersion, Publisher,
+        @{Name="Installiert"; Expression={ try {[DateTime]::ParseExact($_.InstallDate,"yyyyMMdd",$null).ToString("dd.MM.yyyy")} catch {""} }} |
+    Sort-Object DisplayName |
+    Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Als CSV exportieren</div><div class="step-code">$RegPfade = @(
+    "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
+    "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
+)
+Get-ItemProperty $RegPfade -ErrorAction SilentlyContinue |
+    Where-Object { $_.DisplayName } |
+    Select-Object DisplayName, DisplayVersion, Publisher |
+    Sort-Object DisplayName |
+    Export-Csv "C:\Reports\Software_$($env:COMPUTERNAME).csv" -NoTypeInformation -Encoding UTF8
+Write-Host "Exportiert" -ForegroundColor Green</div></div></li>
+        </ol>`},
+      {label:'Remote / alle PCs',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Software auf Remote-PC per Invoke-Command</div><div class="step-code">$PCs = @("client01","client02","server01")
+
+$AlleErgebnisse = Invoke-Command -ComputerName $PCs -ScriptBlock {
+    Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*" |
+        Where-Object { $_.DisplayName } |
+        Select-Object DisplayName, DisplayVersion, Publisher,
+            @{Name="PC"; Expression={$env:COMPUTERNAME}}
+} -ErrorAction SilentlyContinue
+
+$AlleErgebnisse |
+    Select-Object PC, DisplayName, DisplayVersion, Publisher |
+    Sort-Object PC, DisplayName |
+    Export-Csv "C:\Reports\Software_Alle.csv" -NoTypeInformation -Encoding UTF8
+
+Write-Host "Exportiert: $($AlleErgebnisse.Count) Eintraege" -ForegroundColor Cyan</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-uptime',emoji:'⏱️',title:'System-Uptime und Neustart-Info',
+    subtitle:'Letzten Neustart, Betriebszeit und Absturz-Ereignisse aller Server abfragen',
+    tabs:[
+      {label:'Skript',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Uptime eines oder mehrerer Server</div><div class="step-code">$Server = @("dc01","web01","sql01","file01")
+
+$Ergebnis = foreach ($s in $Server) {
+    if (-not (Test-Connection $s -Count 1 -Quiet -TimeoutSeconds 2)) {
+        [PSCustomObject]@{ Server=$s; Status="Offline"; Uptime=""; LetzterNeustart="" }
+        continue
+    }
+    $OS = Get-CimInstance -ComputerName $s Win32_OperatingSystem -ErrorAction SilentlyContinue
+    if ($OS) {
+        $Uptime = (Get-Date) - $OS.LastBootUpTime
+        [PSCustomObject]@{
+            Server         = $s
+            Status         = "Online"
+            LetzterNeustart= $OS.LastBootUpTime.ToString("dd.MM.yyyy HH:mm")
+            Uptime         = "$($Uptime.Days)d $($Uptime.Hours)h $($Uptime.Minutes)m"
+        }
+    }
+}
+$Ergebnis | Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Unerwartete Neustarts der letzten 30 Tage</div><div class="step-code">Get-WinEvent -FilterHashtable @{
+    LogName   = "System"
+    Id        = 6008   # Unerwartetes Herunterfahren
+    StartTime = (Get-Date).AddDays(-30)
+} -ErrorAction SilentlyContinue |
+    Select-Object TimeCreated, Message |
+    Format-Table -AutoSize -Wrap</div><div class="step-note">EventID 6008 = Unerwartetes Herunterfahren (Stromausfall, BSOD, Absturz)</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'pss-firewall-regeln',emoji:'🔥',title:'Firewall-Regeln verwalten',
+    subtitle:'Regeln auflisten, erstellen, aktivieren/deaktivieren per PowerShell-Skript',
+    tabs:[
+      {label:'Skript',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Alle aktiven eingehenden Regeln auflisten</div><div class="step-code">Get-NetFirewallRule -Direction Inbound -Enabled True |
+    Get-NetFirewallPortFilter |
+    ForEach-Object {
+        $Rule = Get-NetFirewallRule -AssociatedNetFirewallPortFilter $_
+        [PSCustomObject]@{
+            Name     = $Rule.DisplayName
+            Protokoll= $_.Protocol
+            Port     = $_.LocalPort
+            Aktion   = $Rule.Action
+        }
+    } | Sort-Object Port | Format-Table -AutoSize</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Neue Regel erstellen (z.B. fuer App)</div><div class="step-code">New-NetFirewallRule
+    -DisplayName "MeineApp HTTP"
+    -Direction   Inbound
+    -Protocol    TCP
+    -LocalPort   8080
+    -Action      Allow
+    -Profile     Domain,Private
+    -Description "Erlaubt eingehende Verbindungen auf Port 8080"
+
+Write-Host "Regel erstellt" -ForegroundColor Green</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Alle Regeln eines Programms deaktivieren</div><div class="step-code">Get-NetFirewallApplicationFilter | 
+    Where-Object { $_.Program -like "*chrome*" } |
+    ForEach-Object {
+        $rule = Get-NetFirewallRule -AssociatedNetFirewallApplicationFilter $_
+        Disable-NetFirewallRule -Name $rule.Name
+        Write-Host "Deaktiviert: $($rule.DisplayName)"
+    }</div></div></li>
+        </ol>`}
+    ]
+  },
+];
 
 // -- TS GUIDE DATA --
 const TS_GUIDES = [
@@ -4630,6 +5518,7 @@ function toggleGuide(id, event) {
   else if (activeTab === 'ts-guide')    renderGuide(TS_GUIDES,    getCatLabel('ts-guide'),    '#f87171', '&#128681;');
   else if (activeTab === 'ps-guide')    renderGuide(PS_GUIDES,    getCatLabel('ps-guide'),'#c084fc', '&#128218;');
   else if (activeTab === 'batch-guide') renderGuide(BATCH_GUIDES, getCatLabel('batch-guide'),   '#fbbf24', '&#128203;');
+  else if (activeTab === 'ps-skripte')  renderGuide(PS_SKRIPTE,   getCatLabel('ps-skripte'),  '#22d3ee', '&#128196;');
 }
 
 // Add copy buttons to all .step-code elements that don't have one yet
@@ -4812,6 +5701,7 @@ function buildNav() {
       : cat.id === 'ts-guide'    ? TS_GUIDES.length
       : cat.id === 'ps-guide'    ? PS_GUIDES.length
       : cat.id === 'batch-guide' ? BATCH_GUIDES.length
+      : cat.id === 'ps-skripte'  ? PS_SKRIPTE.length
       : cat.id === 'favoriten'   ? favorites.size
       : cat.id === 'verlauf'     ? verlauf.length
       : cat.id === 'eigene'      ? customCmds.length
@@ -5045,6 +5935,7 @@ function render() {
   if (activeTab === 'ts-guide')    { renderGuide(TS_GUIDES,    getCatLabel('ts-guide'),    '#f87171', '&#128681;'); return; }
   if (activeTab === 'ps-guide')    { renderGuide(PS_GUIDES,    getCatLabel('ps-guide'),'#c084fc', '&#128218;'); return; }
   if (activeTab === 'batch-guide') { renderGuide(BATCH_GUIDES, getCatLabel('batch-guide'),   '#fbbf24', '&#128203;'); return; }
+  if (activeTab === 'ps-skripte')  { renderGuide(PS_SKRIPTE,   getCatLabel('ps-skripte'),  '#22d3ee', '&#128196;'); return; }
 
   // Favoriten
   if (activeTab === 'favoriten') {
@@ -5089,108 +5980,9 @@ function render() {
   }
 
   if (activeTab === 'alle' && !searchQuery) {
-    let html = '';
-    CATS.filter(c => c.id !== 'alle' && c.id !== 'ad-guide' && c.id !== 'run').forEach(cat => {
-      const catCmds = cat.id === 'powershell'
-        ? CMDS.filter(c => c.typ === 'ps' && c.cat !== 'ad' && c.cat !== 'dns' && c.cat !== 'run')
-        : CMDS.filter(c => c.cat === cat.id);
-      if (!catCmds.length) return;
-      html += `<div class="section-block">
-        <div class="section-title" style="border-left-color:${cat.color}">
-          <span class="section-title-icon">${cat.icon}</span>
-          <div><div class="section-title-name">${getCatLabel(cat.id)}</div><div class="section-title-desc">${getCatDesc(cat.id)}</div></div>
-          <span class="section-title-count">${catCmds.length} Befehle</span>
-        </div>
-        <div class="cmd-grid">${catCmds.map(c => cardHtml(c, CMDS.indexOf(c))).join('')}</div>
-      </div>`;
-    });
-    // AD-Guide Block
-    html += `<div class="section-block">
-      <div class="section-title" style="border-left-color:#fb923c;cursor:pointer" onclick="selectTab('ad-guide')">
-        <span class="section-title-icon">&#128218;</span>
-        <div><div class="section-title-name">${getCatLabel('ad-guide')}</div><div class="section-title-desc">${getCatDesc('ad-guide')} — klicken zum Oeffnen</div></div>
-        <span class="section-title-count">${AD_GUIDES.length} Guides</span>
-      </div>
-    </div>`;
-    // Troubleshooting Befehle Block
-    const tsCmds = CMDS.filter(c => c.cat === 'ts');
-    if (tsCmds.length) {
-      html += `<div class="section-block">
-        <div class="section-title" style="border-left-color:#f87171;cursor:pointer" onclick="selectTab('ts')">
-          <span class="section-title-icon">&#128295;</span>
-          <div><div class="section-title-name">${getCatLabel('ts')}</div><div class="section-title-desc">${getCatDesc('ts')}</div></div>
-          <span class="section-title-count">${tsCmds.length} Befehle</span>
-        </div>
-        <div class="cmd-grid">${tsCmds.map(c => cardHtml(c, [...CMDS,...customCmds].indexOf(c))).join('')}</div>
-      </div>`;
-    }
-    // TS-Guide Block
-    html += `<div class="section-block">
-      <div class="section-title" style="border-left-color:#f87171;cursor:pointer" onclick="selectTab('ts-guide')">
-        <span class="section-title-icon">&#128681;</span>
-        <div><div class="section-title-name">${getCatLabel('ts-guide')}</div><div class="section-title-desc">${getCatDesc('ts-guide')}</div></div>
-        <span class="section-title-count">${TS_GUIDES.length} Guides</span>
-      </div>
-    </div>`;
-    // Sicherheit Block
-    const sichCmds = CMDS.filter(c => c.cat === 'sicherheit');
-    if (sichCmds.length) {
-      html += `<div class="section-block">
-        <div class="section-title" style="border-left-color:#fb923c;cursor:pointer" onclick="selectTab('sicherheit')">
-          <span class="section-title-icon">&#128274;</span>
-          <div><div class="section-title-name">${getCatLabel('sicherheit')}</div><div class="section-title-desc">${getCatDesc('sicherheit')}</div></div>
-          <span class="section-title-count">${sichCmds.length} Befehle</span>
-        </div>
-        <div class="cmd-grid">${sichCmds.slice(0,6).map(c=>cardHtml(c,[...CMDS,...customCmds].indexOf(c))).join('')}</div>
-      </div>`;
-    }
-    // Azure Block
-    const azCmds = CMDS.filter(c => c.cat === 'azure');
-    if (azCmds.length) {
-      html += `<div class="section-block">
-        <div class="section-title" style="border-left-color:#38bdf8;cursor:pointer" onclick="selectTab('azure')">
-          <span class="section-title-icon">&#9729;</span>
-          <div><div class="section-title-name">${getCatLabel('azure')}</div><div class="section-title-desc">${getCatDesc('azure')}</div></div>
-          <span class="section-title-count">${azCmds.length} Befehle</span>
-        </div>
-        <div class="cmd-grid">${azCmds.slice(0,4).map(c=>cardHtml(c,[...CMDS,...customCmds].indexOf(c))).join('')}</div>
-      </div>`;
-    }
-    // Virtualisierung Block
-    const virtCmds = CMDS.filter(c => c.cat === 'virt');
-    if (virtCmds.length) {
-      html += `<div class="section-block">
-        <div class="section-title" style="border-left-color:#a3e635;cursor:pointer" onclick="selectTab('virt')">
-          <span class="section-title-icon">&#128011;</span>
-          <div><div class="section-title-name">${getCatLabel('virt')}</div><div class="section-title-desc">${getCatDesc('virt')}</div></div>
-          <span class="section-title-count">${virtCmds.length} Befehle</span>
-        </div>
-        <div class="cmd-grid">${virtCmds.slice(0,4).map(c=>cardHtml(c,[...CMDS,...customCmds].indexOf(c))).join('')}</div>
-      </div>`;
-    }
-    // PS-Guide Block
-    html += `<div class="section-block">
-      <div class="section-title" style="border-left-color:#c084fc;cursor:pointer" onclick="selectTab('ps-guide')">
-        <span class="section-title-icon">&#128218;</span>
-        <div><div class="section-title-name">${getCatLabel('ps-guide')}</div><div class="section-title-desc">${getCatDesc('ps-guide')}</div></div>
-        <span class="section-title-count">${PS_GUIDES.length} Guides</span>
-      </div>
-    </div>`;
-    // Win+R Block
-    const runCmds = CMDS.filter(c => c.cat === 'run');
-    if (runCmds.length) {
-      html += `<div class="section-block">
-        <div class="section-title" style="border-left-color:#e879f9;cursor:pointer" onclick="selectTab('run')">
-          <span class="section-title-icon">&#9654;</span>
-          <div><div class="section-title-name">${getCatLabel('run')}</div><div class="section-title-desc">${getCatDesc('run')}</div></div>
-          <span class="section-title-count">${runCmds.length} Befehle</span>
-        </div>
-      </div>`;
-    }
-    content.innerHTML = html;
+    renderDashboard();
     return;
   }
-
   // Run-Tab: nach sub-Gruppe gruppiert anzeigen
   if (activeTab === 'run' && !searchQuery) {
     const runCat = CATS.find(c => c.id === 'run');
@@ -5249,6 +6041,189 @@ function render() {
     header = `<div class="cat-header"><div class="cat-header-text"><h2>Suche: "${searchQuery}"</h2><p>${filtered.length} Treffer</p></div></div>`;
   }
   content.innerHTML = header + `<div class="cmd-grid">${filtered.map(c => cardHtml(c, allCmds2.indexOf(c))).join('')}</div>`;
+}
+
+
+// ══ CHANGELOG DATA ══
+const CHANGELOG = [
+  {
+    date: 'Mai 2025',
+    badge: 'new',
+    title: 'PS Skripte — 12 fertige PowerShell-Skripte',
+    items: ['Dienste remote verwalten', 'AD-Benutzer aus CSV', 'Backup mit Robocopy', 'Hardware-Inventar', 'Netzwerk-Scanner', 'Ereignisprotokoll', 'Passwort-Ablauf', 'Software-Inventar'],
+  },
+  {
+    date: 'Mai 2025',
+    badge: 'new',
+    title: 'Impressum & Datenschutz (DSGVO + GitHub)',
+    items: ['3-Tab-Layout', 'GitHub Pages Datenschutz', 'EU-US Data Privacy Framework', 'Feedback-Button'],
+  },
+  {
+    date: 'Mai 2025',
+    badge: 'new',
+    title: '931 Befehle — Kategorien erweitert',
+    items: ['IIS +10', 'Sicherheit +11', 'Daten +12', 'PowerShell +11', 'System +10', 'Dateisystem +8', 'Netzwerk +6'],
+  },
+  {
+    date: 'Apr 2025',
+    badge: 'new',
+    title: 'Themes, Lernkarten, PWA, Shortcuts, Notizen',
+    items: ['6 Themes', 'Lernkarten-Modus', 'PWA installierbar', 'Tastaturkürzel', 'Notizen je Befehl', 'Link teilen'],
+  },
+  {
+    date: 'Apr 2025',
+    badge: 'new',
+    title: 'Favoriten, Verlauf, Export, Paketmanager, IIS',
+    items: ['⭐ Favoriten', '🕐 Verlauf', '📥 Export CSV/MD/JSON', 'winget/choco/scoop', 'iisreset/appcmd'],
+  },
+  {
+    date: 'Apr 2025',
+    badge: 'new',
+    title: 'Sicherheit, Azure, Virtualisierung, PS Guide',
+    items: ['BitLocker', 'Az PowerShell', 'Hyper-V', 'WSL', 'Docker', 'PS Scripting Guide'],
+  },
+  {
+    date: 'Mrz 2025',
+    badge: 'new',
+    title: 'TS Anleitungen — 10 Troubleshooting Guides',
+    items: ['Kein Internet', 'BSOD analysieren', 'Performance', 'DNS', 'Dienste debuggen', 'Windows Update'],
+  },
+  {
+    date: 'Mrz 2025',
+    badge: 'update',
+    title: 'Mobile UX — Swipe, Touch-Flächen, Safe Area',
+    items: ['Swipe-Gesten', '44px Touch-Targets', 'Safe Area Support', 'Bottom Nav verbessert'],
+  },
+];
+
+// Tipp des Tages (rotierend nach Datum)
+const DAILY_TIPS = [
+  { cmd: 'Get-NetTCPConnection -State Listen', text: 'Zeigt alle lauschenden Ports — praktischer Ersatz für netstat', cat: 'netzwerk' },
+  { cmd: 'sfc /scannow', text: 'Repariert beschädigte Windows-Systemdateien — als Admin ausführen', cat: 'ts' },
+  { cmd: 'Get-Process | Sort CPU -Descending | Select -First 5', text: 'Top 5 CPU-Verbraucher sofort im Blick', cat: 'prozesse' },
+  { cmd: 'robocopy C:\\Quelle D:\\Ziel /MIR /R:3', text: 'Mirror-Backup — nur geänderte Dateien werden kopiert', cat: 'tools' },
+  { cmd: 'Get-ADUser -Filter * | Measure-Object | Select Count', text: 'Schnell alle AD-Benutzer zählen', cat: 'ad' },
+  { cmd: 'winget upgrade --all --silent', text: 'Alle installierten Programme auf einmal aktualisieren', cat: 'paket' },
+  { cmd: 'ipconfig /flushdns', text: 'DNS-Cache leeren — löst viele Verbindungsprobleme', cat: 'netzwerk' },
+  { cmd: 'Get-BitLockerVolume | Select MountPoint,VolumeStatus', text: 'BitLocker-Status aller Laufwerke im Überblick', cat: 'sicherheit' },
+  { cmd: 'Compress-Archive -Path C:\\Logs -DestinationPath C:\\Logs.zip', text: 'Ordner ohne Zusatztool als ZIP komprimieren', cat: 'powershell' },
+  { cmd: 'wsl --list --verbose', text: 'Alle WSL-Distributionen mit Version und Status anzeigen', cat: 'virt' },
+  { cmd: 'Get-WinEvent -FilterHashtable @{LogName=\'Security\';Id=4625} -MaxEvents 10', text: 'Letzte fehlgeschlagene Anmeldeversuche auflisten', cat: 'ts' },
+  { cmd: 'Test-NetConnection google.com -Port 443', text: 'Port-Erreichbarkeit testen — ersetzt telnet', cat: 'netzwerk' },
+  { cmd: 'Get-ChildItem -Recurse | Sort Length -Descending | Select -First 10', text: 'Größte Dateien im aktuellen Verzeichnis finden', cat: 'dateisystem' },
+  { cmd: 'systeminfo | findstr "Boot Time"', text: 'Letzten Systemstart schnell ermitteln', cat: 'system' },
+];
+
+function renderDashboard() {
+  const content = document.getElementById('content');
+  document.getElementById('topbarTitle').innerHTML = '<span>&gt;</span> Dashboard';
+
+  // Stats
+  const totalCmds   = CMDS.length + customCmds.length;
+  const totalGuides = AD_GUIDES.length + TS_GUIDES.length + PS_GUIDES.length + BATCH_GUIDES.length + PS_SKRIPTE.length;
+  const totalFavs   = favorites.size;
+  const totalVerlauf= verlauf.length;
+
+  // Tipp des Tages
+  const tipIdx = Math.floor(Date.now() / 86400000) % DAILY_TIPS.length;
+  const tip = DAILY_TIPS[tipIdx];
+
+  // Recent verlauf commands
+  const recentCmds = verlauf.slice(0, 5)
+    .map(n => [...CMDS, ...customCmds].find(c => c.name === n))
+    .filter(Boolean);
+
+  // Categories for quick-nav (exclude meta-cats)
+  const navCats = CATS.filter(c => !['alle','favoriten','verlauf','eigene'].includes(c.id));
+
+  let html = `<div class="db-wrap">
+
+    <!-- Hero -->
+    <div class="db-hero">
+      <div class="db-hero-icon">&#62;_</div>
+      <div>
+        <div class="db-hero-title">WinCMD Referenz</div>
+        <div class="db-hero-sub">CMD &middot; PowerShell &middot; AD &middot; DNS &middot; Azure &middot; Docker &middot; IIS<br>
+        Deine Befehlsreferenz f&uuml;r den Windows-Alltag</div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="db-stats">
+      <div class="db-stat" onclick="document.getElementById('searchInput').focus()" title="Suchen">
+        <div class="db-stat-num">${totalCmds}</div>
+        <div class="db-stat-label">Befehle</div>
+      </div>
+      <div class="db-stat" onclick="selectTab('ad-guide')" title="Anleitungen">
+        <div class="db-stat-num">${totalGuides}</div>
+        <div class="db-stat-label">Anleitungen</div>
+      </div>
+      <div class="db-stat" onclick="selectTab('favoriten')" title="Favoriten" style="border-color:${totalFavs?'#fbbf2466':''}">
+        <div class="db-stat-num" style="color:${totalFavs?'#fbbf24':''}">${totalFavs}</div>
+        <div class="db-stat-label">Favoriten</div>
+      </div>
+      <div class="db-stat" onclick="startLernmodus()" title="Lernkarten starten">
+        <div class="db-stat-num">&#127924;</div>
+        <div class="db-stat-label">Lernen</div>
+      </div>
+    </div>
+
+    <!-- Tipp des Tages -->
+    <div class="db-tip">
+      <div class="db-tip-icon">&#128161;</div>
+      <div>
+        <div class="db-tip-title">Tipp des Tages</div>
+        <div class="db-tip-text">${tip.text}<br>
+          <span class="db-tip-cmd" onclick="handleSearch('${tip.cmd.split(' ')[0]}');document.getElementById('searchInput').value='${tip.cmd.split(' ')[0]}'">${tip.cmd}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zuletzt angesehen -->
+    <div class="db-recent">
+      <div class="db-section-title">&#128336; Zuletzt angesehen</div>
+      ${recentCmds.length === 0
+        ? '<div class="db-recent-empty">Noch keine Befehle angesehen — klicke auf eine Befehlskarte.</div>'
+        : `<div class="cmd-grid">${recentCmds.map(c => cardHtml(c, [...CMDS,...customCmds].indexOf(c))).join('')}</div>`
+      }
+    </div>
+
+    <!-- Kategorien -->
+    <div class="db-section-title">&#127807; Alle Kategorien</div>
+    <div class="db-cat-grid">
+      ${navCats.map(cat => {
+        const count = ['ad-guide','ts-guide','ps-guide','batch-guide','ps-skripte'].includes(cat.id)
+          ? (cat.id==='ad-guide' ? AD_GUIDES.length : cat.id==='ts-guide' ? TS_GUIDES.length : cat.id==='ps-guide' ? PS_GUIDES.length : cat.id==='batch-guide' ? BATCH_GUIDES.length : PS_SKRIPTE.length)
+          : CMDS.filter(c => c.cat === cat.id).length;
+        if (!count) return '';
+        return `<div class="db-cat-card" onclick="selectTab('${cat.id}')" style="border-left:3px solid ${cat.color}22">
+          <div class="db-cat-icon">${cat.icon}</div>
+          <div class="db-cat-info">
+            <div class="db-cat-name">${cat.label}</div>
+            <div class="db-cat-count">${count} ${['ad-guide','ts-guide','ps-guide','batch-guide','ps-skripte'].includes(cat.id)?'Guides':'Befehle'}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Changelog -->
+    <div class="db-changelog">
+      <div class="db-section-title">&#128196; Was ist neu</div>
+      ${CHANGELOG.map(ch => `
+        <div class="db-change-card">
+          <div class="db-change-header">
+            <span class="db-change-badge badge-${ch.badge}">${ch.badge==='new'?'NEU':ch.badge==='update'?'UPDATE':'FIX'}</span>
+            <span class="db-change-title">${ch.title}</span>
+            <span class="db-change-date">${ch.date}</span>
+          </div>
+          <div class="db-change-items">${ch.items.map(i=>`<span>${i}</span>`).join(' ')}</div>
+        </div>`).join('')}
+    </div>
+
+  </div>`;
+
+  content.innerHTML = html;
+  document.getElementById('visCount').textContent = totalCmds;
 }
 
 loadCustomCmds();
@@ -5496,7 +6471,7 @@ function shareLink() {
   if (activeTab !== 'alle' || searchQuery) { buildNav(); buildBottomNav(); render(); }
 })();
 
-// == SWIPE GESTEN ==
+
 (function() {
   // Kategoriewechsel per Swipe
   let sx = 0, sy = 0, st = 0;
@@ -5599,6 +6574,24 @@ function showImpressum() {
 }
 function hideImpressum() {
   document.getElementById('impressumModal').style.display = 'none';
+}
+function switchImpTab(idx, btn) {
+  document.querySelectorAll('.imp-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.imp-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+}
+
+// == FEEDBACK ==
+function sendFeedback() {
+  const subject = encodeURIComponent('Feedback: WinCMD Referenz');
+  const body    = encodeURIComponent(
+    'Hallo Alexander,\n\n' +
+    'ich habe folgenden Feedback zur WinCMD Referenz App:\n\n' +
+    '[ Dein Feedback hier ]\n\n' +
+    '---\n' +
+    'App-Version: WinCMD Ref\n' +
+    'Browser: ' + navigator.userAgent.split(')')[0].split('(')[1] + '\n'
+  );
+  window.location.href = `mailto:info@alexander-scherer.com?subject=${subject}&body=${body}`;
 }
 
 // == PWA MANIFEST ==
