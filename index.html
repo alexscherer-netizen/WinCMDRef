@@ -1256,6 +1256,37 @@
   .shortcut-desc{font-size:12px;color:var(--text2);}
   .shortcut-close{margin-top:14px;width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:8px;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;}
 
+  /* ══ FILTER BAR ══ */
+  #filterBar {
+    display:flex;align-items:center;gap:8px;
+    padding:8px 16px;
+    background:var(--bg2);border-bottom:1px solid var(--border);
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0;
+  }
+  #filterBar::-webkit-scrollbar{display:none;}
+  #filterBar.hidden{display:none;}
+  .filter-group{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+  .filter-sep{width:1px;height:18px;background:var(--border2);flex-shrink:0;margin:0 2px;}
+  .filter-btn{
+    background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+    padding:4px 10px;font-size:10px;font-weight:600;color:var(--text2);cursor:pointer;
+    white-space:nowrap;transition:background 0.12s,border-color 0.12s,color 0.12s;
+    font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .filter-btn:hover{background:var(--bg4);border-color:var(--border2);}
+  .filter-btn.active    {background:var(--blue);border-color:var(--blue);color:#fff;}
+  .filter-btn.active-ps {background:#6b21a8;border-color:#7c3aed;color:#e9d5ff;}
+  .filter-btn.active-cmd{background:#1e3a6e;border-color:#3b82f6;color:#93c5fd;}
+  .filter-btn.active-win{background:#064e3b;border-color:#10b981;color:#6ee7b7;}
+  .filter-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;flex-shrink:0;}
+  .filter-results{font-size:9px;color:var(--text3);white-space:nowrap;margin-left:auto;flex-shrink:0;}
+  @media(max-width:767px){
+    #filterBar{padding:6px 10px;gap:5px;}
+    .filter-btn{padding:3px 8px;font-size:9.5px;}
+    .filter-label{display:none;}
+  }
+
   /* Fav hint */
   .fav-card{border-color:#fbbf2444 !important;}
   .fav-card.open{border-color:#fbbf24 !important;}
@@ -1542,9 +1573,64 @@
   #feedbackBtn:hover{background:var(--bg3);border-color:var(--blue);color:var(--text);transform:translateY(-1px);}
   #feedbackBtn:active{transform:scale(0.96);}
   #feedbackBtn .fb-icon{font-size:14px;}
+
+  /* PayPal Donate Button */
+  #donateBtn{
+    position:fixed;
+    bottom:calc(var(--bottom-nav-h) + 116px);
+    right:16px;
+    background:linear-gradient(135deg,#003087,#009cde);
+    border:none;
+    border-radius:24px;
+    padding:8px 14px;
+    font-size:11px;
+    font-weight:700;
+    color:#fff;
+    cursor:pointer;
+    z-index:55;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    box-shadow:0 2px 16px rgba(0,156,222,0.35);
+    transition:box-shadow 0.15s,transform 0.1s,filter 0.15s;
+    font-family:'JetBrains Mono',monospace;
+    white-space:nowrap;
+    text-decoration:none;
+    -webkit-tap-highlight-color:transparent;
+    letter-spacing:0.02em;
+  }
+  #donateBtn:hover{
+    box-shadow:0 4px 24px rgba(0,156,222,0.55);
+    transform:translateY(-2px);
+    filter:brightness(1.08);
+  }
+  #donateBtn:active{transform:scale(0.96);}
+  #donateBtn .pp-logo{
+    font-size:13px;
+    background:#fff;
+    color:#003087;
+    border-radius:50%;
+    width:20px;
+    height:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    flex-shrink:0;
+    font-family:'Syne',sans-serif;
+  }
+  #donateBtn .pp-text{ line-height:1; }
+  #donateBtn .pp-sub{ font-size:8px; font-weight:400; opacity:0.85; display:block; margin-top:1px; letter-spacing:0.03em; }
+
   @media(max-width:767px){
     #feedbackBtn{
       bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom,0px) + 68px);
+      right:14px;
+      padding:7px 12px;
+      font-size:10px;
+    }
+    #donateBtn{
+      bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom,0px) + 112px);
       right:14px;
       padding:7px 12px;
       font-size:10px;
@@ -1603,6 +1689,33 @@
       <button class="topbar-icon-btn" id="shortcutBtn" onclick="showShortcuts()" title="Tastaturkuerzel (?)">&#9000;</button>
     </div>
   </div>
+  <!-- FILTER BAR -->
+  <div id="filterBar" class="hidden">
+    <span class="filter-label">Typ</span>
+    <div class="filter-group">
+      <button class="filter-btn active" id="fb-all"  onclick="setFilter('typ','all')">Alle</button>
+      <button class="filter-btn"        id="fb-cmd"  onclick="setFilter('typ','cmd')">CMD</button>
+      <button class="filter-btn"        id="fb-ps"   onclick="setFilter('typ','ps')">PS</button>
+      <button class="filter-btn"        id="fb-both" onclick="setFilter('typ','both')">CMD+PS</button>
+    </div>
+    <div class="filter-sep"></div>
+    <span class="filter-label">Win</span>
+    <div class="filter-group">
+      <button class="filter-btn active" id="fb-wAll" onclick="setFilter('win','all')">Alle</button>
+      <button class="filter-btn"        id="fb-w11"  onclick="setFilter('win','11')">11</button>
+      <button class="filter-btn"        id="fb-w10"  onclick="setFilter('win','10')">10</button>
+      <button class="filter-btn"        id="fb-wSrv" onclick="setFilter('win','srv')">Server</button>
+    </div>
+    <div class="filter-sep"></div>
+    <span class="filter-label">Sort</span>
+    <div class="filter-group">
+      <button class="filter-btn active" id="fb-sRel" onclick="setFilter('sort','rel')">Relevant</button>
+      <button class="filter-btn"        id="fb-sAZ"  onclick="setFilter('sort','az')">A–Z</button>
+      <button class="filter-btn"        id="fb-sZA"  onclick="setFilter('sort','za')">Z–A</button>
+    </div>
+    <span class="filter-results" id="filterResults"></span>
+  </div>
+
   <div id="content"></div>
 </div>
 
@@ -1880,6 +1993,19 @@
 
 <!-- FAB -->
 <button id="fab" onclick="showAddModal()" title="Eigenen Befehl hinzufuegen">+</button>
+
+<!-- PAYPAL SPENDEN BUTTON -->
+<a id="donateBtn"
+   href="https://paypal.me/AlexanderGlauche?locale.x=de_DE&country.x=DE"
+   target="_blank"
+   rel="noopener noreferrer"
+   title="Mit PayPal spenden — Danke!">
+  <span class="pp-logo">P</span>
+  <span class="pp-text">
+    Spenden
+    <span class="pp-sub">via PayPal</span>
+  </span>
+</a>
 
 <!-- FEEDBACK BUTTON -->
 <button id="feedbackBtn" onclick="sendFeedback()" title="Feedback senden">
@@ -3295,6 +3421,544 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "MeinSkript" /t 
 
 :: Methode 3: Geplante Aufgabe bei Login
 schtasks /create /tn "LoginSkript" /tr "C:\Scripts\meinskript.bat" /sc ONLOGON /ru %USERNAME% /f</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-fehlerbehandlung',emoji:'⚠️',title:'Fehlerbehandlung & Debugging',
+    subtitle:'ERRORLEVEL pruefen, Logs schreiben, Fehler abfangen und Skripte robust machen',
+    tabs:[
+      {label:'ERRORLEVEL',content:`
+        <div class="guide-section-head">ERRORLEVEL verstehen und nutzen</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">ERRORLEVEL nach jedem Befehl pruefen</div><div class="step-code">xcopy C:\Quelle D:\Ziel /S /Y
+IF %ERRORLEVEL% NEQ 0 (
+    echo FEHLER: xcopy fehlgeschlagen mit Code %ERRORLEVEL%
+    exit /b %ERRORLEVEL%
+)
+echo Kopieren erfolgreich.</div><div class="step-note">&#128161; NEQ 0 = nicht gleich 0. ERRORLEVEL 0 = Erfolg. Groesser 0 = Fehler.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Haeufige ERRORLEVEL-Codes</div><div class="step-code">:: 0  = Erfolg
+:: 1  = Allgemeiner Fehler
+:: 2  = Datei nicht gefunden
+:: 5  = Zugriff verweigert
+:: 9009 = Befehl nicht gefunden (Tippfehler im Befehlsnamen)
+:: Robocopy: 0-7 = OK, 8+ = Fehler
+
+IF %ERRORLEVEL% EQU 5 echo Zugriff verweigert - als Admin ausfuehren!</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Kurzform mit || (OR-Operator)</div><div class="step-code">:: Fuehrt zweiten Befehl nur bei Fehler aus:
+ping -n 1 server01 || echo Server nicht erreichbar!
+
+:: Skript bei Fehler abbrechen:
+net use Z: \\Server\Share || (echo Fehler beim Verbinden & exit /b 1)
+
+:: Mehrere Befehle bei Fehler:
+copy datei.txt D:\Backup\ || (
+    echo Backup fehlgeschlagen!
+    call :log_fehler "Backup gescheitert"
+    exit /b 1
+)</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Fehler-Logging in Datei</div><div class="step-code">@echo off
+set LOGFILE=C:\Logs\skript_%date:~-4,4%%date:~-7,2%%date:~0,2%.log
+
+call :log "Skript gestartet"
+xcopy C:\Quelle D:\Ziel /S /Y >> "%LOGFILE%" 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    call :log "FEHLER: xcopy Code %ERRORLEVEL%"
+    exit /b 1
+)
+call :log "Fertig"
+exit /b 0
+
+:log
+echo [%date% %time%] %~1 >> "%LOGFILE%"
+echo [%date% %time%] %~1
+goto :eof</div><div class="step-note">&#128161; 2>&1 leitet auch Fehlerausgabe (stderr) in die Logdatei. %~1 = Parameter ohne Anfuehrungszeichen.</div></div></li>
+        </ol>`},
+      {label:'Debugging',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">ECHO ON fuer Debugging</div><div class="step-code">@echo off
+:: Zum Debuggen: echo on aktivieren
+:: echo on
+
+set NAME=Test
+echo Schritt 1: Variable ist %NAME%
+
+:: Tipp: Skript mit ECHO ON starten
+:: cmd /c "echo on & meinskript.bat"</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Pause an beliebiger Stelle einfuegen</div><div class="step-code">echo Schritt 1 fertig. Werte pruefen:
+echo NAME=%NAME%
+echo PFAD=%PFAD%
+pause
+echo Weiter mit Schritt 2...</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Variablen zur Laufzeit anzeigen</div><div class="step-code">:: Alle aktuellen Variablen anzeigen:
+set
+
+:: Nur eigene Variablen (Praefix MY_):
+set MY_
+
+:: Variable in Logdatei schreiben:
+set >> debug.log</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Skript trocken durchlaufen (Simulation)</div><div class="step-code">@echo off
+set DRYRUN=1
+
+if %DRYRUN%==1 (
+    echo [SIMULATION] del C:\Temp\*.tmp
+) else (
+    del C:\Temp\*.tmp
+)
+
+if %DRYRUN%==1 (
+    echo [SIMULATION] robocopy C:\Quelle D:\Ziel /MIR
+) else (
+    robocopy C:\Quelle D:\Ziel /MIR
+)</div><div class="step-note">&#128161; DRYRUN=1 setzen um nur zu simulieren, DRYRUN=0 fuer echten Lauf. Spart viele Fehler!</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-dateien-verzeichnisse',emoji:'📂',title:'Dateien & Verzeichnisse verwalten',
+    subtitle:'Dateien suchen, kopieren, verschieben, umbenennen, loeschen und pruefen',
+    tabs:[
+      {label:'Grundoperationen',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Datei und Ordner pruefen vor Aktion</div><div class="step-code">@echo off
+set DATEI=C:\Daten\config.ini
+set ORDNER=C:\Backup
+
+:: Datei pruefen
+IF NOT EXIST "%DATEI%" (
+    echo Datei nicht gefunden: %DATEI%
+    exit /b 1
+)
+
+:: Ordner pruefen und ggf. erstellen
+IF NOT EXIST "%ORDNER%" (
+    echo Erstelle Ordner: %ORDNER%
+    mkdir "%ORDNER%"
+)
+
+echo Alles vorhanden - weiter...</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Dateien mit Datum-Stempel kopieren</div><div class="step-code">@echo off
+:: Datum: YYYY-MM-DD Format
+set DATUM=%date:~-4,4%-%date:~-7,2%%date:~0,2%
+set UHRZEIT=%time:~0,2%%time:~3,2%
+
+:: Leerzeichen in Uhrzeit ersetzen (vor 10 Uhr)
+set UHRZEIT=%UHRZEIT: =0%
+
+set ZIEL=C:\Backup\config_%DATUM%_%UHRZEIT%.ini
+copy "C:\Daten\config.ini" "%ZIEL%"
+echo Gesichert als: %ZIEL%</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Alle Dateien eines Typs verarbeiten</div><div class="step-code">@echo off
+set QUELLE=C:\Logs
+set ZIEL=C:\Archiv
+
+for %%f in ("%QUELLE%\*.log") do (
+    echo Verarbeite: %%~nxf
+    copy "%%f" "%ZIEL%\%%~nxf"
+    IF %ERRORLEVEL% EQU 0 (
+        del "%%f"
+        echo  -> Archiviert und geloescht
+    ) ELSE (
+        echo  -> FEHLER beim Kopieren!
+    )
+)</div><div class="step-note">&#128161; %%~nxf = Dateiname + Erweiterung. %%~nf = nur Name. %%~xf = nur Erweiterung. %%~dpf = Laufwerk+Pfad.</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Aeltere Dateien loeschen (X Tage)</div><div class="step-code">@echo off
+set ORDNER=C:\Logs
+set TAGE=30
+
+echo Loesche Dateien aelter als %TAGE% Tage in %ORDNER%
+forfiles /p "%ORDNER%" /s /m *.log /d -%TAGE% /c "cmd /c echo Loesche: @path && del @path"
+echo Fertig.</div></div></li>
+        </ol>`},
+      {label:'Suchen & Umbenennen',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Dateien rekursiv suchen</div><div class="step-code">@echo off
+:: Alle .log Dateien finden und auflisten:
+dir C:\Windows\*.log /s /b
+
+:: In Datei speichern:
+dir C:\Daten\*.txt /s /b > C:\Temp\gefunden.txt
+echo Gefundene Dateien: 
+find /c /v "" C:\Temp\gefunden.txt</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Massenhaft umbenennen (Praefix hinzufuegen)</div><div class="step-code">@echo off
+cd /d C:\Bilder
+set PRAEFIX=2024_
+
+for %%f in (*.jpg) do (
+    IF NOT "%%~nf"=="%PRAEFIX%%%~nf" (
+        ren "%%f" "%PRAEFIX%%%f"
+        echo Umbenannt: %%f -> %PRAEFIX%%%f
+    )
+)</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Text in Dateien suchen (findstr)</div><div class="step-code">:: Text in einer Datei suchen:
+findstr /i "fehler error" C:\Logs\app.log
+
+:: Rekursiv in allen .log Dateien:
+findstr /s /i /n "CRITICAL" C:\Logs\*.log
+
+:: Ergebnis mit Zeilennummern:
+findstr /n "192.168" C:\Windows\System32\drivers\etc\hosts
+
+:: Mehrere Suchbegriffe (ODER-Suche):
+findstr /i "error warn fail" service.log</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-netzwerk',emoji:'🌐',title:'Netzwerk-Skripte',
+    subtitle:'Ping-Monitoring, Netzlaufwerke verbinden, IP-Konfiguration, Port-Tests',
+    tabs:[
+      {label:'Ping & Monitoring',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Server-Liste pingen und Ergebnis loggen</div><div class="step-code">@echo off
+set LOGFILE=C:\Logs\ping_%date:~-4,4%%date:~-7,2%%date:~0,2%.log
+echo Ping-Test %date% %time% > "%LOGFILE%"
+
+for %%s in (dc01 dc02 web01 sql01 file01) do (
+    ping -n 1 -w 1000 %%s >nul 2>&1
+    IF %ERRORLEVEL% EQU 0 (
+        echo [OK]     %%s >> "%LOGFILE%"
+        echo [OK]     %%s
+    ) ELSE (
+        echo [FEHLER] %%s >> "%LOGFILE%"
+        echo [FEHLER] %%s
+    )
+)
+echo Fertig. Log: %LOGFILE%</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Dauerhaftes Ping-Monitoring mit Zeitstempel</div><div class="step-code">@echo off
+set HOST=8.8.8.8
+set LOGFILE=C:\Logs\monitor.log
+
+:loop
+ping -n 1 -w 2000 %HOST% >nul 2>&1
+IF %ERRORLEVEL% EQU 0 (
+    echo %date% %time% - %HOST% ERREICHBAR >> "%LOGFILE%"
+) ELSE (
+    echo %date% %time% - %HOST% NICHT ERREICHBAR *** >> "%LOGFILE%"
+    echo ALARM: %HOST% nicht erreichbar!
+)
+timeout /t 60 /nobreak >nul
+goto loop</div><div class="step-warn">&#9888; Skript laeuft endlos. Mit STRG+C beenden. Als geplante Aufgabe starten fuer Hintergrundlauf.</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Subnetz scannen (einfach)</div><div class="step-code">@echo off
+set NETZ=192.168.1
+echo Scanne %NETZ%.1 - %NETZ%.254...
+
+for /l %%i in (1,1,254) do (
+    ping -n 1 -w 200 %NETZ%.%%i >nul 2>&1
+    IF %ERRORLEVEL% EQU 0 (
+        echo Aktiv: %NETZ%.%%i
+    )
+)
+echo Scan abgeschlossen.</div><div class="step-note">&#128161; Langsamer als PowerShell-Variante, aber kein PS noetig. -w 200 = 200ms Timeout pro Host.</div></div></li>
+        </ol>`},
+      {label:'Netzlaufwerke',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Netzlaufwerk verbinden und trennen</div><div class="step-code">@echo off
+:: Verbinden (mit Persistenz):
+net use Z: \\Server01\Freigabe /persistent:yes
+IF %ERRORLEVEL% NEQ 0 (
+    echo Verbindung fehlgeschlagen!
+    exit /b 1
+)
+echo Laufwerk Z: verbunden.
+
+:: Trennen:
+net use Z: /delete /yes</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Alle Laufwerke auflisten und trennen</div><div class="step-code">@echo off
+:: Alle Netzlaufwerke anzeigen:
+net use
+
+:: Alle Netzlaufwerke trennen:
+net use * /delete /yes
+
+:: Nur ein bestimmtes trennen wenn verbunden:
+IF EXIST Z:\ (
+    net use Z: /delete /yes
+    echo Z: getrennt
+) ELSE (
+    echo Z: war nicht verbunden
+)</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Login-Skript fuer Netzlaufwerke (GPO)</div><div class="step-code">@echo off
+:: Typisches Login-Skript fuer Domaenum-Benutzer
+
+:: Gemeinsames Laufwerk fuer alle:
+net use H: \\fileserver\home\%USERNAME% /persistent:no
+
+:: Abteilungslaufwerk nach Gruppe pruefen:
+net localgroup "IT-Abteilung" %USERNAME% >nul 2>&1
+IF %ERRORLEVEL% EQU 0 (
+    net use I: \\fileserver\it /persistent:no
+)
+
+net localgroup "Buchhaltung" %USERNAME% >nul 2>&1
+IF %ERRORLEVEL% EQU 0 (
+    net use B: \\fileserver\buchhaltung /persistent:no
+)
+
+echo Laufwerke eingebunden.</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-registry',emoji:'🔑',title:'Registry per Batch bearbeiten',
+    subtitle:'Registrierungseintraege lesen, schreiben, loeschen und sichern per REG-Befehl',
+    tabs:[
+      {label:'Lesen & Schreiben',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Registry-Wert lesen</div><div class="step-code">@echo off
+:: Wert lesen und in Variable speichern:
+for /f "tokens=3" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v CurrentBuild') do (
+    set BUILD=%%a
+)
+echo Windows Build: %BUILD%
+
+:: Einfaches Lesen (Ausgabe direkt):
+reg query "HKCU\Software\Microsoft\Office" /s</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Registry-Wert schreiben</div><div class="step-code">@echo off
+:: String-Wert setzen:
+reg add "HKCU\Software\MeineApp" /v "Version" /t REG_SZ /d "1.0.0" /f
+
+:: DWORD (Zahl) setzen:
+reg add "HKCU\Software\MeineApp" /v "Aktiv" /t REG_DWORD /d 1 /f
+
+:: Erweiterbarer String:
+reg add "HKCU\Software\MeineApp" /v "Pfad" /t REG_EXPAND_SZ /d "%APPDATA%\MeineApp" /f
+
+echo Registry-Werte gesetzt.</div><div class="step-note">&#128161; /f = ohne Rueckfrage ueberschreiben. REG_SZ = Text, REG_DWORD = Zahl (32bit), REG_EXPAND_SZ = Text mit Variablen.</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Autostart-Eintraege verwalten</div><div class="step-code">@echo off
+:: Autostart-Eintrag hinzufuegen (HKCU = nur aktueller Benutzer):
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "MeinProgramm" /t REG_SZ /d "C:\Tools\mein.exe" /f
+
+:: Autostart-Eintrag entfernen:
+reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "MeinProgramm" /f
+
+:: Alle Autostart-Eintraege anzeigen:
+reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+reg query "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"</div></div></li>
+        </ol>`},
+      {label:'Sichern & Importieren',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Registry-Schluessel sichern (exportieren)</div><div class="step-code">@echo off
+set DATUM=%date:~-4,4%%date:~-7,2%%date:~0,2%
+set BACKUP=C:\RegBackup
+
+IF NOT EXIST "%BACKUP%" mkdir "%BACKUP%"
+
+:: Einzelnen Schluessel exportieren:
+reg export "HKCU\Software\MeineApp" "%BACKUP%\MeineApp_%DATUM%.reg" /y
+echo Gesichert: %BACKUP%\MeineApp_%DATUM%.reg
+
+:: Ganzen Hive sichern (Admin noetig):
+reg save HKLM\SOFTWARE "%BACKUP%\SOFTWARE_%DATUM%.hiv" /y</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Registry-Datei importieren</div><div class="step-code">@echo off
+set REGFILE=C:\Setup\einstellungen.reg
+
+IF NOT EXIST "%REGFILE%" (
+    echo Datei nicht gefunden: %REGFILE%
+    exit /b 1
+)
+
+:: Import mit Bestaetigung:
+reg import "%REGFILE%"
+IF %ERRORLEVEL% EQU 0 (
+    echo Import erfolgreich!
+) ELSE (
+    echo Import fehlgeschlagen! Code: %ERRORLEVEL%
+)</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-benutzerverwaltung',emoji:'👥',title:'Benutzerverwaltung per Batch',
+    subtitle:'Lokale Benutzer und Gruppen erstellen, aendern, loeschen und verwalten',
+    tabs:[
+      {label:'Benutzer verwalten',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Lokalen Benutzer erstellen</div><div class="step-code">@echo off
+set BENUTZER=MaxMustermann
+set PASSWORT=P@ssw0rd123!
+
+:: Benutzer erstellen:
+net user %BENUTZER% %PASSWORT% /add /comment:"Erstellt per Skript %date%"
+IF %ERRORLEVEL% NEQ 0 (
+    echo Fehler beim Erstellen von %BENUTZER%
+    exit /b 1
+)
+
+:: Passwort-Ablauf deaktivieren:
+net user %BENUTZER% /passwordchg:no /expires:never
+
+:: Zur Gruppe hinzufuegen:
+net localgroup "Benutzer" %BENUTZER% /add
+echo Benutzer %BENUTZER% erstellt.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Mehrere Benutzer aus Textdatei anlegen</div><div class="step-code">@echo off
+:: benutzer.txt: eine Zeile pro Benutzer (Name;Passwort)
+set LISTE=C:\Scripts\benutzer.txt
+
+for /f "tokens=1,2 delims=;" %%a in (%LISTE%) do (
+    net user %%a %%b /add >nul 2>&1
+    IF %ERRORLEVEL% EQU 0 (
+        echo [OK]     Erstellt: %%a
+    ) ELSE (
+        echo [FEHLER] Fehler bei: %%a
+    )
+)</div><div class="step-note">&#128161; benutzer.txt Format: MaxMustermann;P@ssw0rd1 (eine Zeile pro Benutzer)</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Benutzer pruefen und deaktivieren</div><div class="step-code">@echo off
+set BENUTZER=MaxMustermann
+
+:: Pruefen ob Benutzer existiert:
+net user %BENUTZER% >nul 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    echo Benutzer %BENUTZER% existiert nicht.
+    exit /b 1
+)
+
+:: Benutzer deaktivieren:
+net user %BENUTZER% /active:no
+echo Benutzer %BENUTZER% deaktiviert.
+
+:: Benutzer loeschen:
+:: net user %BENUTZER% /delete</div></div></li>
+        </ol>`},
+      {label:'Gruppen & Rechte',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Lokale Gruppe erstellen und befuellen</div><div class="step-code">@echo off
+set GRUPPE=IT-Support
+
+:: Gruppe erstellen:
+net localgroup %GRUPPE% /add /comment:"IT Support Team"
+
+:: Mitglieder hinzufuegen:
+for %%u in (MaxMustermann ErikaMusterfrau HansTest) do (
+    net localgroup %GRUPPE% %%u /add
+    echo %%u zu %GRUPPE% hinzugefuegt
+)
+
+:: Gruppe anzeigen:
+net localgroup %GRUPPE%</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">NTFS-Berechtigungen per icacls setzen</div><div class="step-code">@echo off
+set ORDNER=C:\Firmadaten
+set BENUTZER=MaxMustermann
+set GRUPPE=IT-Support
+
+:: Berechtigung hinzufuegen (F=Vollzugriff, M=Aendern, R=Lesen):
+icacls "%ORDNER%" /grant "%BENUTZER%:(OI)(CI)M"
+icacls "%ORDNER%" /grant "%GRUPPE%:(OI)(CI)F"
+
+:: Berechtigung entfernen:
+icacls "%ORDNER%" /remove "%BENUTZER%"
+
+:: Berechtigungen anzeigen:
+icacls "%ORDNER%"
+
+:: Rekursiv auf Unterordner anwenden:
+icacls "%ORDNER%" /grant "%GRUPPE%:(OI)(CI)R" /t</div><div class="step-note">&#128161; (OI) = Object Inherit, (CI) = Container Inherit. Ohne diese Flags gilt die Berechtigung nur fuer den Ordner selbst.</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'batch-dienste-prozesse',emoji:'⚙️',title:'Dienste & Prozesse steuern',
+    subtitle:'Windows-Dienste starten, stoppen, abfragen. Prozesse beenden und ueberwachen.',
+    tabs:[
+      {label:'Dienste',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Dienst starten, stoppen, abfragen</div><div class="step-code">@echo off
+set DIENST=Spooler
+
+:: Status abfragen:
+sc query %DIENST% | find "STATE"
+
+:: Starten:
+net start %DIENST%
+IF %ERRORLEVEL% NEQ 0 echo Fehler beim Starten!
+
+:: Stoppen:
+net stop %DIENST%
+
+:: Starttyp aendern (auto/manual/disabled):
+sc config %DIENST% start= auto
+echo Starttyp auf Automatisch gesetzt.</div><div class="step-note">&#128161; Leerzeichen nach start= ist absichtlich und bei sc config noetig!</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Mehrere Dienste neu starten</div><div class="step-code">@echo off
+echo Starte Dienste neu...
+
+for %%s in (Spooler W32Time WinRM) do (
+    sc query %%s | find "RUNNING" >nul 2>&1
+    IF %ERRORLEVEL% EQU 0 (
+        net stop %%s /y >nul
+        net start %%s >nul
+        echo [OK] %%s neugestartet
+    ) ELSE (
+        echo [--] %%s war nicht aktiv
+    )
+)</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Auf Dienst warten bis er laeuft</div><div class="step-code">@echo off
+set DIENST=MSSQLSERVER
+set VERSUCHE=10
+
+net start %DIENST% >nul 2>&1
+
+:warten
+sc query %DIENST% | find "RUNNING" >nul 2>&1
+IF %ERRORLEVEL% EQU 0 (
+    echo %DIENST% laeuft!
+    goto :weiter
+)
+set /a VERSUCHE=%VERSUCHE%-1
+IF %VERSUCHE% EQU 0 (
+    echo TIMEOUT: %DIENST% nicht gestartet!
+    exit /b 1
+)
+echo Warte auf %DIENST%... (%VERSUCHE% Versuche verbleibend)
+timeout /t 3 /nobreak >nul
+goto warten
+
+:weiter
+echo Weiter mit naechstem Schritt...</div></div></li>
+        </ol>`},
+      {label:'Prozesse',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Prozess beenden (nach Name oder PID)</div><div class="step-code">@echo off
+:: Nach Name beenden:
+taskkill /f /im notepad.exe
+taskkill /f /im "Microsoft Edge.exe"
+
+:: Nach PID beenden:
+taskkill /f /pid 1234
+
+:: Alle Instanzen beenden:
+taskkill /f /im chrome.exe /t
+
+:: Pruefen ob Prozess laeuft:
+tasklist /fi "imagename eq notepad.exe" | find "notepad.exe" >nul
+IF %ERRORLEVEL% EQU 0 (
+    echo Notepad laeuft - beende...
+    taskkill /f /im notepad.exe
+) ELSE (
+    echo Notepad laeuft nicht.
+)</div><div class="step-note">&#128161; /f = erzwingen. /t = auch Kindprozesse beenden. /im = nach Name. /pid = nach Prozess-ID.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Prozess starten und auf Ende warten</div><div class="step-code">@echo off
+:: Programm starten und warten bis es fertig ist:
+start /wait notepad.exe C:\Daten\config.txt
+echo Notepad wurde geschlossen. Weiter...
+
+:: Im Hintergrund starten:
+start "" /b meinprogramm.exe
+
+:: Mit Prioritaet starten:
+start "" /high /wait meinprogramm.exe
+
+:: Neues CMD-Fenster mit Titel:
+start "Mein Prozess" cmd /k "cd C:\Scripts && meinskript.bat"</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">CPU & RAM eines Prozesses anzeigen</div><div class="step-code">@echo off
+:: Alle laufenden Prozesse mit Speicher:
+tasklist /fo table
+
+:: Nur bestimmten Prozess:
+tasklist /fi "imagename eq chrome.exe" /fo table
+
+:: Mit WMI-Infos (mehr Details):
+wmic process where "name='notepad.exe'" get Name,ProcessId,WorkingSetSize,CommandLine</div></div></li>
         </ol>`}
     ]
   },
@@ -5977,6 +6641,44 @@ function cardHtml(c, globalIdx) {
   </div>`;
 }
 
+// -- FILTER STATE --
+let filterTyp  = 'all';  // 'all' | 'cmd' | 'ps' | 'both'
+let filterWin  = 'all';  // 'all' | '10' | '11' | 'srv'
+let filterSort = 'rel';  // 'rel' | 'az' | 'za'
+
+function setFilter(group, value) {
+  if (group === 'typ')  filterTyp  = value;
+  if (group === 'win')  filterWin  = value;
+  if (group === 'sort') filterSort = value;
+
+  // Update button styles
+  const typMap  = { all:'fb-all', cmd:'fb-cmd', ps:'fb-ps', both:'fb-both' };
+  const winMap  = { all:'fb-wAll', '10':'fb-w10', '11':'fb-w11', srv:'fb-wSrv' };
+  const sortMap = { rel:'fb-sRel', az:'fb-sAZ', za:'fb-sZA' };
+
+  // Reset all in group then activate selected
+  Object.values(typMap).forEach(id  => { const el=document.getElementById(id); if(el){el.className='filter-btn';} });
+  Object.values(winMap).forEach(id  => { const el=document.getElementById(id); if(el){el.className='filter-btn';} });
+  Object.values(sortMap).forEach(id => { const el=document.getElementById(id); if(el){el.className='filter-btn';} });
+
+  const tEl = document.getElementById(typMap[filterTyp]);
+  if (tEl) tEl.className = filterTyp==='ps' ? 'filter-btn active-ps' : filterTyp==='cmd' ? 'filter-btn active-cmd' : 'filter-btn active';
+  const wEl = document.getElementById(winMap[filterWin]);
+  if (wEl) wEl.className = filterWin==='all' ? 'filter-btn active' : 'filter-btn active-win';
+  const sEl = document.getElementById(sortMap[filterSort]);
+  if (sEl) sEl.className = 'filter-btn active';
+
+  render();
+}
+
+function updateFilterBar() {
+  const fb = document.getElementById('filterBar');
+  const isGuide = ['ad-guide','ts-guide','ps-guide','batch-guide','ps-skripte','favoriten','verlauf'].includes(activeTab);
+  const isDash  = (activeTab === 'alle' && !searchQuery);
+  if (!fb) return;
+  fb.classList.toggle('hidden', isDash || isGuide);
+}
+
 function getFiltered() {
   const all = [...CMDS, ...customCmds];
   if (activeTab === 'favoriten') return all.filter(c => favorites.has(c.name));
@@ -5989,9 +6691,37 @@ function getFiltered() {
       || (activeTab === 'powershell' && c.typ === 'ps' && c.cat !== 'ad' && c.cat !== 'dns' && c.cat !== 'run')
       || (activeTab === 'eigene' && c._custom);
     const q = searchQuery;
-    const matchQ = !q || c.name.toLowerCase().includes(q) || c.short.toLowerCase().includes(q) || (c.tip||'').toLowerCase().includes(q);
+    const matchQ = !q || c.name.toLowerCase().includes(q) || c.short.toLowerCase().includes(q) || (c.tip||'').toLowerCase().includes(q) || (c.syntax||'').toLowerCase().includes(q);
     return matchTab && matchQ;
   });
+}
+
+function getFilteredSorted() {
+  let results = getFiltered();
+
+  // Typ-Filter
+  if (filterTyp === 'cmd')  results = results.filter(c => c.typ === 'cmd');
+  if (filterTyp === 'ps')   results = results.filter(c => c.typ === 'ps');
+  if (filterTyp === 'both') results = results.filter(c => c.typ === 'both' || (c.typ||'').includes('+'));
+
+  // Win-Filter (nur wenn Befehl win-Array hat)
+  if (filterWin !== 'all') {
+    results = results.filter(c => {
+      if (!c.win || c.win.length === 0) return true; // kein Win-Tag = immer anzeigen
+      if (filterWin === 'srv') return c.win.some(w => w.toLowerCase().includes('server') || w.toLowerCase().includes('srv'));
+      return c.win.includes(filterWin);
+    });
+  }
+
+  // Sortierung
+  if (filterSort === 'az') results = [...results].sort((a,b) => a.name.localeCompare(b.name));
+  if (filterSort === 'za') results = [...results].sort((a,b) => b.name.localeCompare(a.name));
+
+  // Treffer-Anzeige aktualisieren
+  const fr = document.getElementById('filterResults');
+  if (fr) fr.textContent = results.length + ' Treffer';
+
+  return results;
 }
 
 // -- EIGENE BEFEHLE --
@@ -6058,6 +6788,7 @@ function saveNewCmd() {
 }
 
 function render() {
+  updateFilterBar();
   if (activeTab === 'ad-guide')    { renderGuide(AD_GUIDES,    getCatLabel('ad-guide'),    '#fb923c', '&#128218;'); return; }
   if (activeTab === 'ts-guide')    { renderGuide(TS_GUIDES,    getCatLabel('ts-guide'),    '#f87171', '&#128681;'); return; }
   if (activeTab === 'ps-guide')    { renderGuide(PS_GUIDES,    getCatLabel('ps-guide'),'#c084fc', '&#128218;'); return; }
@@ -6095,7 +6826,7 @@ function render() {
     document.getElementById('content').innerHTML = html; return;
   }
 
-  const filtered = getFiltered();
+  const filtered = getFilteredSorted();
   const content = document.getElementById('content');
   document.getElementById('visCount').textContent = filtered.length;
   const activeCat = CATS.find(c => c.id === activeTab);
@@ -6182,32 +6913,32 @@ const CHANGELOG = [
   {
     date: 'Mai 2025',
     badge: 'new',
+    title: 'Batch Scripting — 7 neue Anleitungen',
+    items: ['Fehlerbehandlung', 'Dateien & Ordner', 'Netzwerk-Skripte', 'Registry', 'Benutzerverwaltung', 'Dienste & Prozesse'],
+  },
+  {
+    date: 'Mai 2025',
+    badge: 'new',
+    title: 'Erweiterte Suche mit Filtern (CMD/PS/Win)',
+    items: ['Typ-Filter CMD/PS', 'Win 10/11/Server', 'Sortierung A-Z', 'Live Treffer-Anzeige'],
+  },
+  {
+    date: 'Mai 2025',
+    badge: 'new',
+    title: 'PayPal Spenden-Button & 31 Tagestipps',
+    items: ['PayPal Donate Button', '31 rotierende Tipps', 'Datum im Tipp'],
+  },
+  {
+    date: 'Mai 2025',
+    badge: 'new',
     title: 'ntdsutil — AD-Snapshot erstellen & einbinden',
-    items: ['Snapshot erstellen', 'dsamain LDAP-Server', 'Objekte wiederherstellen', 'Gruppen vergleichen', 'Geplante Snapshots', '+7 AD-Befehle'],
+    items: ['Snapshot erstellen', 'dsamain LDAP-Server', 'Objekte wiederherstellen', '+7 AD-Befehle'],
   },
   {
     date: 'Mai 2025',
     badge: 'new',
-    title: 'Dashboard als Startseite',
-    items: ['Stats-Karten', 'Tipp des Tages', 'Zuletzt angesehen', 'Kategorien-Grid', 'Changelog-Widget'],
-  },
-  {
-    date: 'Mai 2025',
-    badge: 'new',
-    title: 'PS Skripte — 12 fertige PowerShell-Skripte',
-    items: ['Dienste remote', 'AD-Benutzer aus CSV', 'Backup Robocopy', 'Hardware-Inventar', 'Netzwerk-Scanner', 'Passwort-Ablauf'],
-  },
-  {
-    date: 'Mai 2025',
-    badge: 'new',
-    title: 'Impressum, DSGVO & Feedback-Button',
-    items: ['§ 5 TMG Impressum', 'DSGVO 3-Tab-Layout', 'GitHub Pages Datenschutz', 'Feedback per E-Mail'],
-  },
-  {
-    date: 'Mai 2025',
-    badge: 'fix',
-    title: 'Sidebar-Navigation & Script-Fehler behoben',
-    items: ['Sidebar-Klick repariert', 'Hoisting-Fehler behoben', 'Swipe-Gesten entschärft'],
+    title: 'Dashboard, PS Skripte, Impressum & DSGVO',
+    items: ['Dashboard Startseite', '12 PS Skripte', 'Impressum § 5 TMG', 'DSGVO GitHub'],
   },
 ];
 
@@ -6297,6 +7028,13 @@ function renderDashboard() {
         <div class="db-hero-sub">CMD &middot; PowerShell &middot; AD &middot; DNS &middot; Azure &middot; Docker &middot; IIS<br>
         Deine Befehlsreferenz f&uuml;r den Windows-Alltag</div>
       </div>
+      <a href="https://paypal.me/AlexanderGlauche?locale.x=de_DE&country.x=DE"
+         target="_blank" rel="noopener noreferrer"
+         style="margin-left:auto;flex-shrink:0;background:linear-gradient(135deg,#003087,#009cde);color:#fff;border-radius:20px;padding:8px 14px;font-size:10px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 2px 12px rgba(0,156,222,0.3);font-family:'JetBrains Mono',monospace;"
+         title="Mit PayPal unterstuetzen">
+        <span style="background:#fff;color:#003087;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;flex-shrink:0;">P</span>
+        Spenden
+      </a>
     </div>
 
     <!-- Stats -->
