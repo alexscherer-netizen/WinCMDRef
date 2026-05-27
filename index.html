@@ -6213,21 +6213,57 @@ const CHANGELOG = [
 
 // Tipp des Tages (rotierend nach Datum)
 const DAILY_TIPS = [
-  { cmd: 'Get-NetTCPConnection -State Listen', text: 'Zeigt alle lauschenden Ports — praktischer Ersatz für netstat', cat: 'netzwerk' },
-  { cmd: 'sfc /scannow', text: 'Repariert beschädigte Windows-Systemdateien — als Admin ausführen', cat: 'ts' },
-  { cmd: 'Get-Process | Sort CPU -Descending | Select -First 5', text: 'Top 5 CPU-Verbraucher sofort im Blick', cat: 'prozesse' },
-  { cmd: 'robocopy C:\\Quelle D:\\Ziel /MIR /R:3', text: 'Mirror-Backup — nur geänderte Dateien werden kopiert', cat: 'tools' },
-  { cmd: 'Get-ADUser -Filter * | Measure-Object | Select Count', text: 'Schnell alle AD-Benutzer zählen', cat: 'ad' },
-  { cmd: 'winget upgrade --all --silent', text: 'Alle installierten Programme auf einmal aktualisieren', cat: 'paket' },
-  { cmd: 'ipconfig /flushdns', text: 'DNS-Cache leeren — löst viele Verbindungsprobleme', cat: 'netzwerk' },
-  { cmd: 'Get-BitLockerVolume | Select MountPoint,VolumeStatus', text: 'BitLocker-Status aller Laufwerke im Überblick', cat: 'sicherheit' },
-  { cmd: 'Compress-Archive -Path C:\\Logs -DestinationPath C:\\Logs.zip', text: 'Ordner ohne Zusatztool als ZIP komprimieren', cat: 'powershell' },
-  { cmd: 'wsl --list --verbose', text: 'Alle WSL-Distributionen mit Version und Status anzeigen', cat: 'virt' },
-  { cmd: 'Get-WinEvent -FilterHashtable @{LogName=\'Security\';Id=4625} -MaxEvents 10', text: 'Letzte fehlgeschlagene Anmeldeversuche auflisten', cat: 'ts' },
-  { cmd: 'Test-NetConnection google.com -Port 443', text: 'Port-Erreichbarkeit testen — ersetzt telnet', cat: 'netzwerk' },
-  { cmd: 'Get-ChildItem -Recurse | Sort Length -Descending | Select -First 10', text: 'Größte Dateien im aktuellen Verzeichnis finden', cat: 'dateisystem' },
-  { cmd: 'systeminfo | findstr "Boot Time"', text: 'Letzten Systemstart schnell ermitteln', cat: 'system' },
+  // Netzwerk
+  { cmd: 'Get-NetTCPConnection -State Listen', text: 'Zeigt alle lauschenden Ports — praktischer Ersatz fuer netstat. Mit | Where LocalPort -lt 1024 nur privilegierte Ports anzeigen.', cat: 'netzwerk' },
+  { cmd: 'Test-NetConnection google.com -Port 443', text: 'Port-Erreichbarkeit testen — ersetzt telnet. TcpTestSucceeded=True bedeutet Port ist offen.', cat: 'netzwerk' },
+  { cmd: 'ipconfig /flushdns', text: 'DNS-Cache leeren — loest viele Verbindungsprobleme. Danach ipconfig /displaydns um den neuen Cache zu pruefen.', cat: 'netzwerk' },
+  { cmd: 'Resolve-DnsName firma.local -Type MX', text: 'DNS-Records direkt per PowerShell abfragen — auch A, CNAME, SOA, PTR moeglich. Praktischer als nslookup.', cat: 'netzwerk' },
+  { cmd: 'netstat -ano | findstr :3389', text: 'Pruefen ob RDP-Port 3389 aktiv ist. PID in der letzten Spalte mit tasklist /FI "PID eq 1234" aufloesen.', cat: 'netzwerk' },
+  // System
+  { cmd: 'systeminfo | findstr "Boot Time"', text: 'Letzten Systemstart schnell ermitteln. Alternativ: (Get-CimInstance Win32_OperatingSystem).LastBootUpTime', cat: 'system' },
+  { cmd: 'Get-CimInstance Win32_LogicalDisk | Select DeviceID,@{n="FreiGB";e={[Math]::Round($_.FreeSpace/1GB,1)}}', text: 'Freien Speicherplatz aller Laufwerke auf einmal anzeigen — kein Klicken durch Explorer noetig.', cat: 'system' },
+  { cmd: 'winver', text: 'Windows-Version und Build-Nummer grafisch anzeigen. Build-Nummer wichtig fuer Update-Stand und Feature-Verfuegbarkeit.', cat: 'system' },
+  { cmd: 'Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -Name CurrentBuild', text: 'Windows Build-Nummer direkt aus der Registry lesen — auch per Remote moeglich.', cat: 'system' },
+  // Prozesse
+  { cmd: 'Get-Process | Sort CPU -Descending | Select -First 5', text: 'Top 5 CPU-Verbraucher sofort im Blick. Mit -First 10 und | Format-Table fuer tabellarische Ausgabe.', cat: 'prozesse' },
+  { cmd: 'Get-Process | Where WorkingSet -gt 500MB | Select Name,Id,@{n="RAM_MB";e={[Math]::Round($_.WorkingSet/1MB)}}', text: 'Prozesse mit mehr als 500 MB RAM-Verbrauch finden — gut fuer Speicherleck-Diagnose.', cat: 'prozesse' },
+  // Dateisystem
+  { cmd: 'Get-ChildItem -Recurse | Sort Length -Descending | Select -First 10 FullName,@{n="MB";e={[Math]::Round($_.Length/1MB,1)}}', text: 'Groesste Dateien im aktuellen Verzeichnis finden — ideal vor Speicherbereinigung.', cat: 'dateisystem' },
+  { cmd: 'forfiles /p C:\\Logs /s /d -30 /c "cmd /c del @path"', text: 'Dateien aelter als 30 Tage automatisch loeschen — perfekt fuer Log-Bereinigung per geplanter Aufgabe.', cat: 'dateisystem' },
+  { cmd: 'tree C:\\Projekt /F /A > struktur.txt', text: 'Verzeichnisstruktur mit allen Dateien als Textdatei exportieren — gut fuer Dokumentation.', cat: 'dateisystem' },
+  // Tools
+  { cmd: 'robocopy C:\\Quelle D:\\Ziel /MIR /R:3 /LOG:C:\\backup.log', text: 'Mirror-Backup mit Protokoll — nur geaenderte Dateien werden kopiert. Exit-Code 0-7 = Erfolg.', cat: 'tools' },
+  { cmd: 'where python', text: 'Pfad eines installierten Programms ermitteln. Zeigt alle Treffer im PATH. PS-Variante: (Get-Command python).Source', cat: 'tools' },
+  // AD
+  { cmd: 'Get-ADUser -Filter * | Measure-Object | Select Count', text: 'Schnell alle AD-Benutzer zaehlen. Mit -Filter {Enabled -eq $true} nur aktive Konten.', cat: 'ad' },
+  { cmd: 'Get-ADComputer -Filter * -Properties LastLogonDate | Sort LastLogonDate | Select -First 10 Name,LastLogonDate', text: 'Aelteste Computer-Anmeldungen finden — gut um veraltete Konten zu identifizieren.', cat: 'ad' },
+  { cmd: 'ntdsutil "snapshot" "activate instance ntds" "create" "quit" "quit" "quit"', text: 'AD-Snapshot per Einzeiler erstellen. GUID aus Ausgabe merken fuer mount und dsamain.', cat: 'ad' },
+  { cmd: 'Get-ADGroupMember "Domain Admins" | Select Name,SamAccountName', text: 'Mitglieder der Domain Admins anzeigen — regelmaessig pruefen wer wirklich Admin-Rechte hat!', cat: 'ad' },
+  // Sicherheit
+  { cmd: 'Get-BitLockerVolume | Select MountPoint,VolumeStatus,EncryptionPercentage', text: 'BitLocker-Status aller Laufwerke im Ueberblick. EncryptionPercentage zeigt Fortschritt laufender Verschluesselung.', cat: 'sicherheit' },
+  { cmd: 'whoami /groups | findstr "S-1-5-32-544"', text: 'Pruefen ob der aktuelle Benutzer Mitglied der lokalen Administratoren-Gruppe ist. SID S-1-5-32-544 = Administratoren.', cat: 'sicherheit' },
+  { cmd: 'Get-MpComputerStatus | Select AntivirusEnabled,RealTimeProtectionEnabled,AntivirusSignatureLastUpdated', text: 'Windows Defender Status pruefen — Signatur-Datum zeigt ob Definitionen aktuell sind.', cat: 'sicherheit' },
+  // PowerShell
+  { cmd: 'Compress-Archive -Path C:\\Logs -DestinationPath C:\\Logs.zip', text: 'Ordner ohne Zusatztool als ZIP komprimieren. Mit -Update bestehende ZIPs aktualisieren. Expand-Archive zum Entpacken.', cat: 'powershell' },
+  { cmd: '$PSVersionTable.PSVersion', text: 'Installierte PowerShell-Version anzeigen. PS 7+ hat deutlich mehr Features als PS 5.1 — lohnt sich zu upgraden.', cat: 'powershell' },
+  { cmd: 'Get-Command | Where CommandType -eq Cmdlet | Measure-Object | Select Count', text: 'Anzahl aller verfuegbaren Cmdlets zaehlen. Mit | Where Name -like "*AD*" AD-Cmdlets finden.', cat: 'powershell' },
+  // Virtualisierung
+  { cmd: 'wsl --list --verbose', text: 'Alle WSL-Distributionen mit Version und Status anzeigen. Version 2 ist deutlich schneller als Version 1.', cat: 'virt' },
+  { cmd: 'Get-VM | Select Name,State,@{n="RAM_GB";e={[Math]::Round($_.MemoryAssigned/1GB,1)}}', text: 'Alle Hyper-V VMs mit Status und RAM-Verbrauch anzeigen. Nur auf Hyper-V Hosts verfuegbar.', cat: 'virt' },
+  // Pakete
+  { cmd: 'winget upgrade --all --silent', text: 'Alle installierten Programme auf einmal aktualisieren. Mit --include-unknown auch manuell installierte Software pruefen.', cat: 'paket' },
+  // DNS
+  { cmd: 'Get-DnsServerZone | Select ZoneName,ZoneType,IsDsIntegrated', text: 'Alle DNS-Zonen auf dem Server anzeigen. IsDsIntegrated=True = in AD gespeichert (bevorzugt).', cat: 'dns' },
+  // TS
+  { cmd: 'Get-WinEvent -FilterHashtable @{LogName="Security";Id=4625} -MaxEvents 10', text: 'Letzte fehlgeschlagene Anmeldeversuche auflisten. EventID 4740 zeigt gesperrte Konten.', cat: 'ts' },
 ];
+
+// Tipp rotiert taeglich — Index basiert auf Datum (Tag des Jahres)
+function getDailyTip() {
+  const now  = new Date();
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  return DAILY_TIPS[dayOfYear % DAILY_TIPS.length];
+}
 
 function renderDashboard() {
   const content = document.getElementById('content');
@@ -6240,8 +6276,8 @@ function renderDashboard() {
   const totalVerlauf= verlauf.length;
 
   // Tipp des Tages
-  const tipIdx = Math.floor(Date.now() / 86400000) % DAILY_TIPS.length;
-  const tip = DAILY_TIPS[tipIdx];
+  const tip = getDailyTip();
+  const tipDate = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 
   // Recent verlauf commands
   const recentCmds = verlauf.slice(0, 5)
@@ -6287,7 +6323,7 @@ function renderDashboard() {
     <div class="db-tip">
       <div class="db-tip-icon">&#128161;</div>
       <div>
-        <div class="db-tip-title">Tipp des Tages</div>
+        <div class="db-tip-title">Tipp des Tages &mdash; ${tipDate}</div>
         <div class="db-tip-text">${tip.text}<br>
           <span class="db-tip-cmd" onclick="handleSearch('${tip.cmd.split(' ')[0]}');document.getElementById('searchInput').value='${tip.cmd.split(' ')[0]}'">${tip.cmd}</span>
         </div>
