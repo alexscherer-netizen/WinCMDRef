@@ -2104,6 +2104,8 @@ const CATS = [
   {id:'iis',        icon:'&#127760;', label:'IIS & Webserver',   desc:'iisreset, appcmd, SSL, Web.config', color:'#67e8f9'},
   {id:'batch-guide',icon:'&#128203;', label:'Batch Scripting',   desc:'.bat/.cmd Anleitungen Schritt fuer Schritt', color:'#fbbf24'},
   {id:'ps-skripte', icon:'&#128196;', label:'PS Skripte',        desc:'Fertige PowerShell-Skripte fuer den Alltag', color:'#22d3ee'},
+  {id:'bitlocker-guide',icon:'&#128274;',label:'BitLocker Guide', desc:'Laufwerke verschluesseln, verwalten, wiederherstellen', color:'#fb923c'},
+  {id:'mapping-guide',  icon:'&#128193;',label:'Ordner Mappen',  desc:'Netzlaufwerke, subst, Symlinks, Junctions, PSDrive', color:'#f59e0b'},
   {id:'favoriten',  icon:'&#11088;',  label:'Favoriten',         desc:'Gemerkte Lieblingsmerkbefehle', color:'#fbbf24'},
   {id:'verlauf',    icon:'&#128336;', label:'Verlauf',           desc:'Zuletzt angesehene Befehle', color:'#94a3b8'},
   {id:'eigene',     icon:'&#10010;',  label:'Eigene Befehle',   desc:'Selbst erstellte und gespeicherte Eintraege',  color:'#facc15'},
@@ -3966,6 +3968,497 @@ wmic process where "name='notepad.exe'" get Name,ProcessId,WorkingSetSize,Comman
 
 
 // -- PS SKRIPTE DATA --
+
+// -- BITLOCKER GUIDE --
+const BITLOCKER_GUIDES = [
+  {
+    id:'bl-grundlagen',emoji:'🔒',title:'BitLocker aktivieren und einrichten',
+    subtitle:'Laufwerke verschluesseln mit TPM, Passwort oder USB-Schluessel — Schritt fuer Schritt',
+    tabs:[
+      {label:'GUI (Windows)',content:`
+        <div class="guide-section-head">BitLocker per Systemsteuerung aktivieren</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">BitLocker-Laufwerkverschluesselung oeffnen</div><div class="step-code">control /name Microsoft.BitLockerDriveEncryption
+:: Oder: Systemsteuerung > System und Sicherheit > BitLocker-Laufwerkverschluesselung</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">BitLocker fuer C: aktivieren</div><div class="step-desc">Klick auf "BitLocker aktivieren" neben dem Systemlaufwerk C:. Windows prueft automatisch ob TPM vorhanden ist.</div><div class="step-note">&#128161; TPM 1.2 oder 2.0 empfohlen. Ohne TPM: Gruppenrichtlinie muss angepasst werden (gpedit.msc).</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Recovery-Key sichern (WICHTIG!)</div><div class="step-desc">Windows bietet 4 Optionen:<br>• In Microsoft-Konto speichern<br>• Auf USB-Stick speichern<br>• In Datei speichern<br>• Drucken</div><div class="step-warn">&#9888; Recovery-Key UNBEDINGT extern sichern! Ohne ihn ist das Laufwerk verloren wenn TPM-Probleme auftreten.</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Verschluesselungsumfang waehlen</div><div class="step-desc"><b>Nur verwendeten Speicherplatz:</b> Schneller, gut fuer neue Laufwerke.<br><b>Gesamtes Laufwerk:</b> Sicherer, empfohlen fuer bestehende Systeme.</div></div></li>
+          <li class="step"><span class="step-num">5</span><div class="step-content"><div class="step-title">Verschluesselungsmodus</div><div class="step-desc"><b>Neuer Verschluesselungsmodus (XTS-AES 128):</b> Fuer fest eingebaute Laufwerke — Windows 10/11.<br><b>Kompatibler Modus:</b> Fuer externe Laufwerke die auch auf aelteren Windows-Versionen genutzt werden.</div></div></li>
+          <li class="step"><span class="step-num">6</span><div class="step-content"><div class="step-title">BitLocker-Systemcheck und Neustart</div><div class="step-desc">Windows fuehrt einen Systemcheck durch und startet neu. Die Verschluesselung laeuft dann im Hintergrund.</div><div class="step-note">&#128161; Fortschritt pruefen: manage-bde -status C: oder Get-BitLockerVolume</div></div></li>
+        </ol>`},
+      {label:'PowerShell',content:`
+        <div class="guide-section-head">BitLocker per PowerShell aktivieren (als Admin)</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">TPM-Status pruefen</div><div class="step-code">Get-Tpm | Select TpmPresent,TpmReady,TpmEnabled,ManufacturerVersion</div><div class="step-note">&#128161; TpmReady=$true = BitLocker mit TPM moeglich. TpmPresent=$false = kein TPM, Passwort-Modus noetig.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">C: mit TPM verschluesseln (empfohlen)</div><div class="step-code">Enable-BitLocker -MountPoint "C:"
+    -EncryptionMethod XtsAes256
+    -TpmProtector
+
+# Recovery-Key-Protector hinzufuegen:
+Add-BitLockerKeyProtector -MountPoint "C:" -RecoveryPasswordProtector
+
+# Recovery-Key anzeigen und speichern:
+(Get-BitLockerVolume -MountPoint "C:").KeyProtector |
+    Where KeyProtectorType -eq RecoveryPassword |
+    Select RecoveryPassword</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Datenlaufwerk mit Passwort verschluesseln</div><div class="step-code">$PW = ConvertTo-SecureString "MeinSicheresP@ssw0rd!" -AsPlainText -Force
+
+Enable-BitLocker -MountPoint "D:"
+    -EncryptionMethod XtsAes256
+    -PasswordProtector -Password $PW
+
+# Status pruefen:
+Get-BitLockerVolume -MountPoint "D:" |
+    Select MountPoint,VolumeStatus,EncryptionPercentage</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Recovery-Key in AD hinterlegen (Unternehmensumgebung)</div><div class="step-code">$KeyProtector = (Get-BitLockerVolume -MountPoint "C:").KeyProtector |
+    Where KeyProtectorType -eq RecoveryPassword
+
+Backup-BitLockerKeyProtector -MountPoint "C:"
+    -KeyProtectorId $KeyProtector.KeyProtectorId
+
+# Bestaetigung dass Key in AD gespeichert:
+Get-ADObject -Filter {objectClass -eq "msFVE-RecoveryInformation"} -Properties msFVE-RecoveryPassword |
+    Select Name,msFVE-RecoveryPassword</div><div class="step-note">&#128161; Benoetigt AD-Schema-Erweiterung fuer BitLocker. GPO: "BitLocker Recovery-Informationen in AD DS sichern" aktivieren.</div></div></li>
+          <li class="step"><span class="step-num">5</span><div class="step-content"><div class="step-title">Verschluesselungsfortschritt ueberwachen</div><div class="step-code">while ((Get-BitLockerVolume -MountPoint "C:").VolumeStatus -ne "FullyEncrypted") {
+    $pct = (Get-BitLockerVolume -MountPoint "C:").EncryptionPercentage
+    Write-Progress -Activity "BitLocker Verschluesselung" -PercentComplete $pct -Status "$pct%"
+    Start-Sleep 5
+}
+Write-Host "Verschluesselung abgeschlossen!" -ForegroundColor Green</div></div></li>
+        </ol>`},
+      {label:'manage-bde (CMD)',content:`
+        <div class="guide-section-head">BitLocker per Kommandozeile (manage-bde)</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Status aller Laufwerke anzeigen</div><div class="step-code">manage-bde -status
+manage-bde -status C:</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">BitLocker aktivieren (mit Recovery-Key)</div><div class="step-code">:: C: mit TPM + Recovery-Passwort:
+manage-bde -on C: -recoverypassword -recoverykey C:\RecoveryKey
+
+:: D: mit Passwort:
+manage-bde -on D: -password
+
+:: Verschluesselung pausieren/fortsetzen:
+manage-bde -pause C:
+manage-bde -resume C:</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Alle Protectors anzeigen und verwalten</div><div class="step-code">:: Protectors anzeigen (inkl. Recovery-Key-ID):
+manage-bde -protectors -get C:
+
+:: Zusaetzlichen Recovery-Key hinzufuegen:
+manage-bde -protectors -add C: -recoverypassword
+
+:: Protector loeschen (nach ID aus -get):
+manage-bde -protectors -delete C: -id {GUID}
+
+:: Recovery-Key in AD sichern:
+manage-bde -protectors -adbackup C: -id {GUID}</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Laufwerk entsperren und deaktivieren</div><div class="step-code">:: Mit Recovery-Passwort entsperren:
+manage-bde -unlock D: -recoverypassword 123456-789012-345678-901234-567890-123456-789012-345678
+
+:: Mit Passwort entsperren:
+manage-bde -unlock D: -password
+
+:: BitLocker deaktivieren:
+manage-bde -off C:</div><div class="step-warn">&#9888; manage-bde -off startet die Entschluesselung. Bei C: ist ein Neustart erforderlich!</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'bl-netzwerk',emoji:'🌐',title:'BitLocker To Go & Netzwerk',
+    subtitle:'Externe Laufwerke und USB-Sticks verschluesseln. BitLocker in Unternehmensnetzen verwalten.',
+    tabs:[
+      {label:'BitLocker To Go',content:`
+        <div class="guide-section-head">USB-Stick / externe Festplatte verschluesseln</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Externes Laufwerk verschluesseln (PowerShell)</div><div class="step-code">$PW = Read-Host "BitLocker-Passwort eingeben" -AsSecureString
+
+Enable-BitLocker -MountPoint "E:"
+    -EncryptionMethod XtsAes256
+    -PasswordProtector -Password $PW
+
+Add-BitLockerKeyProtector -MountPoint "E:" -RecoveryPasswordProtector
+
+Write-Host "Verschluesselung gestartet!" -ForegroundColor Green</div><div class="step-note">&#128161; Kompatibler Modus empfohlen wenn der Stick auch auf aelteren Windows-PCs genutzt wird: -EncryptionMethod Aes256</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Automatisch entsperren auf vertrauenswuerdigen PCs</div><div class="step-code">:: Automatisches Entsperren aktivieren (GUI):
+:: BitLocker-Verwaltung > E: > "Automatisches Entsperren aktivieren"
+
+:: Oder per PS:
+Enable-BitLockerAutoUnlock -MountPoint "E:"
+
+:: Deaktivieren:
+Disable-BitLockerAutoUnlock -MountPoint "E:"</div></div></li>
+        </ol>`},
+      {label:'GPO & Unternehmensumgebung',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Wichtige BitLocker-Gruppenrichtlinien (gpedit.msc)</div><div class="step-desc">Pfad: Computerkonfiguration > Administrative Vorlagen > Windows-Komponenten > BitLocker-Laufwerkverschluesselung<br><br><b>Empfohlene GPO-Einstellungen:</b><br>• "Speichern von BitLocker-Wiederherstellungsinformationen in AD DS" = Aktiviert<br>• "Kennwortstaerke fuer Wechsellaufwerke" = min. 12 Zeichen<br>• "Verschluesselungsmethode" = XTS-AES 256 Bit<br>• "BitLocker ohne kompatibles TPM erlauben" = nur wenn noetig</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">BitLocker-Status aller PCs per PowerShell pruefen</div><div class="step-code">$PCs = Get-ADComputer -Filter {OperatingSystem -like "Windows*"} |
+       Select -ExpandProperty Name
+
+foreach ($PC in $PCs) {
+    if (-not (Test-Connection $PC -Count 1 -Quiet -TimeoutSeconds 2)) {
+        Write-Host "$PC - Offline" -ForegroundColor Gray
+        continue
+    }
+    try {
+        $BL = Invoke-Command -ComputerName $PC -ScriptBlock {
+            Get-BitLockerVolume -MountPoint "C:" |
+            Select VolumeStatus,ProtectionStatus,EncryptionPercentage
+        }
+        $Status = if ($BL.ProtectionStatus -eq "On") {"Geschuetzt"} else {"UNGESCHUETZT!"}
+        Write-Host "$PC - $Status ($($BL.VolumeStatus))" -ForegroundColor $(if($BL.ProtectionStatus -eq "On"){"Green"}else{"Red"})
+    } catch {
+        Write-Host "$PC - Fehler: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Recovery-Key aus AD auslesen</div><div class="step-code">Import-Module ActiveDirectory
+
+$Computer = "CLIENT01"
+$ComputerObj = Get-ADComputer $Computer
+
+Get-ADObject -Filter {objectClass -eq "msFVE-RecoveryInformation"}
+    -SearchBase $ComputerObj.DistinguishedName
+    -Properties msFVE-RecoveryPassword, whenCreated |
+    Sort whenCreated -Descending |
+    Select Name, msFVE-RecoveryPassword, whenCreated |
+    Format-Table -AutoSize</div><div class="step-note">&#128161; Benoetigt Berechtigung "BitLocker-Wiederherstellungskennwort lesen" in AD. Standardmaessig nur Domaenadmins.</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'bl-wiederherstellung',emoji:'🔓',title:'BitLocker Wiederherstellung & Fehlerbehebung',
+    subtitle:'Recovery-Key nutzen, gesperrte Laufwerke entsperren, haeufige Fehler beheben',
+    tabs:[
+      {label:'Wiederherstellung',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Recovery-Key ermitteln (vor dem Sperren!)</div><div class="step-code">:: Alle Recovery-Keys anzeigen:
+manage-bde -protectors -get C:
+
+:: Per PowerShell:
+(Get-BitLockerVolume -MountPoint "C:").KeyProtector |
+    Where KeyProtectorType -eq RecoveryPassword |
+    Select KeyProtectorId, RecoveryPassword</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Gesperrtes Laufwerk per WinRE entsperren</div><div class="step-desc">1. PC mit Windows-Installationsmedium booten<br>2. Reparaturoptionen > Eingabeaufforderung<br>3. Recovery-Key eingeben:</div><div class="step-code">manage-bde -unlock C: -recoverypassword 123456-789012-345678-901234-567890-123456-789012-345678</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Recovery-Key aus Microsoft-Konto abrufen</div><div class="step-desc">Webseite: <b>account.microsoft.com/devices/recoverykey</b><br>Dort alle gespeicherten Recovery-Keys aller BitLocker-Laufwerke anzeigen. Computer-Name und Key-ID helfen bei der Zuordnung.</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Nach Entsperren: Protectors neu hinzufuegen</div><div class="step-code">:: TPM-Protector neu hinzufuegen:
+Add-BitLockerKeyProtector -MountPoint "C:" -TpmProtector
+
+:: Recovery-Passwort neu generieren:
+Add-BitLockerKeyProtector -MountPoint "C:" -RecoveryPasswordProtector
+
+:: Schutz wieder aktivieren:
+Resume-BitLocker -MountPoint "C:"</div></div></li>
+        </ol>`},
+      {label:'Haeufige Fehler',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Fehler: "TPM nicht bereit"</div><div class="step-code">:: TPM-Status pruefen:
+tpm.msc
+Get-Tpm
+
+:: TPM initialisieren (Admin):
+Initialize-Tpm -AllowClear -AllowPhysicalPresence
+
+:: TPM in BIOS/UEFI aktivieren:
+:: Einstellungen > System > Sicherheit > TPM aktivieren</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Fehler: "Gruppenrichtlinie erlaubt BitLocker ohne TPM nicht"</div><div class="step-code">:: gpedit.msc oeffnen:
+gpedit.msc
+
+:: Pfad:
+:: Computerkonfiguration > Administrative Vorlagen >
+:: Windows-Komponenten > BitLocker-Laufwerkverschluesselung >
+:: Betriebssystemlaufwerke >
+:: "Zusaetzliche Authentifizierung beim Start anfordern"
+:: = Aktiviert + "BitLocker ohne kompatibles TPM zulassen" = Haken</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Fehler: "BitLocker wartend auf Aktivierung"</div><div class="step-code">:: Status anzeigen:
+manage-bde -status C:
+
+:: Schutz manuell aktivieren:
+manage-bde -protectors -enable C:
+Resume-BitLocker -MountPoint "C:"
+
+:: Pruefen ob Schutz aktiv:
+(Get-BitLockerVolume "C:").ProtectionStatus</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">BitLocker-Protokoll auswerten</div><div class="step-code">:: Ereignisprotokoll fuer BitLocker:
+Get-WinEvent -FilterHashtable @{
+    LogName = "Microsoft-Windows-BitLocker/BitLocker Management"
+} -MaxEvents 20 | Select TimeCreated,Id,Message | Format-List
+
+:: Haeufige Event-IDs:
+:: 770 = BitLocker aktiviert
+:: 773 = Entschluesselung abgeschlossen
+:: 775 = Recovery-Key genutzt (Alarm!)</div></div></li>
+        </ol>`}
+    ]
+  },
+];
+
+// -- MAPPING GUIDE --
+const MAPPING_GUIDES = [
+  {
+    id:'map-netzlaufwerk',emoji:'🌐',title:'Netzlaufwerke verbinden',
+    subtitle:'SMB-Freigaben als Laufwerksbuchstaben einbinden — GUI, net use, PowerShell und GPO',
+    tabs:[
+      {label:'net use (CMD)',content:`
+        <div class="guide-section-head">Netzlaufwerk per Kommandozeile einbinden</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Einfach verbinden</div><div class="step-code">:: Laufwerk verbinden:
+net use Z: \\Server01\Freigabe
+
+:: Mit Anmeldedaten:
+net use Z: \\Server01\Freigabe /user:DOMAIN\MaxMustermann * /persistent:yes
+
+:: Pruefen ob verbunden:
+net use | find "Z:"
+
+:: Trennen:
+net use Z: /delete /yes</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Alle Verbindungen anzeigen und trennen</div><div class="step-code">:: Alle Netzverbindungen anzeigen:
+net use
+
+:: Alle trennen:
+net use * /delete /yes
+
+:: Laufwerk trennen wenn es verbunden ist:
+IF EXIST Z:\ (
+    net use Z: /delete /yes
+    echo Z: getrennt
+)</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Credentials sicher uebergeben</div><div class="step-code">:: Passwort interaktiv abfragen (kein Plaintext!):
+net use Z: \\Server01\Daten /user:DOMAIN\Admin *
+
+:: Oder im Batch ohne Passwort im Klartext (credential manager):
+cmdkey /add:Server01 /user:DOMAIN\Admin /pass:P@ssw0rd
+net use Z: \\Server01\Daten
+:: Gespeicherte Credentials loeschen:
+cmdkey /delete:Server01</div><div class="step-note">&#128161; cmdkey speichert Zugangsdaten im Windows Credential Manager — sicherer als Passwort im Klartext im Skript.</div></div></li>
+        </ol>`},
+      {label:'PowerShell',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Netzlaufwerk per New-SmbMapping</div><div class="step-code">:: Einfach:
+New-SmbMapping -LocalPath "Z:" -RemotePath "\\Server01\Freigabe"
+
+:: Mit Anmeldedaten:
+$Cred = Get-Credential
+New-SmbMapping -LocalPath "Z:" -RemotePath "\\Server01\Freigabe" -Credential $Cred -Persistent $true
+
+:: Status pruefen:
+Get-SmbMapping | Select LocalPath,RemotePath,Status
+
+:: Trennen:
+Remove-SmbMapping -LocalPath "Z:" -Force</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Mehrere Laufwerke auf einmal mappen</div><div class="step-code">$Laufwerke = @(
+    @{ Buchstabe = "H:"; Pfad = "\\fileserver\home\$env:USERNAME" },
+    @{ Buchstabe = "I:"; Pfad = "\\fileserver\it-abteilung" },
+    @{ Buchstabe = "G:"; Pfad = "\\fileserver\gemeinsam" }
+)
+
+foreach ($L in $Laufwerke) {
+    if (-not (Get-SmbMapping -LocalPath $L.Buchstabe -ErrorAction SilentlyContinue)) {
+        New-SmbMapping -LocalPath $L.Buchstabe -RemotePath $L.Pfad -Persistent $true
+        Write-Host "$($L.Buchstabe) -> $($L.Pfad)" -ForegroundColor Green
+    } else {
+        Write-Host "$($L.Buchstabe) bereits verbunden" -ForegroundColor Gray
+    }
+}</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Netzlaufwerk-Status pruefen und reparieren</div><div class="step-code">Get-SmbMapping | ForEach-Object {
+    if ($_.Status -ne "OK") {
+        Write-Host "Unterbrochen: $($_.LocalPath) -> $($_.RemotePath)" -ForegroundColor Yellow
+        Remove-SmbMapping -LocalPath $_.LocalPath -Force
+        New-SmbMapping -LocalPath $_.LocalPath -RemotePath $_.RemotePath -Persistent $true
+        Write-Host "Wiederverbunden" -ForegroundColor Green
+    } else {
+        Write-Host "OK: $($_.LocalPath)" -ForegroundColor Green
+    }
+}</div></div></li>
+        </ol>`},
+      {label:'GPO Login-Skript',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Laufwerke per GPO mappen (empfohlen)</div><div class="step-desc">In der Gruppenrichtlinien-Verwaltungskonsole (gpmc.msc):<br>Benutzerkonfiguration > Einstellungen > Windows-Einstellungen > Laufwerkszuordnungen > Neu</div><div class="step-code">:: Alternativ: Anmeldeskript per GPO zuweisen
+:: Benutzerkonfiguration > Windows-Einstellungen > Skripts > Anmeldung
+
+:: skript_laufwerke.bat:
+@echo off
+net use H: \\fileserver\home\%USERNAME% /persistent:no
+net use I: \\fileserver\it /persistent:no
+net use G: \\fileserver\gemeinsam /persistent:no</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Laufwerk nach Abteilung/Gruppe zuweisen</div><div class="step-code">@echo off
+:: Heimlaufwerk fuer alle:
+net use H: \\fileserver\home\%USERNAME% /persistent:no
+
+:: IT-Laufwerk nur fuer IT-Gruppe:
+net localgroup "IT-Abteilung" %USERNAME% >nul 2>&1
+IF %ERRORLEVEL% EQU 0 net use I: \\fileserver\it /persistent:no
+
+:: Buchhaltung:
+net localgroup "Buchhaltung" %USERNAME% >nul 2>&1
+IF %ERRORLEVEL% EQU 0 net use B: \\fileserver\buchhaltung /persistent:no</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'map-subst-virtual',emoji:'💾',title:'Virtuelle Laufwerke (subst)',
+    subtitle:'Lokale Ordner als Laufwerksbuchstaben einbinden — temporaer und persistent',
+    tabs:[
+      {label:'subst (CMD)',content:`
+        <div class="guide-section-head">Ordner als Laufwerk einbinden mit subst</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Ordner als Laufwerk einbinden</div><div class="step-code">:: Ordner als X: einbinden:
+subst X: C:\Projekte\Aktuell
+
+:: Alle subst-Laufwerke anzeigen:
+subst
+
+:: Laufwerk wieder trennen:
+subst X: /d</div><div class="step-warn">&#9888; subst ist NICHT persistent! Nach Neustart weg. Fuer dauerhafte Loesung Registry oder geplante Aufgabe nutzen.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">subst persistent machen (Registry)</div><div class="step-code">:: Beim Start automatisch ausfuehren via Registry:
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" ^
+    /v "SubstX" ^
+    /t REG_SZ ^
+    /d "subst X: C:\Projekte\Aktuell" ^
+    /f
+echo Subst X: wird beim naechsten Login automatisch eingebunden.
+
+:: Entfernen:
+reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "SubstX" /f</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Alle subst-Laufwerke per PowerShell verwalten</div><div class="step-code">:: Alle virtuellen Laufwerke anzeigen:
+Get-PSDrive -PSProvider FileSystem | Where DisplayRoot -like "*\*" | Format-Table
+
+:: New-PSDrive als subst-Alternative:
+New-PSDrive -Name "P" -PSProvider FileSystem -Root "C:\Projekte" -Persist -Scope Global
+
+:: Trennen:
+Remove-PSDrive -Name "P" -Force</div><div class="step-note">&#128161; -Persist macht den PSDrive sichtbar im Windows Explorer. Ohne -Persist nur in PowerShell-Session.</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'map-symlinks',emoji:'🔗',title:'Symlinks & Junctions',
+    subtitle:'Symbolische Links und Junction Points erstellen — Ordner und Dateien verknuepfen',
+    tabs:[
+      {label:'mklink',content:`
+        <div class="guide-section-head">Symbolische Links und Junctions mit mklink</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Typen im Ueberblick</div><div class="step-desc"><b>Symlink (Datei):</b> Verweis auf eine Datei — <code>mklink Link.txt Ziel.txt</code><br><b>Symlink (Ordner):</b> Verweis auf Ordner — <code>mklink /D LinkOrdner ZielOrdner</code><br><b>Hard Link:</b> Zweiter Name fuer dieselbe Datei — <code>mklink /H Link.txt Ziel.txt</code><br><b>Junction:</b> NTFS-Verknuepfung fuer lokale Ordner (kein Admin noetig) — <code>mklink /J LinkOrdner ZielOrdner</code></div><div class="step-note">&#128161; Symbolische Links benoetigen Administratorrechte oder Entwicklermodus. Junctions funktionieren ohne Admin.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Ordner-Symlink erstellen (Admin noetig)</div><div class="step-code">:: Symlink von C:\Daten -> D:\Daten:
+mklink /D C:\Daten D:\GroesseresLaufwerk\Daten
+
+:: Pruefen:
+dir C:\ | find "Daten"
+:: Ausgabe: <SYMLINKD> Daten [D:\GroesseresLaufwerk\Daten]</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Junction erstellen (kein Admin noetig)</div><div class="step-code">:: Junction (nur lokale Laufwerke):
+mklink /J C:\ProjekteLink D:\Projekte
+
+:: Nuetzlich z.B. fuer:
+:: - OneDrive-Ordner auf anderes Laufwerk umleiten
+:: - Programmdaten auf SSD/HDD verschieben ohne Konfig zu aendern
+:: - Temporaere Ordner auf Ramdisk legen
+
+:: Junction loeschen (NUR rmdir, nicht del!):
+rmdir C:\ProjekteLink</div><div class="step-warn">&#9888; Junction mit rd/rmdir loeschen — NICHT mit del oder Explorer-Loeschen, sonst wird der Zielordner geloescht!</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Alle Links in einem Ordner anzeigen</div><div class="step-code">:: Alle Symlinks und Junctions finden:
+dir C:\ /AL /S
+
+:: Per PowerShell:
+Get-ChildItem C:\ -Recurse -Force -ErrorAction SilentlyContinue |
+    Where { $_.LinkType -in "SymbolicLink","Junction","HardLink" } |
+    Select FullName,LinkType,Target |
+    Format-Table -AutoSize</div></div></li>
+        </ol>`},
+      {label:'PowerShell',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Symlink per PowerShell erstellen</div><div class="step-code">:: Ordner-Symlink:
+New-Item -ItemType SymbolicLink -Path "C:\Link" -Target "D:\ZielOrdner"
+
+:: Datei-Symlink:
+New-Item -ItemType SymbolicLink -Path "C:\Config.ini" -Target "D:\Configs\config.ini"
+
+:: Junction:
+New-Item -ItemType Junction -Path "C:\Junction" -Target "D:\ZielOrdner"
+
+:: Hard Link:
+New-Item -ItemType HardLink -Path "C:\Kopie.txt" -Target "C:\Original.txt"</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Praxisbeispiel: OneDrive auf D: umleiten</div><div class="step-code">$OneDriveOrig = "$env:USERPROFILE\OneDrive"
+$OneDriveNeu  = "D:\OneDrive"
+
+:: 1. OneDrive stoppen
+Stop-Process -Name OneDrive -Force -ErrorAction SilentlyContinue
+
+:: 2. Ordner auf D: verschieben
+Move-Item $OneDriveOrig $OneDriveNeu
+
+:: 3. Junction erstellen
+New-Item -ItemType Junction -Path $OneDriveOrig -Target $OneDriveNeu
+
+Write-Host "OneDrive auf D: umgeleitet" -ForegroundColor Green</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Alle Symlinks/Junctions pruefen und reparieren</div><div class="step-code">Get-ChildItem "C:\" -Recurse -Force -ErrorAction SilentlyContinue |
+    Where LinkType -in "SymbolicLink","Junction" |
+    ForEach-Object {
+        $target = $_.Target
+        if ($target -and -not (Test-Path $target)) {
+            Write-Host "KAPUTT: $($_.FullName) -> $target" -ForegroundColor Red
+        } else {
+            Write-Host "OK: $($_.FullName) -> $target" -ForegroundColor Green
+        }
+    }</div></div></li>
+        </ol>`}
+    ]
+  },
+  {
+    id:'map-psdrive',emoji:'⚡',title:'PSDrive & Laufwerke in PowerShell',
+    subtitle:'PowerShell-Laufwerke erstellen fuer Dateisystem, Registry, Zertifikate und mehr',
+    tabs:[
+      {label:'PSDrive',content:`
+        <div class="guide-section-head">Virtuelle Laufwerke in PowerShell</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Alle verfuegbaren Laufwerke anzeigen</div><div class="step-code">:: Alle PSDrives inkl. Registry, Zertifikate, etc.:
+Get-PSDrive
+
+:: Nur Dateisystem-Laufwerke:
+Get-PSDrive -PSProvider FileSystem
+
+:: Nur Registry-Laufwerke:
+Get-PSDrive -PSProvider Registry</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Dateisystem-PSDrive erstellen</div><div class="step-code">:: Temporaer (nur aktuelle PS-Session):
+New-PSDrive -Name "Proj" -PSProvider FileSystem -Root "C:\Projekte\Aktuell"
+cd Proj:
+ls
+
+:: Persistent (im Explorer sichtbar, bleibt nach Session):
+New-PSDrive -Name "Proj" -PSProvider FileSystem -Root "C:\Projekte" -Persist
+
+:: Netzlaufwerk als PSDrive:
+$Cred = Get-Credential
+New-PSDrive -Name "Z" -PSProvider FileSystem -Root "\\Server\Share" -Credential $Cred -Persist
+
+:: Entfernen:
+Remove-PSDrive -Name "Proj"</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Registry als Laufwerk nutzen</div><div class="step-code">:: HKEY_CLASSES_ROOT als Laufwerk einbinden:
+New-PSDrive -Name "HKCR" -PSProvider Registry -Root "HKEY_CLASSES_ROOT"
+
+:: Dann wie Dateisystem navigieren:
+cd HKCR:
+ls
+cd HKCR:\SOFTWARE
+
+:: Registry-Wert lesen:
+Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild
+
+:: Registry-Wert setzen:
+Set-ItemProperty "HKCU:\Software\MeineApp" -Name "Version" -Value "2.0"</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Zertifikat-Store als Laufwerk</div><div class="step-code">:: Alle Zertifikate des lokalen Computers:
+Get-ChildItem Cert:\LocalMachine\My
+
+:: Ablaufende Zertifikate in 30 Tagen finden:
+Get-ChildItem Cert:\ -Recurse |
+    Where { $_.NotAfter -lt (Get-Date).AddDays(30) -and $_.NotAfter -gt (Get-Date) } |
+    Select Subject,NotAfter,Thumbprint |
+    Format-Table -AutoSize
+
+:: Zertifikat exportieren:
+$Cert = Get-ChildItem Cert:\LocalMachine\My | Where Thumbprint -eq "ABCDEF123456"
+Export-Certificate -Cert $Cert -FilePath "C:\cert.cer"</div></div></li>
+        </ol>`}
+    ]
+  },
+];
 const PS_SKRIPTE = [
   {
     id:'pss-dienste',emoji:'⚙️',title:'Dienste remote verwalten',
@@ -6310,6 +6803,8 @@ function toggleGuide(id, event) {
   else if (activeTab === 'ps-guide')    renderGuide(PS_GUIDES,    getCatLabel('ps-guide'),'#c084fc', '&#128218;');
   else if (activeTab === 'batch-guide') renderGuide(BATCH_GUIDES, getCatLabel('batch-guide'),   '#fbbf24', '&#128203;');
   else if (activeTab === 'ps-skripte')  renderGuide(PS_SKRIPTE,   getCatLabel('ps-skripte'),  '#22d3ee', '&#128196;');
+  else if (activeTab === 'bitlocker-guide') renderGuide(BITLOCKER_GUIDES, getCatLabel('bitlocker-guide'), '#fb923c', '&#128274;');
+  else if (activeTab === 'mapping-guide')   renderGuide(MAPPING_GUIDES,   getCatLabel('mapping-guide'),   '#f59e0b', '&#128193;');
 }
 
 // Add copy buttons to all .step-code elements that don't have one yet
@@ -6493,6 +6988,8 @@ function buildNav() {
       : cat.id === 'ps-guide'    ? PS_GUIDES.length
       : cat.id === 'batch-guide' ? BATCH_GUIDES.length
       : cat.id === 'ps-skripte'  ? PS_SKRIPTE.length
+      : cat.id === 'bitlocker-guide' ? BITLOCKER_GUIDES.length
+      : cat.id === 'mapping-guide'   ? MAPPING_GUIDES.length
       : cat.id === 'favoriten'   ? favorites.size
       : cat.id === 'verlauf'     ? verlauf.length
       : cat.id === 'eigene'      ? customCmds.length
@@ -6673,7 +7170,7 @@ function setFilter(group, value) {
 
 function updateFilterBar() {
   const fb = document.getElementById('filterBar');
-  const isGuide = ['ad-guide','ts-guide','ps-guide','batch-guide','ps-skripte','favoriten','verlauf'].includes(activeTab);
+  const isGuide = ['ad-guide','ts-guide','ps-guide','batch-guide','ps-skripte','bitlocker-guide','mapping-guide','favoriten','verlauf'].includes(activeTab);
   const isDash  = (activeTab === 'alle' && !searchQuery);
   if (!fb) return;
   fb.classList.toggle('hidden', isDash || isGuide);
@@ -6794,6 +7291,8 @@ function render() {
   if (activeTab === 'ps-guide')    { renderGuide(PS_GUIDES,    getCatLabel('ps-guide'),'#c084fc', '&#128218;'); return; }
   if (activeTab === 'batch-guide') { renderGuide(BATCH_GUIDES, getCatLabel('batch-guide'),   '#fbbf24', '&#128203;'); return; }
   if (activeTab === 'ps-skripte')  { renderGuide(PS_SKRIPTE,   getCatLabel('ps-skripte'),  '#22d3ee', '&#128196;'); return; }
+  if (activeTab === 'bitlocker-guide') { renderGuide(BITLOCKER_GUIDES, getCatLabel('bitlocker-guide'), '#fb923c', '&#128274;'); return; }
+  if (activeTab === 'mapping-guide')   { renderGuide(MAPPING_GUIDES,   getCatLabel('mapping-guide'),   '#f59e0b', '&#128193;'); return; }
 
   // Favoriten
   if (activeTab === 'favoriten') {
@@ -6913,6 +7412,12 @@ const CHANGELOG = [
   {
     date: 'Mai 2025',
     badge: 'new',
+    title: 'BitLocker Guide & Ordner Mappen',
+    items: ['BitLocker aktivieren', 'manage-bde', 'Recovery & Fehlerbehebung', 'Netzlaufwerke', 'subst', 'Symlinks & Junctions', 'PSDrive'],
+  },
+  {
+    date: 'Mai 2025',
+    badge: 'new',
     title: 'Batch Scripting — 7 neue Anleitungen',
     items: ['Fehlerbehandlung', 'Dateien & Ordner', 'Netzwerk-Skripte', 'Registry', 'Benutzerverwaltung', 'Dienste & Prozesse'],
   },
@@ -6934,13 +7439,7 @@ const CHANGELOG = [
     title: 'ntdsutil — AD-Snapshot erstellen & einbinden',
     items: ['Snapshot erstellen', 'dsamain LDAP-Server', 'Objekte wiederherstellen', '+7 AD-Befehle'],
   },
-  {
-    date: 'Mai 2025',
-    badge: 'new',
-    title: 'Dashboard, PS Skripte, Impressum & DSGVO',
-    items: ['Dashboard Startseite', '12 PS Skripte', 'Impressum § 5 TMG', 'DSGVO GitHub'],
-  },
-];
+  ];
 
 // Tipp des Tages (rotierend nach Datum)
 const DAILY_TIPS = [
@@ -7098,8 +7597,7 @@ function renderDashboard() {
     <!-- Changelog -->
     <div class="db-changelog">
       <div class="db-section-title">&#128196; Was ist neu</div>
-      ${CHANGELOG.map(ch => `
-        <div class="db-change-card">
+      ${CHANGELOG.map(ch => `        <div class="db-change-card">
           <div class="db-change-header">
             <span class="db-change-badge badge-${ch.badge}">${ch.badge==='new'?'NEU':ch.badge==='update'?'UPDATE':'FIX'}</span>
             <span class="db-change-title">${ch.title}</span>
