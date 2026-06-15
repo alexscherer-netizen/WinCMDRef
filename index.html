@@ -2106,6 +2106,16 @@ const CATS = [
   {id:'ps-skripte', icon:'&#128196;', label:'PS Skripte',        desc:'Fertige PowerShell-Skripte fuer den Alltag', color:'#22d3ee'},
   {id:'bitlocker-guide',icon:'&#128274;',label:'BitLocker Guide', desc:'Laufwerke verschluesseln, verwalten, wiederherstellen', color:'#fb923c'},
   {id:'mapping-guide',  icon:'&#128193;',label:'Ordner Mappen',  desc:'Netzlaufwerke, subst, Symlinks, Junctions, PSDrive', color:'#f59e0b'},
+  {id:'update',         icon:'&#128260;',label:'Windows Update', desc:'Updates anzeigen, installieren, deinstallieren, Fehler', color:'#22d3ee'},
+  {id:'entra',          icon:'&#9729;',  label:'Entra & Intune', desc:'Entra ID, Microsoft Graph, Intune MDM, Compliance', color:'#0ea5e9'},
+  {id:'gpo',            icon:'&#128220;',label:'Gruppenrichtlinien',desc:'GPO, gpresult, gpupdate, Backup & Verknuepfung', color:'#a78bfa'},
+  {id:'drucker',        icon:'&#128424;',label:'Drucker & Server', desc:'Drucker, Druckwarteschlange, Spooler, Treiber', color:'#34d399'},
+  {id:'zertifikat',     icon:'&#128273;',label:'Zertifikate & PKI',desc:'certutil, Zertifikatsspeicher, Ablaufueberwachung', color:'#fbbf24'},
+  {id:'exchange',       icon:'&#9993;',  label:'Exchange Online',  desc:'Postfaecher, Berechtigungen, Verteilerlisten', color:'#38bdf8'},
+  {id:'gpo-guide',      icon:'&#128220;',label:'GPO Anleitung',    desc:'GPO erstellen, verknuepfen, sichern, RSoP', color:'#a78bfa'},
+  {id:'drucker-guide',  icon:'&#128424;',label:'Drucker Anleitung',desc:'Drucker einrichten, freigeben, Probleme loesen', color:'#34d399'},
+  {id:'zert-guide',     icon:'&#128273;',label:'Zertifikat Anleitung',desc:'Zertifikate verwalten, exportieren, ueberwachen', color:'#fbbf24'},
+  {id:'exo-guide',      icon:'&#9993;',  label:'Exchange Anleitung',desc:'Postfaecher und Berechtigungen verwalten', color:'#38bdf8'},
   {id:'favoriten',  icon:'&#11088;',  label:'Favoriten',         desc:'Gemerkte Lieblingsmerkbefehle', color:'#fbbf24'},
   {id:'verlauf',    icon:'&#128336;', label:'Verlauf',           desc:'Zuletzt angesehene Befehle', color:'#94a3b8'},
   {id:'eigene',     icon:'&#10010;',  label:'Eigene Befehle',   desc:'Selbst erstellte und gespeicherte Eintraege',  color:'#facc15'},
@@ -2755,6 +2765,73 @@ const CMDS = [
   {name:'dotnet',cat:'dev',typ:'cmd',short:'.NET SDK Befehle -- build, run, publish, test.',syntax:'dotnet [new|build|run|test|publish] [Optionen]',examples:['dotnet new console -n MeinProjekt','dotnet build','dotnet run','dotnet publish -c Release -r win-x64 --self-contained'],tip:'--self-contained = alle .NET-Libs einbetten. -r win-x64/linux-x64/osx-x64 fuer Plattform.'},
 
   // === AZURE ERWEITERT ===
+  // === GRUPPENRICHTLINIEN (GPO) BEFEHLE ===
+  {name:'gpupdate /force',cat:'gpo',typ:'cmd',short:'Gruppenrichtlinien sofort aktualisieren.',syntax:'gpupdate [/force] [/target:computer|user] [/boot] [/logoff]',examples:['gpupdate /force','gpupdate /target:computer /force','gpupdate /force /boot','gpupdate /force /logoff'],tip:'/force = alle Richtlinien neu anwenden (nicht nur geaenderte). /boot = Neustart wenn noetig. /logoff = Abmelden wenn noetig.'},
+  {name:'gpresult /r',cat:'gpo',typ:'cmd',short:'Angewendete Gruppenrichtlinien des aktuellen Benutzers anzeigen.',syntax:'gpresult /r  |  gpresult /h report.html  |  gpresult /scope user',examples:['gpresult /r','gpresult /h C:\\GPO-Report.html','gpresult /scope computer /r','gpresult /user max /h report.html'],tip:'/r = Zusammenfassung im Terminal. /h = HTML-Report (uebersichtlich!). /scope = nur user oder computer. Zeigt welche GPOs greifen.'},
+  {name:'Get-GPO -All',cat:'gpo',typ:'ps',short:'Alle Gruppenrichtlinienobjekte in der Domaene anzeigen.',syntax:'Get-GPO -All  |  Get-GPO -Name "GPO-Name"',examples:['Get-GPO -All | Select DisplayName,GpoStatus,ModificationTime','Get-GPO -Name "Default Domain Policy"','Get-GPO -All | Where GpoStatus -eq "AllSettingsEnabled" | Select DisplayName','Get-GPO -All | Sort ModificationTime -Descending | Select DisplayName,ModificationTime -First 10'],tip:'Benoetigt GroupPolicy-Modul (RSAT). GpoStatus zeigt ob aktiviert. ModificationTime fuer kuerzlich geaenderte GPOs.'},
+  {name:'New-GPO',cat:'gpo',typ:'ps',short:'Neues Gruppenrichtlinienobjekt erstellen.',syntax:'New-GPO -Name "Name" [-Comment "Beschreibung"]',examples:['New-GPO -Name "USB-Sperre" -Comment "Blockiert USB-Speicher"','New-GPO -Name "Bildschirmsperre" | New-GPLink -Target "OU=PCs,DC=firma,DC=local"'],tip:'New-GPO erstellt nur das GPO — mit New-GPLink mit OU verknuepfen damit es wirkt. Set-GPRegistryValue fuer Einstellungen.'},
+  {name:'New-GPLink',cat:'gpo',typ:'ps',short:'GPO mit OU oder Domaene verknuepfen.',syntax:'New-GPLink -Name "GPO" -Target "OU=...,DC=..." [-LinkEnabled Yes]',examples:['New-GPLink -Name "USB-Sperre" -Target "OU=Workstations,DC=firma,DC=local" -LinkEnabled Yes','Get-GPInheritance -Target "OU=PCs,DC=firma,DC=local"','Remove-GPLink -Name "USB-Sperre" -Target "OU=PCs,DC=firma,DC=local"'],tip:'LinkEnabled Yes/No. Get-GPInheritance zeigt alle verknuepften GPOs einer OU inkl. Vererbung. Reihenfolge = LinkEnabled Order.'},
+  {name:'Backup-GPO',cat:'gpo',typ:'ps',short:'Gruppenrichtlinien sichern.',syntax:'Backup-GPO -Name "GPO" -Path "Pfad"  |  Backup-GPO -All -Path "Pfad"',examples:['Backup-GPO -All -Path "C:\\GPO-Backup"','Backup-GPO -Name "Default Domain Policy" -Path "C:\\GPO-Backup"','Backup-GPO -All -Path "C:\\GPO-Backup\\$(Get-Date -Format yyyy-MM-dd)"'],tip:'-All sichert alle GPOs. Jedes Backup bekommt eine eigene GUID. Restore-GPO zum Wiederherstellen. Regelmaessig per Aufgabe sichern!'},
+  {name:'Restore-GPO',cat:'gpo',typ:'ps',short:'Gesicherte Gruppenrichtlinie wiederherstellen.',syntax:'Restore-GPO -Name "GPO" -Path "BackupPfad"  |  Restore-GPO -All -Path "Pfad"',examples:['Restore-GPO -Name "USB-Sperre" -Path "C:\\GPO-Backup"','Restore-GPO -All -Path "C:\\GPO-Backup"','Import-GPO -BackupGpoName "USB-Sperre" -TargetName "USB-Sperre-Neu" -Path "C:\\GPO-Backup" -CreateIfNeeded'],tip:'Restore-GPO stellt in dasselbe GPO zurueck. Import-GPO kann in ein NEUES GPO importieren (-CreateIfNeeded).'},
+  {name:'Get-GPResultantSetOfPolicy',cat:'gpo',typ:'ps',short:'Resultierende Richtlinien (RSoP) als Report erstellen.',syntax:'Get-GPResultantSetOfPolicy -ReportType Html -Path "report.html"',examples:['Get-GPResultantSetOfPolicy -ReportType Html -Path "C:\\RSoP.html"','Get-GPResultantSetOfPolicy -User max -Computer PC01 -ReportType Xml -Path "C:\\RSoP.xml"'],tip:'PowerShell-Variante von gpresult. ReportType Html oder Xml. Zeigt das Endergebnis aller angewendeten GPOs (Resultant Set of Policy).'},
+
+  // === DRUCKER & DRUCKSERVER BEFEHLE ===
+  {name:'Get-Printer',cat:'drucker',typ:'ps',short:'Installierte Drucker anzeigen.',syntax:'Get-Printer [-Name "Drucker"] [-ComputerName Server]',examples:['Get-Printer | Select Name,DriverName,PortName,Shared','Get-Printer -ComputerName PrintSrv01','Get-Printer | Where Shared -eq $true | Select Name,ShareName','Get-Printer | Where PrinterStatus -ne "Normal"'],tip:'-ComputerName fuer Druckserver. Shared zeigt freigegebene Drucker. PrinterStatus fuer Fehlerdiagnose (Offline, Error, PaperOut).'},
+  {name:'Add-Printer',cat:'drucker',typ:'ps',short:'Drucker hinzufuegen.',syntax:'Add-Printer -Name "Name" -DriverName "Treiber" -PortName "Port"',examples:['Add-Printer -Name "Buero-HP" -DriverName "HP Universal Printing PCL 6" -PortName "192.168.1.50"','Add-Printer -ConnectionName "\\\\PrintSrv01\\Buero-HP"','Add-Printer -Name "PDF" -DriverName "Microsoft Print To PDF" -PortName "PORTPROMPT:"'],tip:'-ConnectionName verbindet Netzwerkdrucker vom Server. Treiber muss vorhanden sein (Add-PrinterDriver). Port zuerst anlegen (Add-PrinterPort).'},
+  {name:'Add-PrinterPort',cat:'drucker',typ:'ps',short:'Druckerport (TCP/IP) erstellen.',syntax:'Add-PrinterPort -Name "Port" -PrinterHostAddress "IP"',examples:['Add-PrinterPort -Name "192.168.1.50" -PrinterHostAddress "192.168.1.50"','Add-PrinterPort -Name "Drucker-EG" -PrinterHostAddress "10.0.0.20" -PortNumber 9100','Get-PrinterPort | Select Name,PrinterHostAddress'],tip:'Standard-RAW-Port 9100. Port muss vor Add-Printer existieren. Get-PrinterPort listet alle Ports.'},
+  {name:'Get-PrintJob',cat:'drucker',typ:'ps',short:'Druckauftraege in der Warteschlange anzeigen.',syntax:'Get-PrintJob -PrinterName "Drucker" [-ComputerName Server]',examples:['Get-PrintJob -PrinterName "Buero-HP"','Get-PrintJob -PrinterName "Buero-HP" -ComputerName PrintSrv01 | Select Id,DocumentName,UserName,JobStatus','Get-Printer | ForEach-Object { Get-PrintJob -PrinterName $_.Name }'],tip:'JobStatus zeigt Status (Spooling, Printing, Error, Paused). Remove-PrintJob zum Loeschen haengender Auftraege.'},
+  {name:'Remove-PrintJob',cat:'drucker',typ:'ps',short:'Haengende Druckauftraege loeschen.',syntax:'Remove-PrintJob -PrinterName "Drucker" -ID JobID',examples:['Remove-PrintJob -PrinterName "Buero-HP" -ID 3','Get-PrintJob -PrinterName "Buero-HP" | Remove-PrintJob','Get-Printer | ForEach-Object { Get-PrintJob -PrinterName $_.Name | Remove-PrintJob }'],tip:'Loescht steckengebliebene Auftraege. Bei komplettem Stau: Druckwarteschlange (Spooler) neu starten — net stop spooler && net start spooler.'},
+  {name:'Spooler neu starten',cat:'drucker',typ:'cmd',short:'Druckwarteschlange (Spooler-Dienst) zuruecksetzen.',syntax:'net stop spooler && del /Q /F /S %systemroot%\\System32\\spool\\PRINTERS\\* && net start spooler',examples:['net stop spooler','del /Q /F /S %systemroot%\\System32\\spool\\PRINTERS\\*.*','net start spooler','Restart-Service -Name Spooler -Force'],tip:'Klassische Loesung bei haengenden Drucker. Stoppt Spooler, loescht alle Auftraege im Spool-Ordner, startet neu. Behebt 90% der Drucker.'},
+  {name:'printui /s',cat:'drucker',typ:'cmd',short:'Druckserver-Eigenschaften und Treiber verwalten.',syntax:'printui /s /t2  |  rundll32 printui.dll,PrintUIEntry /s /t2',examples:['printui /s /t2','rundll32 printui.dll,PrintUIEntry /ga /c\\\\PC /n\\\\PrintSrv\\Drucker','rundll32 printui.dll,PrintUIEntry /dn /n\\\\PrintSrv\\Drucker'],tip:'/s /t2 oeffnet Treiber-Tab des Druckservers. /ga = Drucker pro Maschine hinzufuegen. /dn = Netzwerkdrucker entfernen.'},
+  {name:'Get-PrinterDriver',cat:'drucker',typ:'ps',short:'Installierte Druckertreiber anzeigen und verwalten.',syntax:'Get-PrinterDriver  |  Add-PrinterDriver -Name "Treiber"',examples:['Get-PrinterDriver | Select Name,Manufacturer,DriverVersion','Add-PrinterDriver -Name "HP Universal Printing PCL 6"','Remove-PrinterDriver -Name "Alter Treiber"'],tip:'Treiber muss im Treiberspeicher sein (pnputil /add-driver). Universal-Treiber (HP UPD, etc.) decken viele Modelle ab.'},
+
+  // === ZERTIFIKATE & PKI BEFEHLE ===
+  {name:'certutil -store',cat:'zertifikat',typ:'cmd',short:'Zertifikatsspeicher anzeigen.',syntax:'certutil -store [My|Root|CA] [-user]',examples:['certutil -store My','certutil -store -user My','certutil -store Root','certutil -store CA'],tip:'My = eigene Zertifikate, Root = Stammzertifizierungsstellen, CA = Zwischenzertifikate. -user = Benutzerspeicher statt Computer.'},
+  {name:'certutil -verify',cat:'zertifikat',typ:'cmd',short:'Zertifikat und Kette pruefen.',syntax:'certutil -verify zertifikat.cer  |  certutil -urlfetch -verify cert.cer',examples:['certutil -verify C:\\cert.cer','certutil -urlfetch -verify C:\\cert.cer','certutil -verifystore My {Thumbprint}'],tip:'-urlfetch prueft auch CRL/OCSP (Sperrlisten) online. Zeigt ob Zertifikat gueltig, abgelaufen oder gesperrt ist.'},
+  {name:'certutil -dump',cat:'zertifikat',typ:'cmd',short:'Zertifikatsdetails anzeigen.',syntax:'certutil -dump zertifikat.cer',examples:['certutil -dump C:\\cert.cer','certutil -dump -privatekey C:\\cert.pfx','certutil -hashfile C:\\datei.exe SHA256'],tip:'Zeigt Aussteller, Gueltigkeit, Seriennummer, Erweiterungen. -hashfile berechnet Pruefsummen (SHA256, MD5, SHA1).'},
+  {name:'Get-ChildItem Cert:',cat:'zertifikat',typ:'ps',short:'Zertifikate per PowerShell durchsuchen.',syntax:'Get-ChildItem Cert:\\LocalMachine\\My  |  Get-ChildItem Cert:\\ -Recurse',examples:['Get-ChildItem Cert:\\LocalMachine\\My | Select Subject,NotAfter,Thumbprint','Get-ChildItem Cert:\\CurrentUser\\My','Get-ChildItem Cert:\\LocalMachine\\Root | Select Subject'],tip:'Cert: ist ein PSDrive. LocalMachine = Computer, CurrentUser = Benutzer. My = persoenlich, Root = Stamm-CAs, CA = Zwischen-CAs.'},
+  {name:'Zertifikate Ablaufueberwachung',cat:'zertifikat',typ:'ps',short:'Bald ablaufende Zertifikate finden.',syntax:'Get-ChildItem Cert:\\ -Recurse | Where {$_.NotAfter -lt (Get-Date).AddDays(30)}',examples:['Get-ChildItem Cert:\\LocalMachine\\My -Recurse | Where { $_.NotAfter -lt (Get-Date).AddDays(30) -and $_.NotAfter -gt (Get-Date) } | Select Subject,NotAfter,Thumbprint | Sort NotAfter','Get-ChildItem Cert:\\LocalMachine\\My | Where NotAfter -lt (Get-Date).AddDays(60) | Format-Table Subject,NotAfter'],tip:'Praxis-Goldwert: ablaufende Zertifikate vor dem Ausfall finden. AddDays(30) = naechste 30 Tage. Als geplante Aufgabe mit E-Mail-Alarm einrichten!'},
+  {name:'New-SelfSignedCertificate',cat:'zertifikat',typ:'ps',short:'Selbstsigniertes Zertifikat erstellen (Test/Intern).',syntax:'New-SelfSignedCertificate -DnsName "name" -CertStoreLocation Cert:\\LocalMachine\\My',examples:['New-SelfSignedCertificate -DnsName "server.firma.local" -CertStoreLocation "Cert:\\LocalMachine\\My"','New-SelfSignedCertificate -DnsName "*.firma.local" -CertStoreLocation "Cert:\\LocalMachine\\My" -NotAfter (Get-Date).AddYears(3)'],tip:'Nur fuer Test/interne Zwecke (nicht oeffentlich vertraut). -NotAfter setzt Gueltigkeit. Wildcard mit *. moeglich.'},
+  {name:'Export/Import-Certificate',cat:'zertifikat',typ:'ps',short:'Zertifikate exportieren und importieren.',syntax:'Export-Certificate / Export-PfxCertificate / Import-Certificate',examples:['$c = Get-ChildItem Cert:\\LocalMachine\\My | Where Thumbprint -eq "ABC123"','Export-Certificate -Cert $c -FilePath "C:\\cert.cer"','Export-PfxCertificate -Cert $c -FilePath "C:\\cert.pfx" -Password (ConvertTo-SecureString "Pass123" -AsPlainText -Force)','Import-Certificate -FilePath "C:\\cert.cer" -CertStoreLocation "Cert:\\LocalMachine\\Root"'],tip:'Export-Certificate = nur oeffentlicher Teil (.cer). Export-PfxCertificate = mit privatem Schluessel (.pfx, Passwort noetig).'},
+  {name:'certutil -CRL',cat:'zertifikat',typ:'cmd',short:'Zertifikatsperrliste (CRL) verwalten.',syntax:'certutil -CRL  |  certutil -getreg CA\\CRLPeriod',examples:['certutil -CRL','certutil -getreg CA\\CRLPeriod','certutil -getreg CA\\CRLPeriodUnits'],tip:'Auf einer CA: -CRL erzeugt neue Sperrliste manuell. CRLPeriod legt Gueltigkeitsdauer fest. Wichtig fuer interne PKI-Wartung.'},
+
+  // === EXCHANGE ONLINE BEFEHLE ===
+  {name:'Connect-ExchangeOnline',cat:'exchange',typ:'ps',short:'Mit Exchange Online (Microsoft 365) verbinden.',syntax:'Connect-ExchangeOnline -UserPrincipalName admin@firma.com',examples:['Install-Module ExchangeOnlineManagement -Force','Connect-ExchangeOnline -UserPrincipalName admin@firma.com','Connect-ExchangeOnline -ShowBanner:$false','Disconnect-ExchangeOnline -Confirm:$false'],tip:'Benoetigt Modul ExchangeOnlineManagement. Moderne Auth mit MFA wird unterstuetzt. Disconnect am Ende nicht vergessen (Sessionlimit).'},
+  {name:'Get-Mailbox',cat:'exchange',typ:'ps',short:'Postfaecher anzeigen.',syntax:'Get-Mailbox [-Identity user] [-ResultSize Unlimited]',examples:['Get-Mailbox -ResultSize Unlimited | Select DisplayName,PrimarySmtpAddress,RecipientTypeDetails','Get-Mailbox -Identity "max@firma.com"','Get-Mailbox -Filter "RecipientTypeDetails -eq \'SharedMailbox\'"','Get-Mailbox | Get-MailboxStatistics | Select DisplayName,TotalItemSize'],tip:'-ResultSize Unlimited fuer alle (sonst nur 1000). RecipientTypeDetails: UserMailbox, SharedMailbox, RoomMailbox. MailboxStatistics fuer Groesse.'},
+  {name:'Set-Mailbox',cat:'exchange',typ:'ps',short:'Postfach-Einstellungen aendern.',syntax:'Set-Mailbox -Identity user -[Einstellung] [Wert]',examples:['Set-Mailbox -Identity "max@firma.com" -ProhibitSendQuota 50GB','Set-Mailbox -Identity "info@firma.com" -Type Shared','Set-Mailbox "max@firma.com" -LitigationHoldEnabled $true','Set-Mailbox "max@firma.com" -ForwardingAddress "chef@firma.com" -DeliverToMailboxAndForward $true'],tip:'-Type Shared wandelt in freigegebenes Postfach. LitigationHold = Aufbewahrungspflicht. ForwardingAddress = Weiterleitung.'},
+  {name:'Add-MailboxPermission',cat:'exchange',typ:'ps',short:'Postfachberechtigungen vergeben (Vollzugriff).',syntax:'Add-MailboxPermission -Identity postfach -User benutzer -AccessRights FullAccess',examples:['Add-MailboxPermission -Identity "info@firma.com" -User "max@firma.com" -AccessRights FullAccess -InheritanceType All','Get-MailboxPermission -Identity "info@firma.com" | Where {$_.User -notlike "NT AUTHORITY*"}','Remove-MailboxPermission -Identity "info@firma.com" -User "max@firma.com" -AccessRights FullAccess'],tip:'FullAccess = Postfach oeffnen/lesen. Fuer Senden zusaetzlich Add-RecipientPermission (SendAs). -AutoMapping $false verhindert automatisches Einbinden in Outlook.'},
+  {name:'Add-RecipientPermission',cat:'exchange',typ:'ps',short:'Senden-Als-Berechtigung (SendAs) vergeben.',syntax:'Add-RecipientPermission -Identity postfach -Trustee user -AccessRights SendAs',examples:['Add-RecipientPermission -Identity "info@firma.com" -Trustee "max@firma.com" -AccessRights SendAs -Confirm:$false','Get-RecipientPermission -Identity "info@firma.com"','Set-Mailbox "info@firma.com" -GrantSendOnBehalfTo "max@firma.com"'],tip:'SendAs = im Namen des Postfachs senden (erscheint als info@). GrantSendOnBehalfTo = "im Auftrag von" (zeigt beide Namen).'},
+  {name:'Get-DistributionGroup',cat:'exchange',typ:'ps',short:'Verteilerlisten anzeigen und verwalten.',syntax:'Get-DistributionGroup  |  New-DistributionGroup  |  Add-DistributionGroupMember',examples:['Get-DistributionGroup | Select DisplayName,PrimarySmtpAddress','New-DistributionGroup -Name "Alle-IT" -PrimarySmtpAddress "it@firma.com"','Add-DistributionGroupMember -Identity "it@firma.com" -Member "max@firma.com"','Get-DistributionGroupMember -Identity "it@firma.com" | Select DisplayName'],tip:'Verteilerliste = E-Mails an alle Mitglieder. New-DistributionGroup -Type Security fuer e-mail-aktivierte Sicherheitsgruppe.'},
+  {name:'Search-Mailbox',cat:'exchange',typ:'ps',short:'Postfachinhalte durchsuchen oder loeschen (Compliance).',syntax:'Search-Mailbox -Identity user -SearchQuery "..." [-DeleteContent]',examples:['Search-Mailbox -Identity "max@firma.com" -SearchQuery "subject:Rechnung" -EstimateResultOnly','Search-Mailbox -Identity "max@firma.com" -SearchQuery \'from:spam@bad.com\' -DeleteContent -Force'],tip:'-EstimateResultOnly zeigt nur Anzahl (ungefaehrlich). -DeleteContent loescht! Fuer Phishing-Bereinigung. Neuere Umgebungen: New-ComplianceSearch.'},
+  {name:'Get-MailboxStatistics',cat:'exchange',typ:'ps',short:'Postfachgroesse und Statistiken anzeigen.',syntax:'Get-MailboxStatistics -Identity user',examples:['Get-MailboxStatistics -Identity "max@firma.com" | Select DisplayName,TotalItemSize,ItemCount','Get-Mailbox -ResultSize Unlimited | Get-MailboxStatistics | Sort TotalItemSize -Descending | Select DisplayName,TotalItemSize -First 20'],tip:'TotalItemSize = belegter Speicher. ItemCount = Anzahl E-Mails. Letztes Beispiel findet die groessten Postfaecher (Speicherplatz-Audit).'},
+
+  // === ENTRA ID & INTUNE BEFEHLE ===
+  // -- Microsoft Graph Verbindung --
+  {name:'Install-Module Microsoft.Graph',cat:'entra',typ:'ps',short:'Microsoft Graph PowerShell SDK installieren.',syntax:'Install-Module Microsoft.Graph -Scope CurrentUser -Force',examples:['Install-Module Microsoft.Graph -Scope CurrentUser -Force','Install-Module Microsoft.Graph.Intune -Force','Get-InstalledModule Microsoft.Graph*','Update-Module Microsoft.Graph'],tip:'Das Graph SDK ersetzt die alten AzureAD und MSOnline Module (Ende 2024 abgekuendigt). CurrentUser = ohne Admin-Rechte installierbar.'},
+  {name:'Connect-MgGraph',cat:'entra',typ:'ps',short:'Mit Microsoft Graph (Entra ID) verbinden.',syntax:'Connect-MgGraph -Scopes "Scope1","Scope2"',examples:['Connect-MgGraph -Scopes "User.Read.All","Group.Read.All"','Connect-MgGraph -Scopes "DeviceManagementManagedDevices.Read.All"','Connect-MgGraph -TenantId "contoso.onmicrosoft.com"','Disconnect-MgGraph'],tip:'Scopes = Berechtigungen die angefragt werden. Erste Anmeldung erfordert Admin-Consent. Get-MgContext zeigt aktuelle Verbindung.'},
+  {name:'Get-MgContext',cat:'entra',typ:'ps',short:'Aktuelle Graph-Verbindung und Berechtigungen anzeigen.',syntax:'Get-MgContext  |  (Get-MgContext).Scopes',examples:['Get-MgContext','(Get-MgContext).Scopes','Get-MgContext | Select Account,TenantId,Scopes'],tip:'Zeigt angemeldetes Konto, Tenant-ID und alle erteilten Scopes. Nuetzlich um zu pruefen ob genug Berechtigungen vorhanden sind.'},
+  // -- Entra ID Benutzer --
+  {name:'Get-MgUser',cat:'entra',typ:'ps',short:'Entra ID Benutzer abfragen.',syntax:'Get-MgUser [-UserId UPN] [-Filter] [-All]',examples:['Get-MgUser -All | Select DisplayName,UserPrincipalName','Get-MgUser -UserId "max@contoso.com"','Get-MgUser -Filter "accountEnabled eq false" -All','Get-MgUser -Filter "startswith(displayName,\'Max\')" | Select DisplayName,Mail'],tip:'-All holt alle (sonst nur 100). -Filter nutzt OData-Syntax. Ersetzt Get-AzureADUser. Properties: -Property fuer zusaetzliche Felder.'},
+  {name:'New-MgUser',cat:'entra',typ:'ps',short:'Neuen Entra ID Benutzer erstellen.',syntax:'New-MgUser -DisplayName -UserPrincipalName -MailNickname -PasswordProfile',examples:['$pw = @{ Password = "Start123!"; ForceChangePasswordNextSignIn = $true }','New-MgUser -DisplayName "Max Mustermann" -UserPrincipalName "max@contoso.com" -MailNickname "max" -AccountEnabled -PasswordProfile $pw'],tip:'PasswordProfile als Hashtable. ForceChangePasswordNextSignIn = Passwort beim ersten Login aendern. Benoetigt Scope User.ReadWrite.All.'},
+  {name:'Update-MgUser',cat:'entra',typ:'ps',short:'Entra ID Benutzer-Attribute aendern.',syntax:'Update-MgUser -UserId [UPN] -[Attribut] [Wert]',examples:['Update-MgUser -UserId "max@contoso.com" -Department "IT" -JobTitle "Admin"','Update-MgUser -UserId "max@contoso.com" -AccountEnabled:$false','Update-MgUser -UserId "max@contoso.com" -UsageLocation "DE"'],tip:'UsageLocation (Laendercode) ist Pflicht vor Lizenzzuweisung. AccountEnabled:$false deaktiviert das Konto.'},
+  {name:'Get-MgUserLicenseDetail',cat:'entra',typ:'ps',short:'Lizenzen eines Benutzers anzeigen.',syntax:'Get-MgUserLicenseDetail -UserId [UPN]',examples:['Get-MgUserLicenseDetail -UserId "max@contoso.com" | Select SkuPartNumber','Get-MgUser -All | ForEach-Object { [PSCustomObject]@{ User=$_.UserPrincipalName; Lizenzen=(Get-MgUserLicenseDetail -UserId $_.Id).SkuPartNumber -join "," } }'],tip:'SkuPartNumber zeigt Lizenztyp (z.B. ENTERPRISEPACK = Office 365 E3). Set-MgUserLicense zum Zuweisen/Entfernen.'},
+  // -- Entra ID Gruppen --
+  {name:'Get-MgGroup',cat:'entra',typ:'ps',short:'Entra ID Gruppen abfragen.',syntax:'Get-MgGroup [-Filter] [-All]',examples:['Get-MgGroup -All | Select DisplayName,GroupTypes','Get-MgGroup -Filter "startswith(displayName,\'IT\')"','Get-MgGroup -Filter "securityEnabled eq true" -All','Get-MgGroupMember -GroupId "{GUID}" | Select -ExpandProperty AdditionalProperties'],tip:'GroupTypes: Unified = Microsoft 365 Gruppe, leer = Sicherheitsgruppe. Get-MgGroupMember fuer Mitglieder.'},
+  {name:'New-MgGroup',cat:'entra',typ:'ps',short:'Neue Entra ID Gruppe erstellen.',syntax:'New-MgGroup -DisplayName -MailEnabled -SecurityEnabled -MailNickname',examples:['New-MgGroup -DisplayName "IT-Team" -MailEnabled:$false -SecurityEnabled -MailNickname "itteam"','New-MgGroup -DisplayName "Projekt X" -GroupTypes "Unified" -MailEnabled -SecurityEnabled:$false -MailNickname "projektx"'],tip:'SecurityEnabled = Sicherheitsgruppe. GroupTypes Unified = M365-Gruppe mit Postfach. New-MgGroupMember zum Hinzufuegen von Mitgliedern.'},
+  {name:'New-MgGroupMember',cat:'entra',typ:'ps',short:'Benutzer zu Entra ID Gruppe hinzufuegen.',syntax:'New-MgGroupMember -GroupId [GUID] -DirectoryObjectId [UserGUID]',examples:['$user = Get-MgUser -UserId "max@contoso.com"','New-MgGroupMember -GroupId "{GroupGUID}" -DirectoryObjectId $user.Id','Remove-MgGroupMemberByRef -GroupId "{GroupGUID}" -DirectoryObjectId $user.Id'],tip:'DirectoryObjectId = Objekt-ID des Benutzers (nicht UPN). Remove-MgGroupMemberByRef zum Entfernen.'},
+  // -- Entra ID Geraete & Sicherheit --
+  {name:'Get-MgDevice',cat:'entra',typ:'ps',short:'In Entra ID registrierte Geraete anzeigen.',syntax:'Get-MgDevice [-Filter] [-All]',examples:['Get-MgDevice -All | Select DisplayName,OperatingSystem,TrustType','Get-MgDevice -Filter "operatingSystem eq \'Windows\'" -All','Get-MgDevice -All | Where { $_.ApproximateLastSignInDateTime -lt (Get-Date).AddDays(-90) }'],tip:'TrustType: AzureAd = Entra joined, ServerAd = Hybrid joined, Workplace = registriert. Veraltete Geraete ueber ApproximateLastSignInDateTime finden.'},
+  {name:'Get-MgAuditLogSignIn',cat:'entra',typ:'ps',short:'Entra ID Anmeldeprotokolle abfragen.',syntax:'Get-MgAuditLogSignIn [-Filter] [-Top N]',examples:['Get-MgAuditLogSignIn -Top 50 | Select CreatedDateTime,UserPrincipalName,AppDisplayName,@{n="Status";e={$_.Status.ErrorCode}}','Get-MgAuditLogSignIn -Filter "status/errorCode ne 0" -Top 100','Get-MgAuditLogSignIn -Filter "createdDateTime ge 2024-01-01T00:00:00Z"'],tip:'errorCode 0 = Erfolg, sonst Fehler. Benoetigt Scope AuditLog.Read.All und Entra ID P1/P2 Lizenz. Top max 1000.'},
+  {name:'Get-MgUserAuthenticationMethod',cat:'entra',typ:'ps',short:'MFA-Methoden eines Benutzers anzeigen.',syntax:'Get-MgUserAuthenticationMethod -UserId [UPN]',examples:['Get-MgUserAuthenticationMethod -UserId "max@contoso.com"','Get-MgUser -All | ForEach-Object { $m = Get-MgUserAuthenticationMethod -UserId $_.Id; [PSCustomObject]@{ User=$_.UserPrincipalName; MFA=($m.Count -gt 1) } }'],tip:'Zeigt registrierte MFA-Methoden (Authenticator, SMS, FIDO2). Benoetigt UserAuthenticationMethod.Read.All. Pruefen wer kein MFA hat = Sicherheitsrisiko.'},
+  // -- Intune Geraeteverwaltung --
+  {name:'Get-MgDeviceManagementManagedDevice',cat:'entra',typ:'ps',short:'Alle von Intune verwalteten Geraete anzeigen.',syntax:'Get-MgDeviceManagementManagedDevice [-Filter] [-All]',examples:['Get-MgDeviceManagementManagedDevice -All | Select DeviceName,OperatingSystem,ComplianceState,LastSyncDateTime','Get-MgDeviceManagementManagedDevice -Filter "complianceState eq \'noncompliant\'" -All','Get-MgDeviceManagementManagedDevice -All | Where ManagedDeviceOwnerType -eq "company"'],tip:'ComplianceState: compliant/noncompliant/unknown. Benoetigt Scope DeviceManagementManagedDevices.Read.All. LastSyncDateTime fuer inaktive Geraete.'},
+  {name:'Sync-MgDeviceManagementManagedDevice',cat:'entra',typ:'ps',short:'Intune-Geraet zur Synchronisation zwingen.',syntax:'Sync-MgDeviceManagementManagedDevice -ManagedDeviceId [GUID]',examples:['$device = Get-MgDeviceManagementManagedDevice -Filter "deviceName eq \'LAPTOP-01\'"','Sync-MgDeviceManagementManagedDevice -ManagedDeviceId $device.Id','Get-MgDeviceManagementManagedDevice -All | ForEach-Object { Sync-MgDeviceManagementManagedDevice -ManagedDeviceId $_.Id }'],tip:'Erzwingt sofortige Geraetesynchronisation mit Intune (statt zu warten). Benoetigt DeviceManagementManagedDevices.PrivilegedOperations.All.'},
+  {name:'Remote-Wipe Intune',cat:'entra',typ:'ps',short:'Intune-Geraet zuruecksetzen (Remote Wipe).',syntax:'Invoke-MgWipeDeviceManagementManagedDevice -ManagedDeviceId [GUID]',examples:['$device = Get-MgDeviceManagementManagedDevice -Filter "deviceName eq \'LOST-PHONE\'"','Invoke-MgWipeDeviceManagementManagedDevice -ManagedDeviceId $device.Id','Invoke-MgRetireDeviceManagementManagedDevice -ManagedDeviceId $device.Id'],tip:'Wipe = vollstaendiges Zuruecksetzen. Retire = nur Firmendaten entfernen (BYOD). Bei verlorenen/gestohlenen Geraeten! Nicht umkehrbar.'},
+  {name:'Get-MgDeviceManagementDeviceCompliancePolicy',cat:'entra',typ:'ps',short:'Intune Compliance-Richtlinien anzeigen.',syntax:'Get-MgDeviceManagementDeviceCompliancePolicy [-All]',examples:['Get-MgDeviceManagementDeviceCompliancePolicy -All | Select DisplayName,Description','Get-MgDeviceManagementDeviceConfiguration -All | Select DisplayName'],tip:'Compliance-Richtlinien definieren Geraete-Anforderungen (BitLocker, PIN, OS-Version). DeviceConfiguration fuer Konfigurationsprofile.'},
+  {name:'Get-MgDeviceManagementDeviceConfiguration',cat:'entra',typ:'ps',short:'Intune Konfigurationsprofile anzeigen.',syntax:'Get-MgDeviceManagementDeviceConfiguration [-All]',examples:['Get-MgDeviceManagementDeviceConfiguration -All | Select DisplayName,@{n="Typ";e={$_.AdditionalProperties.\'@odata.type\'}}'],tip:'Konfigurationsprofile setzen Geraete-Einstellungen (WLAN, VPN, Restriktionen). @odata.type zeigt den Profiltyp (Windows, iOS, Android).'},
+  {name:'Get-MgDeviceManagementManagedDeviceApp',cat:'entra',typ:'ps',short:'Auf Intune-Geraet installierte Apps anzeigen.',syntax:'Get-MgDeviceManagementManagedDevice -ManagedDeviceId [GUID] -ExpandProperty DetectedApps',examples:['$d = Get-MgDeviceManagementManagedDevice -Filter "deviceName eq \'LAPTOP-01\'"','(Get-MgDeviceManagementManagedDevice -ManagedDeviceId $d.Id -ExpandProperty DetectedApps).DetectedApps | Select DisplayName,Version'],tip:'DetectedApps zeigt erkannte Software-Inventarisierung. Nuetzlich fuer Lizenz-Audits und Sicherheitspruefungen.'},
+  {name:'Get-MgDeviceManagementManagedDeviceOverview',cat:'entra',typ:'ps',short:'Intune Geraete-Uebersicht und Statistiken.',syntax:'Get-MgDeviceManagementManagedDeviceOverview',examples:['Get-MgDeviceManagementManagedDeviceOverview | Select EnrolledDeviceCount,MdmEnrolledCount','Get-MgDeviceManagementManagedDeviceOverview | Select -ExpandProperty DeviceOperatingSystemSummary'],tip:'Schneller Ueberblick: Anzahl registrierter Geraete, MDM-Status, OS-Verteilung. Gut fuer Dashboards und Reports.'},
+
   {name:'Get-AzContext',cat:'azure',typ:'ps',short:'Aktuellen Azure-Kontext anzeigen.',syntax:'Get-AzContext  |  Get-AzContext -ListAvailable',examples:['Get-AzContext','Get-AzContext -ListAvailable | Select Name,Account','Set-AzContext -Subscription "Mein Abo"'],tip:'-ListAvailable = alle gespeicherten Kontexte. Save-AzContext / Import-AzContext fuer Skripte.'},
   {name:'New-AzVM',cat:'azure',typ:'ps',short:'Neue Azure-VM erstellen.',syntax:'New-AzVM -ResourceGroupName [RG] -Name [Name] -Location [Region] -Image [Image]',examples:["New-AzVM -ResourceGroupName 'RG-Test' -Name 'VM-Test' -Location 'westeurope' -Image 'Win2022AzureBotEdge'"],tip:'Verfuegbare Groessen: Get-AzVMSize -Location westeurope. Standard_B1s = 1vCPU/1GB.'},
   {name:'Get-AzLog',cat:'azure',typ:'ps',short:'Azure Aktivitaetsprotokoll abfragen.',syntax:'Get-AzLog [-StartTime [Datum]] [-ResourceGroupName RG]',examples:['Get-AzLog -StartTime (Get-Date).AddDays(-7) | Select EventTimestamp,Caller,OperationName,Status'],tip:'Zeigt alle Aenderungen. Caller = wer hat was geaendert. Standard: letzte 7 Tage.'},
@@ -2851,6 +2928,33 @@ const CMDS = [
   {name:'ldp.exe /server localhost /port 50000',cat:'ad',typ:'cmd',short:'LDP.exe mit Snapshot-LDAP-Port verbinden.',syntax:'ldp.exe  dann: Connection -> Connect -> localhost:50000',examples:['ldp.exe'],tip:'Grafisches LDAP-Browser-Tool. Mit dsamain-Snapshot verbinden: Connection > Connect > Server: localhost, Port: 50000. Dann Browse > Search fuer AD-Objekte.'},
   {name:'Get-ADObject -Server localhost:50000',cat:'ad',typ:'ps',short:'AD-Snapshot per PowerShell abfragen (nach dsamain).',syntax:'Get-ADObject -Filter * -Server localhost:50000 -SearchBase "DC=firma,DC=local"',examples:['Get-ADUser -Filter * -Server localhost:50000 | Select Name,SamAccountName','Get-ADObject -Filter {Name -eq "MaxMustermann"} -Server localhost:50000 -Properties *'],tip:'Verbindet sich mit dem dsamain-LDAP auf Port 50000. Perfekt um geloeschte Objekte oder alte Attributwerte zu lesen.'},
 
+
+  // === WINDOWS UPDATE BEFEHLE ===
+  // -- PowerShell selbst & Module aktualisieren --
+  {name:'$PSVersionTable',cat:'update',typ:'ps',short:'Installierte PowerShell-Version anzeigen.',syntax:'$PSVersionTable  |  $PSVersionTable.PSVersion',examples:['$PSVersionTable','$PSVersionTable.PSVersion','$PSVersionTable.PSEdition'],tip:'PSEdition: Desktop = Windows PowerShell 5.1, Core = PowerShell 7+. Major-Version 7+ ist die moderne plattformuebergreifende Version.'},
+  {name:'winget upgrade PowerShell',cat:'update',typ:'cmd',short:'PowerShell 7 per winget aktualisieren.',syntax:'winget upgrade Microsoft.PowerShell',examples:['winget search Microsoft.PowerShell','winget install Microsoft.PowerShell','winget upgrade Microsoft.PowerShell','winget upgrade --all'],tip:'Installiert/aktualisiert PowerShell 7 (pwsh.exe). Laeuft parallel zu Windows PowerShell 5.1. winget upgrade --all aktualisiert alle Programme.'},
+  {name:'Update-Module',cat:'update',typ:'ps',short:'Installierte PowerShell-Module aktualisieren.',syntax:'Update-Module [-Name Modulname] [-Force]',examples:['Update-Module','Update-Module -Name PSWindowsUpdate','Update-Module -Force','Get-InstalledModule | Update-Module'],tip:'Ohne -Name werden ALLE Module aktualisiert. Aktualisiert nur Module die per Install-Module installiert wurden. Als Admin fuer AllUsers-Module.'},
+  {name:'Get-InstalledModule',cat:'update',typ:'ps',short:'Alle installierten PowerShell-Module mit Version anzeigen.',syntax:'Get-InstalledModule [-Name Modulname]',examples:['Get-InstalledModule','Get-InstalledModule | Sort Name','Get-InstalledModule -Name Az','Get-InstalledModule | Where {$_.Version -lt (Find-Module $_.Name).Version}'],tip:'Zeigt Name, Version, Repository. Letztes Beispiel findet Module fuer die ein Update verfuegbar ist (Vergleich mit PS Gallery).'},
+  {name:'Find-Module -Name',cat:'update',typ:'ps',short:'Neueste verfuegbare Modul-Version in PowerShell Gallery suchen.',syntax:'Find-Module -Name [Modulname]',examples:['Find-Module -Name PSWindowsUpdate','Find-Module -Name Az | Select Name,Version','Find-Module -Tag "ActiveDirectory"','Find-Module Az* | Select Name,Version'],tip:'Sucht in der PowerShell Gallery (powershellgallery.com). Version vergleichen mit Get-InstalledModule um Updates zu finden.'},
+  {name:'Get-Module -ListAvailable',cat:'update',typ:'ps',short:'Alle auf dem System verfuegbaren Module auflisten.',syntax:'Get-Module -ListAvailable [-Name Modulname]',examples:['Get-Module -ListAvailable','Get-Module -ListAvailable -Name Az*','Get-Module -ListAvailable | Group-Object Name | Where Count -gt 1','Get-Module -ListAvailable | Select Name,Version | Sort Name'],tip:'Zeigt auch Module die NICHT per Install-Module kamen (z.B. mitgelieferte). Group-Object findet Module mit mehreren Versionen.'},
+  {name:'Update-Help',cat:'update',typ:'ps',short:'PowerShell-Hilfedateien aktualisieren.',syntax:'Update-Help [-Module Modulname] [-Force]',examples:['Update-Help','Update-Help -Force','Update-Help -Module Microsoft.PowerShell.Management','Save-Help -DestinationPath C:\\PSHelp'],tip:'Als Admin ausfuehren. Laedt aktuelle Hilfe aus dem Internet. Save-Help fuer Offline-Systeme: Hilfe herunterladen und per Update-Help -SourcePath einspielen.'},
+  {name:'Get-PSRepository',cat:'update',typ:'ps',short:'Konfigurierte Modul-Quellen (Repositories) anzeigen.',syntax:'Get-PSRepository  |  Set-PSRepository',examples:['Get-PSRepository','Set-PSRepository -Name PSGallery -InstallationPolicy Trusted','Register-PSRepository -Default'],tip:'PSGallery = offizielle Microsoft-Quelle. InstallationPolicy Trusted unterdrueckt Sicherheitsabfrage bei Install-Module. Register-PSRepository -Default stellt PSGallery wieder her.'},
+
+  // -- Installierte Updates anzeigen --
+  {name:'Get-HotFix',cat:'update',typ:'ps',short:'Alle installierten Windows-Updates anzeigen.',syntax:'Get-HotFix [-Id KB-Nummer] [-ComputerName PC]',examples:['Get-HotFix | Sort InstalledOn -Descending | Select -First 20','Get-HotFix -Id KB5034441','Get-HotFix -ComputerName DC01 | Sort InstalledOn -Descending','Get-HotFix | Where Description -eq "Security Update" | Measure-Object'],tip:'InstalledOn = Installationsdatum. Description: Security Update, Update, Hotfix. Ohne -ComputerName = lokaler PC.'},
+  {name:'wmic qfe list',cat:'update',typ:'cmd',short:'Installierte Updates per WMI anzeigen.',syntax:'wmic qfe list [brief|full] [/format:table]',examples:['wmic qfe list brief','wmic qfe list full | findstr KB5034441','wmic qfe list /format:csv > C:\\Updates.csv','wmic /node:Server01 qfe list brief'],tip:'QFE = Quick Fix Engineering. full = alle Felder inkl. InstalledBy. /format:csv fuer Export. /node fuer Remote-PCs.'},
+  {name:'Get-CimInstance Win32_QuickFixEngineering',cat:'update',typ:'ps',short:'Updates per CIM abfragen (moderner WMI-Ersatz).',syntax:'Get-CimInstance Win32_QuickFixEngineering | Sort InstalledOn -Descending',examples:['Get-CimInstance Win32_QuickFixEngineering | Sort InstalledOn -Descending | Select HotFixID,Description,InstalledOn | Format-Table','Get-CimInstance Win32_QuickFixEngineering -ComputerName DC01 | Where InstalledOn -gt (Get-Date).AddDays(-30)'],tip:'Moderner Ersatz fuer Get-HotFix. -ComputerName fuer Remote. InstalledOn -gt fuer Updates der letzten X Tage.'},
+  {name:'Get-WindowsUpdateLog',cat:'update',typ:'ps',short:'Windows Update Protokolldatei erstellen.',syntax:'Get-WindowsUpdateLog [-LogPath Pfad]',examples:['Get-WindowsUpdateLog','Get-WindowsUpdateLog -LogPath C:\\WULog.txt'],tip:'Konvertiert ETL-Protokolle in lesbare Textdatei. Alternativ: C:\\Windows\\SoftwareDistribution\\ReportingEvents.log'},
+  {name:'Get-WinEvent WindowsUpdateClient',cat:'update',typ:'ps',short:'Windows Update Ereignisse aus Ereignisprotokoll auslesen.',syntax:"Get-WinEvent -FilterHashtable @{LogName='System';ProviderName='Microsoft-Windows-WindowsUpdateClient'}",examples:["Get-WinEvent -FilterHashtable @{LogName='System';ProviderName='Microsoft-Windows-WindowsUpdateClient'} -MaxEvents 20 | Select TimeCreated,Id,Message","Get-WinEvent -FilterHashtable @{LogName='System';Id=19} -MaxEvents 10 | Select TimeCreated,Message"],tip:'EventID 19 = Update installiert. EventID 20 = Fehler. EventID 43 = Download gestartet. EventID 44 = Download bereit.'},
+  {name:'UsoClient StartScan',cat:'update',typ:'cmd',short:'Windows Update Suche/Download/Install starten (Win10/11).',syntax:'UsoClient [StartScan|StartDownload|StartInstall|RebootDevice]',examples:['UsoClient StartScan','UsoClient StartDownload','UsoClient StartInstall','UsoClient RebootDevice'],tip:'Moderner Ersatz fuer wuauclt. StartScan = nur suchen. StartInstall = installieren. Als Admin ausfuehren.'},
+  {name:'wuauclt /detectnow',cat:'update',typ:'cmd',short:'Windows Update Suche manuell ausloesen (aelter als Win10).',syntax:'wuauclt /detectnow  |  wuauclt /updatenow',examples:['wuauclt /detectnow','wuauclt /updatenow'],tip:'Ab Windows 10 UsoClient bevorzugen. /detectnow = nur suchen. /updatenow = suchen und installieren. Als Admin.'},
+  {name:'Install-Module PSWindowsUpdate',cat:'update',typ:'ps',short:'PSWindowsUpdate Modul installieren fuer volle Update-Kontrolle.',syntax:'Install-Module PSWindowsUpdate -Force\nImport-Module PSWindowsUpdate',examples:['Install-Module PSWindowsUpdate -Force','Import-Module PSWindowsUpdate','Get-WindowsUpdate','Install-WindowsUpdate -AcceptAll -IgnoreReboot'],tip:'Drittanbieter-Modul (PS Gallery). Ermoeglicht Get-WindowsUpdate, Install-WindowsUpdate, Remote-Updates. ExecutionPolicy RemoteSigned benoetigt.'},
+  {name:'Get-WindowsUpdate',cat:'update',typ:'ps',short:'Verfuegbare Updates anzeigen (PSWindowsUpdate-Modul).',syntax:'Get-WindowsUpdate [-MicrosoftUpdate] [-Category "Security Updates"]',examples:['Get-WindowsUpdate','Get-WindowsUpdate -MicrosoftUpdate','Get-WindowsUpdate -Category "Security Updates"',"Get-WindowsUpdate -ComputerName 'Server01'"],tip:'Benoetigt PSWindowsUpdate. -MicrosoftUpdate zeigt auch Office-Updates. -NotInstalled nur ausstehende Updates.'},
+  {name:'Install-WindowsUpdate',cat:'update',typ:'ps',short:'Windows Updates per PowerShell installieren (PSWindowsUpdate).',syntax:'Install-WindowsUpdate [-AcceptAll] [-AutoReboot] [-IgnoreReboot] [-KBArticleID KB]',examples:['Install-WindowsUpdate -AcceptAll -IgnoreReboot','Install-WindowsUpdate -KBArticleID KB5034441 -AcceptAll','Install-WindowsUpdate -AcceptAll -AutoReboot',"Invoke-WUJob -ComputerName 'Server01' -Script {ipmo PSWindowsUpdate; Install-WindowsUpdate -AcceptAll -AutoReboot} -RunNow"],tip:'-AcceptAll ohne Rueckfrage. -IgnoreReboot kein Neustart. Invoke-WUJob fuer Remote-Installation via WinRM.'},
+  {name:'wusa /uninstall /kb',cat:'update',typ:'cmd',short:'Installiertes Update deinstallieren.',syntax:'wusa /uninstall /kb:NNNNNNN [/quiet] [/norestart]',examples:['wusa /uninstall /kb:5034441','wusa /uninstall /kb:5034441 /quiet /norestart','wusa /uninstall /kb:5034441 /quiet /forcerestart'],tip:'/quiet = kein Dialog. /norestart = kein Neustart. KB-Nummer ohne KB-Praefix. Als Admin! Nicht alle Updates deinstallierbar.'},
+  {name:'Remove-WindowsUpdate',cat:'update',typ:'ps',short:'Update per PowerShell deinstallieren (PSWindowsUpdate).',syntax:'Remove-WindowsUpdate -KBArticleID KB-Nummer [-NoRestart]',examples:['Remove-WindowsUpdate -KBArticleID KB5034441','Remove-WindowsUpdate -KBArticleID KB5034441 -NoRestart -Verbose'],tip:'Benoetigt PSWindowsUpdate-Modul. -NoRestart verzoegert Neustart. Zeigt Fehlermeldungen wenn Update nicht deinstallierbar.'},
+  {name:'SoftwareDistribution Reset',cat:'update',typ:'cmd',short:'Windows Update Cache zuruecksetzen — loest viele Update-Fehler.',syntax:'net stop wuauserv && rd /s /q C:\\Windows\\SoftwareDistribution\\Download && net start wuauserv',examples:['net stop wuauserv','net stop bits','rd /s /q C:\\Windows\\SoftwareDistribution\\Download','net start wuauserv','net start bits'],tip:'Loest Fehler 0x80070002, 0x80070003, 0x80073712. Nur Download-Ordner leeren! Nach Neustart des Dienstes wird Cache neu aufgebaut.'},
+  {name:'WU-Fehlercodes',cat:'update',typ:'cmd',short:'Haeufige Windows Update Fehlercodes und Loesungen.',syntax:'-- Referenz --',examples:['0x80070002 = Datei nicht gefunden -> SoftwareDistribution leeren','0x8024402C = Proxy/Firewall blockiert WU -> Netzwerk pruefen','0x80240034 = Update nicht anwendbar -> falsche Windows-Version','0x80070422 = WU-Dienst gestoppt -> net start wuauserv','0x800705B4 = Zeitlimit -> Verbindung pruefen','0xC1900208 = Inkompatible App -> App deinstallieren vor Upgrade'],tip:'Diagnosetool: msdt.exe /id WindowsUpdateDiagnostic. Oder: Settings > Windows Update > Problembehandlung.'},
 
   // System & Boot
   {name:'sfc /scannow',cat:'ts',typ:'cmd',short:'Systemdateipruefung — beschaedigte Windows-Dateien reparieren.',syntax:'sfc /scannow',examples:['sfc /scannow','sfc /verifyonly','sfc /scanfile=C:\\Windows\\System32\\ntdll.dll'],tip:'Als Admin! Ergebnis in C:\\Windows\\Logs\\CBS\\CBS.log. Danach dism /Online /Cleanup-Image /RestoreHealth wenn Fehler bleiben.'},
@@ -4459,6 +4563,322 @@ Export-Certificate -Cert $Cert -FilePath "C:\cert.cer"</div></div></li>
     ]
   },
 ];
+
+// -- ADMIN GUIDES (GPO, Drucker, Zertifikate, Exchange) --
+const GPO_GUIDES = [
+  {
+    id:'gpo-grundlagen',emoji:'📜',title:'Gruppenrichtlinien — Erstellen & Verwalten',
+    subtitle:'GPO erstellen, mit OU verknuepfen, Reihenfolge und Vererbung verstehen',
+    tabs:[
+      {label:'GPO erstellen',content:`
+        <div class="guide-section-head">Neue Gruppenrichtlinie anlegen und verknuepfen</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">RSAT / GroupPolicy-Modul bereitstellen</div><div class="step-code"># RSAT-Tools installieren (Windows 10/11):
+Add-WindowsCapability -Online -Name "Rsat.GroupPolicy.Management.Tools~~~~0.0.1.0"
+
+# Modul laden:
+Import-Module GroupPolicy
+Get-Command -Module GroupPolicy</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">GPO erstellen und verknuepfen</div><div class="step-code"># 1. GPO erstellen:
+New-GPO -Name "USB-Sperre" -Comment "Blockiert USB-Speichermedien"
+
+# 2. Mit OU verknuepfen (sonst wirkt es nicht!):
+New-GPLink -Name "USB-Sperre"
+    -Target "OU=Workstations,DC=firma,DC=local"
+    -LinkEnabled Yes
+
+Write-Host "GPO erstellt und verknuepft" -ForegroundColor Green</div><div class="step-note">&#128161; Ein GPO ohne Verknuepfung (Link) bleibt wirkungslos! Erst die Verknuepfung mit einer OU/Domaene aktiviert es.</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Registry-Einstellung per GPO setzen</div><div class="step-code"># Beispiel: USB-Speicher deaktivieren
+Set-GPRegistryValue -Name "USB-Sperre"
+    -Key "HKLM\\SYSTEM\\CurrentControlSet\\Services\\USBSTOR"
+    -ValueName "Start"
+    -Type DWord
+    -Value 4
+
+# Wert 4 = deaktiviert, 3 = aktiviert</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Verknuepfungen und Vererbung pruefen</div><div class="step-code"># Alle GPOs einer OU anzeigen:
+Get-GPInheritance -Target "OU=Workstations,DC=firma,DC=local"
+
+# Reihenfolge der Anwendung (LSDOU):
+# Local -> Site -> Domain -> OU (spaetere ueberschreiben fruehere)</div><div class="step-note">&#128161; LSDOU-Regel: Lokale Richtlinie zuerst, dann Standort, Domaene, OU. Die zuletzt angewendete gewinnt bei Konflikten.</div></div></li>
+        </ol>`},
+      {label:'Analyse & Backup',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Angewendete Richtlinien analysieren (RSoP)</div><div class="step-code"># Schnelle Uebersicht im Terminal:
+gpresult /r
+
+# Detaillierter HTML-Report (empfohlen):
+gpresult /h C:\\GPO-Report.html
+start C:\\GPO-Report.html
+
+# Fuer anderen Benutzer/Computer:
+gpresult /user max /scope user /h report.html</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Richtlinien sofort aktualisieren</div><div class="step-code"># Lokal:
+gpupdate /force
+
+# Remote auf mehreren PCs:
+Invoke-GPUpdate -Computer "PC01" -Force
+Get-ADComputer -Filter * | ForEach-Object { Invoke-GPUpdate -Computer $_.Name -Force -RandomDelayInMinutes 5 }</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Alle GPOs sichern (automatisiert)</div><div class="step-code"># Backup mit Datumsordner:
+$Pfad = "C:\\GPO-Backup\$(Get-Date -Format yyyy-MM-dd)"
+New-Item -ItemType Directory -Path $Pfad -Force
+Backup-GPO -All -Path $Pfad
+
+Write-Host "Alle GPOs gesichert nach $Pfad" -ForegroundColor Green
+
+# Als geplante Aufgabe taeglich ausfuehren!</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">GPO wiederherstellen</div><div class="step-code"># In dasselbe GPO zuruecksichern:
+Restore-GPO -Name "USB-Sperre" -Path "C:\\GPO-Backup\\2025-06-01"
+
+# In ein NEUES GPO importieren:
+Import-GPO -BackupGpoName "USB-Sperre"
+    -TargetName "USB-Sperre-Kopie"
+    -Path "C:\\GPO-Backup\\2025-06-01"
+    -CreateIfNeeded</div></div></li>
+        </ol>`}
+    ]
+  },
+];
+
+const DRUCKER_GUIDES = [
+  {
+    id:'drucker-einrichten',emoji:'🖨️',title:'Drucker & Druckserver einrichten',
+    subtitle:'Netzwerkdrucker installieren, freigeben und Probleme beheben',
+    tabs:[
+      {label:'Drucker installieren',content:`
+        <div class="guide-section-head">Netzwerkdrucker per PowerShell einrichten</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Treiber bereitstellen</div><div class="step-code"># Treiber in den Treiberspeicher laden:
+pnputil /add-driver "C:\\Treiber\\drucker.inf" /install
+
+# Pruefen ob Treiber verfuegbar:
+Get-PrinterDriver | Select Name,Manufacturer
+
+# Treiber hinzufuegen (falls schon im Speicher):
+Add-PrinterDriver -Name "HP Universal Printing PCL 6"</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Druckerport (TCP/IP) erstellen</div><div class="step-code"># RAW-Port auf Standard-Port 9100:
+Add-PrinterPort -Name "192.168.1.50" -PrinterHostAddress "192.168.1.50"
+
+# Mit benanntem Port:
+Add-PrinterPort -Name "Drucker-EG" -PrinterHostAddress "10.0.0.20" -PortNumber 9100
+
+# Ports anzeigen:
+Get-PrinterPort | Select Name,PrinterHostAddress</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Drucker hinzufuegen und freigeben</div><div class="step-code"># Drucker installieren:
+Add-Printer -Name "Buero-HP"
+    -DriverName "HP Universal Printing PCL 6"
+    -PortName "192.168.1.50"
+
+# Freigeben (auf Druckserver):
+Set-Printer -Name "Buero-HP" -Shared $true -ShareName "Buero-HP"
+
+# Im AD veroeffentlichen:
+Set-Printer -Name "Buero-HP" -Published $true</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Netzwerkdrucker auf Client verbinden</div><div class="step-code"># Vom Druckserver verbinden:
+Add-Printer -ConnectionName "\\PrintSrv01\\Buero-HP"
+
+# Als Standarddrucker setzen:
+(New-Object -ComObject WScript.Network).SetDefaultPrinter("\\PrintSrv01\\Buero-HP")
+
+# Per GPO fuer alle Benutzer (Drucker-Bereitstellung):
+# gpmc.msc > Benutzerkonfig > Einstellungen > Systemsteuerung > Drucker</div></div></li>
+        </ol>`},
+      {label:'Probleme beheben',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Druckwarteschlange (Spooler) zuruecksetzen</div><div class="step-code">:: Klassische Loesung bei haengenden Auftraegen:
+net stop spooler
+del /Q /F /S %systemroot%\\System32\\spool\\PRINTERS\\*.*
+net start spooler
+
+:: PowerShell-Variante:
+Stop-Service Spooler -Force
+Remove-Item "$env:systemroot\\System32\\spool\\PRINTERS\\*" -Force
+Start-Service Spooler</div><div class="step-note">&#128161; Behebt ~90% aller Drucker. Loescht alle wartenden Auftraege und startet den Dienst neu.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Haengende Druckauftraege gezielt loeschen</div><div class="step-code"># Auftraege anzeigen:
+Get-PrintJob -PrinterName "Buero-HP" | Select Id,DocumentName,UserName,JobStatus
+
+# Einzelnen Auftrag loeschen:
+Remove-PrintJob -PrinterName "Buero-HP" -ID 3
+
+# Alle Auftraege eines Druckers:
+Get-PrintJob -PrinterName "Buero-HP" | Remove-PrintJob</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Druckerstatus diagnostizieren</div><div class="step-code"># Drucker mit Problemen finden:
+Get-Printer | Where PrinterStatus -ne "Normal" |
+    Select Name,PrinterStatus,JobCount
+
+# Status-Werte: Normal, Offline, Error, PaperOut, PaperJam, TonerLow
+
+# Drucker-Konnektivitaet testen:
+Test-NetConnection -ComputerName 192.168.1.50 -Port 9100</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Alte/verwaiste Treiber bereinigen</div><div class="step-code"># Alle Treiber anzeigen:
+Get-PrinterDriver | Select Name,Manufacturer,DriverVersion
+
+# Nicht genutzten Treiber entfernen:
+Remove-PrinterDriver -Name "Alter HP Treiber"
+
+# Druckserver-Eigenschaften (Treiber-Tab):
+printui /s /t2</div></div></li>
+        </ol>`}
+    ]
+  },
+];
+
+const ZERTIFIKAT_GUIDES = [
+  {
+    id:'zert-verwalten',emoji:'🔐',title:'Zertifikate verwalten & überwachen',
+    subtitle:'Zertifikate anzeigen, exportieren, importieren und ablaufende Zertifikate finden',
+    tabs:[
+      {label:'Anzeigen & Prüfen',content:`
+        <div class="guide-section-head">Zertifikate im Speicher finden und pruefen</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Zertifikatsspeicher durchsuchen</div><div class="step-code"># Eigene Computer-Zertifikate:
+Get-ChildItem Cert:\\LocalMachine\\My |
+    Select Subject, NotAfter, Thumbprint, Issuer
+
+# Stammzertifizierungsstellen:
+Get-ChildItem Cert:\\LocalMachine\\Root
+
+# Benutzer-Zertifikate:
+Get-ChildItem Cert:\\CurrentUser\\My</div><div class="step-note">&#128161; Cert: ist ein PowerShell-Laufwerk. My = persoenlich, Root = Stamm-CAs, CA = Zwischenzertifikate.</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Zertifikat im Detail pruefen (certutil)</div><div class="step-code">:: Zertifikatsdatei anzeigen:
+certutil -dump C:\\cert.cer
+
+:: Zertifikat + Sperrstatus online pruefen:
+certutil -urlfetch -verify C:\\cert.cer
+
+:: Speicher anzeigen:
+certutil -store My</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Ablaufende Zertifikate finden (WICHTIG!)</div><div class="step-code"># Zertifikate die in 30 Tagen ablaufen:
+Get-ChildItem Cert:\\LocalMachine\\My -Recurse |
+    Where { $_.NotAfter -lt (Get-Date).AddDays(30) -and $_.NotAfter -gt (Get-Date) } |
+    Select Subject, NotAfter, Thumbprint |
+    Sort NotAfter |
+    Format-Table -AutoSize
+
+Write-Host "Diese Zertifikate laufen bald ab!" -ForegroundColor Yellow</div><div class="step-warn">&#9888; Abgelaufene Zertifikate verursachen Dienst-Ausfaelle (Webseiten, RDP, LDAPS). Rechtzeitig erneuern!</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Ablauf-Ueberwachung mit E-Mail-Alarm</div><div class="step-code">$Tage = 30
+$Ablaufend = Get-ChildItem Cert:\\LocalMachine\\My |
+    Where { $_.NotAfter -lt (Get-Date).AddDays($Tage) -and $_.NotAfter -gt (Get-Date) }
+
+if ($Ablaufend) {
+    $Body = $Ablaufend | Select Subject,NotAfter | Out-String
+    Send-MailMessage -To "admin@firma.com" -From "alarm@firma.com"
+        -Subject "Zertifikate laufen ab!" -Body $Body
+        -SmtpServer "mail.firma.com"
+}
+# Als taegliche geplante Aufgabe einrichten!</div></div></li>
+        </ol>`},
+      {label:'Export & Import',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Zertifikat exportieren (ohne privaten Schluessel)</div><div class="step-code"># Zertifikat auswaehlen:
+$Cert = Get-ChildItem Cert:\\LocalMachine\\My |
+    Where Subject -like "*firma.local*"
+
+# Nur oeffentlicher Teil (.cer):
+Export-Certificate -Cert $Cert -FilePath "C:\\cert.cer"</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Zertifikat mit privatem Schluessel exportieren (.pfx)</div><div class="step-code"># Passwort fuer PFX:
+$PW = ConvertTo-SecureString "SicheresPW123!" -AsPlainText -Force
+
+# Export mit privatem Schluessel:
+Export-PfxCertificate -Cert $Cert
+    -FilePath "C:\\cert.pfx"
+    -Password $PW
+
+Write-Host "PFX exportiert (enthaelt privaten Schluessel - sicher aufbewahren!)" -ForegroundColor Yellow</div><div class="step-warn">&#9888; PFX-Dateien enthalten den privaten Schluessel! Sicher speichern und Passwort schuetzen.</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Zertifikat importieren</div><div class="step-code"># Oeffentliches Zertifikat in Stammspeicher:
+Import-Certificate -FilePath "C:\\cert.cer"
+    -CertStoreLocation "Cert:\\LocalMachine\\Root"
+
+# PFX mit privatem Schluessel importieren:
+$PW = ConvertTo-SecureString "SicheresPW123!" -AsPlainText -Force
+Import-PfxCertificate -FilePath "C:\\cert.pfx"
+    -CertStoreLocation "Cert:\\LocalMachine\\My"
+    -Password $PW</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Selbstsigniertes Zertifikat erstellen (Test/Intern)</div><div class="step-code"># Fuer interne Tests / Entwicklung:
+New-SelfSignedCertificate
+    -DnsName "server.firma.local", "*.firma.local"
+    -CertStoreLocation "Cert:\\LocalMachine\\My"
+    -NotAfter (Get-Date).AddYears(3)
+    -FriendlyName "Internes Test-Zertifikat"</div><div class="step-note">&#128161; Selbstsignierte Zertifikate sind nicht oeffentlich vertrauenswuerdig — nur fuer interne/Testzwecke. Fuer Produktion: CA oder Let's Encrypt.</div></div></li>
+        </ol>`}
+    ]
+  },
+];
+
+const EXCHANGE_GUIDES = [
+  {
+    id:'exo-verwalten',emoji:'📧',title:'Exchange Online verwalten',
+    subtitle:'Postfaecher, Berechtigungen, freigegebene Postfaecher und Verteilerlisten',
+    tabs:[
+      {label:'Verbinden & Postfächer',content:`
+        <div class="guide-section-head">Mit Exchange Online verbinden</div>
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Modul installieren und verbinden</div><div class="step-code"># Einmalig installieren:
+Install-Module ExchangeOnlineManagement -Scope CurrentUser -Force
+
+# Verbinden (mit MFA-Unterstuetzung):
+Connect-ExchangeOnline -UserPrincipalName admin@firma.com
+
+# Am Ende trennen (Session-Limit beachten):
+# Disconnect-ExchangeOnline -Confirm:$false</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Postfaecher anzeigen und analysieren</div><div class="step-code"># Alle Postfaecher:
+Get-Mailbox -ResultSize Unlimited |
+    Select DisplayName, PrimarySmtpAddress, RecipientTypeDetails
+
+# Groesste Postfaecher finden:
+Get-Mailbox -ResultSize Unlimited | Get-MailboxStatistics |
+    Sort TotalItemSize -Descending |
+    Select DisplayName, TotalItemSize, ItemCount -First 20</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Freigegebenes Postfach erstellen</div><div class="step-code"># Shared Mailbox anlegen:
+New-Mailbox -Shared -Name "Info" -DisplayName "Info Postfach" -PrimarySmtpAddress "info@firma.com"
+
+# Bestehendes umwandeln:
+Set-Mailbox -Identity "alt@firma.com" -Type Shared
+
+Write-Host "Freigegebenes Postfach erstellt" -ForegroundColor Green</div><div class="step-note">&#128161; Freigegebene Postfaecher bis 50 GB benoetigen keine eigene Lizenz. Ideal fuer info@, support@, etc.</div></div></li>
+        </ol>`},
+      {label:'Berechtigungen',content:`
+        <ol class="steps">
+          <li class="step"><span class="step-num">1</span><div class="step-content"><div class="step-title">Vollzugriff auf Postfach geben</div><div class="step-code"># FullAccess = Postfach oeffnen und lesen:
+Add-MailboxPermission -Identity "info@firma.com"
+    -User "max@firma.com"
+    -AccessRights FullAccess
+    -InheritanceType All
+
+# -AutoMapping $false = nicht automatisch in Outlook einbinden:
+Add-MailboxPermission -Identity "info@firma.com"
+    -User "max@firma.com"
+    -AccessRights FullAccess
+    -AutoMapping $false</div></div></li>
+          <li class="step"><span class="step-num">2</span><div class="step-content"><div class="step-title">Senden-Als-Berechtigung (SendAs)</div><div class="step-code"># Im Namen des Postfachs senden (erscheint als info@):
+Add-RecipientPermission -Identity "info@firma.com"
+    -Trustee "max@firma.com"
+    -AccessRights SendAs
+    -Confirm:$false
+
+# Alternative: "Im Auftrag von" (zeigt beide Namen):
+Set-Mailbox "info@firma.com" -GrantSendOnBehalfTo "max@firma.com"</div><div class="step-note">&#128161; SendAs = E-Mail kommt scheinbar direkt vom Postfach. SendOnBehalf = "max im Auftrag von info".</div></div></li>
+          <li class="step"><span class="step-num">3</span><div class="step-content"><div class="step-title">Berechtigungen pruefen und entfernen</div><div class="step-code"># Aktuelle Berechtigungen anzeigen:
+Get-MailboxPermission -Identity "info@firma.com" |
+    Where { $_.User -notlike "NT AUTHORITY*" }
+
+Get-RecipientPermission -Identity "info@firma.com"
+
+# Entfernen:
+Remove-MailboxPermission -Identity "info@firma.com" -User "max@firma.com" -AccessRights FullAccess -Confirm:$false</div></div></li>
+          <li class="step"><span class="step-num">4</span><div class="step-content"><div class="step-title">Verteilerlisten verwalten</div><div class="step-code"># Verteilerliste erstellen:
+New-DistributionGroup -Name "Alle-IT" -PrimarySmtpAddress "it@firma.com"
+
+# Mitglied hinzufuegen:
+Add-DistributionGroupMember -Identity "it@firma.com" -Member "max@firma.com"
+
+# Mitglieder anzeigen:
+Get-DistributionGroupMember -Identity "it@firma.com" | Select DisplayName</div></div></li>
+        </ol>`}
+    ]
+  },
+];
+
 const PS_SKRIPTE = [
   {
     id:'pss-dienste',emoji:'⚙️',title:'Dienste remote verwalten',
@@ -6805,6 +7225,10 @@ function toggleGuide(id, event) {
   else if (activeTab === 'ps-skripte')  renderGuide(PS_SKRIPTE,   getCatLabel('ps-skripte'),  '#22d3ee', '&#128196;');
   else if (activeTab === 'bitlocker-guide') renderGuide(BITLOCKER_GUIDES, getCatLabel('bitlocker-guide'), '#fb923c', '&#128274;');
   else if (activeTab === 'mapping-guide')   renderGuide(MAPPING_GUIDES,   getCatLabel('mapping-guide'),   '#f59e0b', '&#128193;');
+  else if (activeTab === 'gpo-guide')     renderGuide(GPO_GUIDES,       getCatLabel('gpo-guide'),     '#a78bfa', '&#128220;');
+  else if (activeTab === 'drucker-guide') renderGuide(DRUCKER_GUIDES,   getCatLabel('drucker-guide'), '#34d399', '&#128424;');
+  else if (activeTab === 'zert-guide')    renderGuide(ZERTIFIKAT_GUIDES,getCatLabel('zert-guide'),    '#fbbf24', '&#128273;');
+  else if (activeTab === 'exo-guide')     renderGuide(EXCHANGE_GUIDES,  getCatLabel('exo-guide'),     '#38bdf8', '&#9993;');
 }
 
 // Add copy buttons to all .step-code elements that don't have one yet
@@ -6990,6 +7414,10 @@ function buildNav() {
       : cat.id === 'ps-skripte'  ? PS_SKRIPTE.length
       : cat.id === 'bitlocker-guide' ? BITLOCKER_GUIDES.length
       : cat.id === 'mapping-guide'   ? MAPPING_GUIDES.length
+      : cat.id === 'gpo-guide'       ? GPO_GUIDES.length
+      : cat.id === 'drucker-guide'   ? DRUCKER_GUIDES.length
+      : cat.id === 'zert-guide'      ? ZERTIFIKAT_GUIDES.length
+      : cat.id === 'exo-guide'       ? EXCHANGE_GUIDES.length
       : cat.id === 'favoriten'   ? favorites.size
       : cat.id === 'verlauf'     ? verlauf.length
       : cat.id === 'eigene'      ? customCmds.length
@@ -7170,7 +7598,7 @@ function setFilter(group, value) {
 
 function updateFilterBar() {
   const fb = document.getElementById('filterBar');
-  const isGuide = ['ad-guide','ts-guide','ps-guide','batch-guide','ps-skripte','bitlocker-guide','mapping-guide','favoriten','verlauf'].includes(activeTab);
+  const isGuide = ['ad-guide','ts-guide','ps-guide','batch-guide','ps-skripte','bitlocker-guide','mapping-guide','gpo-guide','drucker-guide','zert-guide','exo-guide','favoriten','verlauf'].includes(activeTab);
   const isDash  = (activeTab === 'alle' && !searchQuery);
   if (!fb) return;
   fb.classList.toggle('hidden', isDash || isGuide);
@@ -7293,6 +7721,10 @@ function render() {
   if (activeTab === 'ps-skripte')  { renderGuide(PS_SKRIPTE,   getCatLabel('ps-skripte'),  '#22d3ee', '&#128196;'); return; }
   if (activeTab === 'bitlocker-guide') { renderGuide(BITLOCKER_GUIDES, getCatLabel('bitlocker-guide'), '#fb923c', '&#128274;'); return; }
   if (activeTab === 'mapping-guide')   { renderGuide(MAPPING_GUIDES,   getCatLabel('mapping-guide'),   '#f59e0b', '&#128193;'); return; }
+  if (activeTab === 'gpo-guide')     { renderGuide(GPO_GUIDES,       getCatLabel('gpo-guide'),     '#a78bfa', '&#128220;'); return; }
+  if (activeTab === 'drucker-guide') { renderGuide(DRUCKER_GUIDES,   getCatLabel('drucker-guide'), '#34d399', '&#128424;'); return; }
+  if (activeTab === 'zert-guide')    { renderGuide(ZERTIFIKAT_GUIDES,getCatLabel('zert-guide'),    '#fbbf24', '&#128273;'); return; }
+  if (activeTab === 'exo-guide')     { renderGuide(EXCHANGE_GUIDES,  getCatLabel('exo-guide'),     '#38bdf8', '&#9993;'); return; }
 
   // Favoriten
   if (activeTab === 'favoriten') {
@@ -7410,6 +7842,24 @@ function render() {
 // ══════════════════════════════════════════════════════════════
 const CHANGELOG = [
   {
+    date: 'Jun 2025',
+    badge: 'new',
+    title: 'GPO, Drucker, Zertifikate & Exchange',
+    items: ['32 neue Befehle', 'Gruppenrichtlinien', 'Drucker & Spooler', 'Zertifikate & PKI', 'Exchange Online', '4 neue Anleitungen'],
+  },
+  {
+    date: 'Jun 2025',
+    badge: 'new',
+    title: 'Entra ID & Intune — 20 Befehle',
+    items: ['Microsoft Graph SDK', 'Connect-MgGraph', 'Entra Benutzer & Gruppen', 'Intune Geraete', 'Compliance-Richtlinien', 'Remote-Wipe', 'MFA-Methoden', 'Anmeldeprotokolle'],
+  },
+  {
+    date: 'Jun 2025',
+    badge: 'new',
+    title: 'Windows Update — 22 Befehle (CMD + PowerShell)',
+    items: ['Get-HotFix', 'PowerShell Module updaten', 'Update-Module', 'winget PowerShell 7', 'Install-WindowsUpdate', 'WU-Fehlercodes'],
+  },
+  {
     date: 'Mai 2025',
     badge: 'new',
     title: 'BitLocker Guide & Ordner Mappen',
@@ -7421,25 +7871,8 @@ const CHANGELOG = [
     title: 'Batch Scripting — 7 neue Anleitungen',
     items: ['Fehlerbehandlung', 'Dateien & Ordner', 'Netzwerk-Skripte', 'Registry', 'Benutzerverwaltung', 'Dienste & Prozesse'],
   },
-  {
-    date: 'Mai 2025',
-    badge: 'new',
-    title: 'Erweiterte Suche mit Filtern (CMD/PS/Win)',
-    items: ['Typ-Filter CMD/PS', 'Win 10/11/Server', 'Sortierung A-Z', 'Live Treffer-Anzeige'],
-  },
-  {
-    date: 'Mai 2025',
-    badge: 'new',
-    title: 'PayPal Spenden-Button & 31 Tagestipps',
-    items: ['PayPal Donate Button', '31 rotierende Tipps', 'Datum im Tipp'],
-  },
-  {
-    date: 'Mai 2025',
-    badge: 'new',
-    title: 'ntdsutil — AD-Snapshot erstellen & einbinden',
-    items: ['Snapshot erstellen', 'dsamain LDAP-Server', 'Objekte wiederherstellen', '+7 AD-Befehle'],
-  },
-  ];
+
+];
 
 // Tipp des Tages (rotierend nach Datum)
 const DAILY_TIPS = [
